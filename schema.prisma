@@ -1,0 +1,61 @@
+datasource db {
+    provider = "mysql"
+    url = "env(DATABASE_URL)"
+}
+
+model User {
+    id              Int             @id @default(autoincrement())
+    created_at      DateTime        @default(now())
+    email           String          @unique
+    password_hash   String          @db.Char(60)
+    role            Role            @default(User)
+    name            String          @db.VarChar(64)
+
+    playlists       Playlist[]
+    songs           Song[]
+}
+
+
+
+model Song {
+    id              Int             @id @default(autoincrement())
+    title           String
+    created_at      DateTime        @db.Date
+    duration        Int
+    is_explicit     Boolean
+
+    artists         User[]
+    playlist_songs  OrderedSong[]
+}
+
+model Playlist {
+    id              Int             @id @default(autoincrement())
+    creator         User            @relation(fields: [creator_id], references: [id])
+    creator_id      Int
+    name            String
+    created_at      DateTime        @db.Date @default(now())
+    description     String?         @db.Text
+    is_album        Boolean         @default(false)
+
+    songs           OrderedSong[]
+}
+
+model OrderedSong {
+    playlist        Playlist        @relation(fields: [playlist_id], references: [id])
+    playlist_id     Int
+    song            Song            @relation(fields: [song_id], references: [id])
+    song_id         Int
+    added_at        DateTime        @default(now())
+    index           Int
+
+    @@id([playlist_id, song_id])
+    @@unique([playlist_id, index])
+}
+
+
+
+enum Role {
+    Admin
+    Artist
+    User
+}
