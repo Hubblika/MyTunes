@@ -1,18 +1,26 @@
 datasource db {
     provider = "mysql"
-    url = "env(DATABASE_URL)"
 }
 
 model User {
     id              Int             @id @default(autoincrement())
-    created_at      DateTime        @default(now())
+    created_at      DateTime
     email           String          @unique
-    password_hash   String          @db.Char(60)
+    password_hash   Bytes           @db.Binary(32)
     role            Role            @default(User)
-    name            String          @db.VarChar(64)
+    name            String?         @db.VarChar(64)
 
+    sessions        Session[]
     playlists       Playlist[]
     songs           Song[]
+}
+
+model Session {
+    token_hash      Bytes           @id @db.Binary(32)
+    created_at      DateTime
+    ip_address      Bytes?          @db.Binary(4)
+    user            User            @relation(fields: [user_id], references: [id])
+    user_id         Int
 }
 
 
@@ -33,7 +41,7 @@ model Playlist {
     creator         User            @relation(fields: [creator_id], references: [id])
     creator_id      Int
     name            String
-    created_at      DateTime        @db.Date @default(now())
+    created_at      DateTime        @db.Date
     description     String?         @db.Text
     is_album        Boolean         @default(false)
 
@@ -45,7 +53,7 @@ model OrderedSong {
     playlist_id     Int
     song            Song            @relation(fields: [song_id], references: [id])
     song_id         Int
-    added_at        DateTime        @default(now())
+    added_at        DateTime
     index           Int
 
     @@id([playlist_id, song_id])
