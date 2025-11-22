@@ -2,24 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class User extends Model
+class Session extends Model
 {
     /**
      * The table associated with the model.
      * 
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'sessions';
 
     /**
      * The primary key associated with the table.
      * 
      * @var string
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'token_hash';
+    protected $keyType = 'binary';
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -27,9 +30,11 @@ class User extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'email',
-        'password_hash',
-        'name'
+        'token_hash',
+        'created_at',
+        'ip_address',
+        'user_agent',
+        'user_id'
     ];
 
     /**
@@ -37,35 +42,23 @@ class User extends Model
      * 
      * @var list<string>
      */
-    protected $hidden = [
-        'password_hash'
-    ];
+    protected $hidden = [];
 
     /**
      * Indicates if the model should be timestamped.
      * 
      * @var bool
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
-     * Get all sessions for the user
+     * Get the user that owns the session
      * 
-     * @return HasMany<Session, User>
+     * @return BelongsTo<User, Session>
      */
-    public function sessions(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(Session::class);
-    }
-
-    /**
-     * Get all playlists the user has created
-     * 
-     * @return HasMany<Playlist, User>
-     */
-    public function playlists(): HasMany
-    {
-        return $this->hasMany(Playlist::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -76,7 +69,8 @@ class User extends Model
     protected function casts(): array
     {
         return [
-            // 'password_hash' => 'hashed'
+            // 'token_hash' => 'hashed'
+            'created_at' => 'datetime'
         ];
     }
 }

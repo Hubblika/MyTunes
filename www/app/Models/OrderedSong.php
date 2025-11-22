@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class User extends Model
+class OrderedSong extends Model
 {
     /**
      * The table associated with the model.
      * 
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'ordered_songs';
 
     /**
      * The primary key associated with the table.
@@ -27,9 +27,9 @@ class User extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'email',
-        'password_hash',
-        'name'
+        'playlist_id',
+        'song_id',
+        'index'
     ];
 
     /**
@@ -37,9 +37,7 @@ class User extends Model
      * 
      * @var list<string>
      */
-    protected $hidden = [
-        'password_hash'
-    ];
+    protected $hidden = [];
 
     /**
      * Indicates if the model should be timestamped.
@@ -49,23 +47,23 @@ class User extends Model
     public $timestamps = true;
 
     /**
-     * Get all sessions for the user
+     * Get the user that created the playlist
      * 
-     * @return HasMany<Session, User>
+     * @return BelongsTo<User, Playlist>
      */
-    public function sessions(): HasMany
+    public function song(): BelongsTo
     {
-        return $this->hasMany(Session::class);
+        return $this->belongsTo(Song::class);
     }
 
     /**
-     * Get all playlists the user has created
+     * Get the playlist this ordered song is in
      * 
-     * @return HasMany<Playlist, User>
+     * @return BelongsTo<Playlist, OrderedSong>
      */
-    public function playlists(): HasMany
+    public function playlist(): BelongsTo
     {
-        return $this->hasMany(Playlist::class);
+        return $this->belongsTo(Playlist::class);
     }
 
     /**
@@ -75,8 +73,6 @@ class User extends Model
      */
     protected function casts(): array
     {
-        return [
-            // 'password_hash' => 'hashed'
-        ];
+        return [];
     }
 }
