@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('creator_id')->constrained('users')->cascadeOnDelete();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->boolean('is_album')->default(false);
             $table->timestamps();
         });
