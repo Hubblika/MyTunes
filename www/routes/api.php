@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\RequiresJson;
+use App\Http\Middleware\RequiresLogin;
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -84,7 +86,7 @@ function err(int $status, HttpError $error = HttpError::UNKNOWN, ?string $messag
     return response()->json(
         [
             'error' => [
-                'code' => $status,
+                'status' => $status,
                 'name' => $error->name,
                 'message' => $message
             ]
@@ -124,14 +126,14 @@ function new_session(User $user, ?Request $request) {
 
 
 
-Route::prefix('/account')->group(fn () => [
+Route::prefix('/account')->middleware([RequiresJson::class])->group(fn () => [
     // Route to register a new account
     // Creates a `User` and `Session`, and sets the auth cookie
     Route::match(['post', 'put'], '/register', function (Request $request) {
         $email = $request->json('email');
         $password = $request->json('password');
 
-        if ($email === null || preg_match('/^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$/i', $email)) {
+        if ($email === null || preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
             return err(Status::HTTP_BAD_REQUEST, HttpError::INVALID_EMAIL);
         }
 
@@ -151,11 +153,11 @@ Route::prefix('/account')->group(fn () => [
 
     // Route to log into an existing user
     // Creates a `Session` and sets the auth cookie
-    Route::post('/login', function (Request $request) {
+    Route::middleware([RequiresJson::class])->post('/login', function (Request $request) {
         $email = $request->json('email');
         $password = $request->json('password');
 
-        if ($email === null || preg_match('/^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$/i', $email)) {
+        if ($email === null || preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
             return err(Status::HTTP_BAD_REQUEST, HttpError::INVALID_EMAIL);
         }
 
@@ -177,4 +179,16 @@ Route::prefix('/account')->group(fn () => [
 
         return ok($user)->withCookie($cookie);
     })
+]);
+
+Route::prefix('/user')->middleware([RequiresLogin::class])->group(fn () => [
+    Route::get('/{id}', function (Request $request, string $id) {
+        $user = User::find((int) $id);
+
+        if ($user === null) {
+            return err(Status::HTTP_NOT_FOUND, HttpError::USER_NOT_FOUND);
+        }
+
+        return ok($user);
+    })->whereNumber('id')
 ]);
