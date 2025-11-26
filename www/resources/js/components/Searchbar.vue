@@ -1,0 +1,23 @@
+<script setup lang="ts">
+import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Icon } from '.';
+
+const query = ref('');
+
+function search() {
+    router.push({ url: `/search/${encodeURIComponent(query.value)}` });
+}
+</script>
+
+<template>
+    <label class="w-3/4 h-11 border border-black rounded-full flex">
+        <div class="h-full aspect-square flex justify-center items-center">
+            <Icon name="search" class="size-5 translate-x-0.5"></Icon>
+        </div>
+        <input id="search" type="text" class="placeholder-gray-600 h-full outline-none grow" placeholder="Search" @submit="search" v-model.trim="query" />
+        <button :class="['h-full aspect-square flex justify-center items-center', { 'collapse': query.length < 1 }]" @click="search">
+            <Icon name="send" class="size-5 -translate-x-0.5"></Icon>
+        </button>
+    </label>
+</template>
