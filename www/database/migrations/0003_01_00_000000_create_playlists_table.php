@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('playlists', function (Blueprint $table) {
-            $table->id();
+            $table->uuid()->primary();
             $table->foreignId('creator_id')->constrained('users')->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
@@ -21,14 +21,14 @@ return new class extends Migration
         });
 
         Schema::create('ordered_songs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('playlist_id')->constrained('playlists')->cascadeOnDelete();
-            $table->foreignId('song_id')->constrained('songs')->cascadeOnDelete();
+            $table->id()->primary();
+            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
+            $table->foreignUuid('song_uuid')->constrained('songs', 'uuid')->cascadeOnDelete();
             $table->unsignedMediumInteger('index');
             $table->timestamps();
 
-            $table->unique(['playlist_id', 'song_id']);
-            $table->unique(['playlist_id', 'index']);
+            $table->unique(['playlist_uuid', 'song_uuid']);
+            $table->unique(['playlist_uuid', 'index']);
         });
     }
 
