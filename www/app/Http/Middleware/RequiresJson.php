@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use HttpError;
+use ApiError;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,7 +20,7 @@ class RequiresJson
         $needle = 'application/json';
 
         if ($contentType === null || !str_starts_with($contentType, $needle)) {
-            \err(Response::HTTP_BAD_REQUEST, HttpError::INVALID_CONTENT_TYPE);
+            \err(Response::HTTP_BAD_REQUEST, ApiError::INVALID_CONTENT_TYPE);
         }
 
         return $next($request);

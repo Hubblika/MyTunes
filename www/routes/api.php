@@ -3,6 +3,7 @@
 use App\Http\Middleware\RequiresJson;
 use App\Http\Middleware\RequiresLogin;
 use App\Models\Session;
+use App\Models\Song;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 /**
  * Enum containing common http errors to be handled by the Vue frontend
  */
-enum HttpError {
+enum ApiError {
     case UNKNOWN;
 
     // 400 Bad Request
@@ -26,6 +27,8 @@ enum HttpError {
 
     // 404 Not Found
     case USER_NOT_FOUND;
+    case SONG_NOT_FOUND;
+    case PLAYLIST_NOT_FOUND;
 }
 
 /**
@@ -40,13 +43,13 @@ const AUTH_TOKEN = 'mytunes_auth_token';
  * @return string
  */
 function sha256(string $data) {
-    return hash('sha256', $data, true);
+    return hash('sha256', $data);
 }
 
 /**
  * Gets the current session being used to make the request, or `null` if `AUTH_TOKEN` isn't in the `cookie` header
  * @param Request $request
- * @return User
+ * @return ?Session
  */
 function current_session(Request $request): ?Session {
     $token = $request->cookie(AUTH_TOKEN);
@@ -79,10 +82,10 @@ function ok(mixed $data, int $status = 200): JsonResponse {
 /**
  * Shorthand for returning a json error response to the client
  * @param int $status Status code of the error
- * @param HttpError $error The HTTP error kind which will determine what data is displayed
+ * @param ApiError $error The HTTP error kind which will determine what data is displayed
  * @return JsonResponse The json response
  */
-function err(int $status, HttpError $error = HttpError::UNKNOWN, ?string $message = null): JsonResponse {
+function err(int $status, ApiError $error = ApiError::UNKNOWN, ?string $message = null): JsonResponse {
     return response()->json(
         [
             'error' => [
@@ -105,10 +108,8 @@ function err(int $status, HttpError $error = HttpError::UNKNOWN, ?string $messag
  */
 function new_session(User $user, ?Request $request) {
     $bytes = random_bytes(64);
-    $token = sha256($bytes);
     Session::create([
-        'token_hash' => $token,
-        'created_at' => Date::now(),
+        'token_hash' => sha256($bytes),
         'ip_address' => $request?->ip(),
         'user_agent' => $request?->userAgent(),
         'user_id' => $user->getKey()
@@ -126,69 +127,125 @@ function new_session(User $user, ?Request $request) {
 
 
 
-Route::prefix('/account')->middleware([RequiresJson::class])->group(fn () => [
-    // Route to register a new account
-    // Creates a `User` and `Session`, and sets the auth cookie
-    Route::match(['post', 'put'], '/register', function (Request $request) {
-        $email = $request->json('email');
-        $password = $request->json('password');
+/// Creates and returns a new `User`, creating a `Session`
+Route::post('/account/register', function (Request $request) {
+    $email = $request->json('email');
+    $password = $request->json('password');
 
-        if ($email === null || preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-            return err(Status::HTTP_BAD_REQUEST, HttpError::INVALID_EMAIL);
-        }
+    if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
+        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_EMAIL);
+    }
 
-        if ($password === null || strlen($password) < 8) {
-            return err(Status::HTTP_BAD_REQUEST, HttpError::INVALID_PASSWORD);
-        }
+    if ($password === null || strlen($password) < 8) {
+        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_PASSWORD);
+    }
 
-        $user = User::create([
-            'email' => $email,
-            'password_hash' => sha256($password)
-        ]);
+    $user_id = User::create([
+        'email' => $email,
+        'password_hash' => sha256($password)
+    ])->getKey();
+    $user = User::find($user_id);
 
-        $cookie = new_session($user, $request);
+    $cookie = new_session($user, $request);
 
-        return ok($user, Status::HTTP_CREATED)->withCookie($cookie);
-    }),
+    return ok($user, Status::HTTP_CREATED)->withCookie($cookie);
+})->middleware([RequiresJson::class]);
 
-    // Route to log into an existing user
-    // Creates a `Session` and sets the auth cookie
-    Route::middleware([RequiresJson::class])->post('/login', function (Request $request) {
-        $email = $request->json('email');
-        $password = $request->json('password');
+/// Logs into an existing `User`, creating a `Session`
+Route::post('/account/login', function (Request $request) {
+    $email = $request->json('email');
+    $password = $request->json('password');
 
-        if ($email === null || preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-            return err(Status::HTTP_BAD_REQUEST, HttpError::INVALID_EMAIL);
-        }
+    if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
+        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_EMAIL);
+    }
 
-        if ($password === null || strlen($password) < 8) {
-            return err(Status::HTTP_BAD_REQUEST, HttpError::INVALID_PASSWORD);
-        }
+    if ($password === null || strlen($password) < 8) {
+        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_PASSWORD);
+    }
 
-        $user = User::where('email', $email)->first();
+    $user = User::where('email', $email)->first();
 
-        if ($user === null) {
-            return err(Status::HTTP_NOT_FOUND, HttpError::USER_NOT_FOUND);
-        }
+    if ($user === null) {
+        return err(Status::HTTP_NOT_FOUND, ApiError::USER_NOT_FOUND);
+    }
 
-        if ($user->getAttribute('password_hash') !== sha256($password)) {
-            return err(Status::HTTP_UNAUTHORIZED, HttpError::INCORRECT_PASSWORD);
-        }
+    if (sha256($password) === $user->password_hash) {
+        return err(Status::HTTP_UNAUTHORIZED, ApiError::INCORRECT_PASSWORD);
+    }
 
-        $cookie = new_session($user, $request);
+    $cookie = new_session($user, $request);
 
-        return ok($user)->withCookie($cookie);
-    })
-]);
+    return ok($user)->withCookie($cookie);
+})->middleware([RequiresJson::class]);
 
-Route::prefix('/user')->middleware([RequiresLogin::class])->group(fn () => [
-    Route::get('/{id}', function (Request $request, string $id) {
-        $user = User::find((int) $id);
 
-        if ($user === null) {
-            return err(Status::HTTP_NOT_FOUND, HttpError::USER_NOT_FOUND);
-        }
 
-        return ok($user);
-    })->whereNumber('id')
-]);
+/// Creates a new `Song` if the user is authorized
+Route::put('/song', function (Request $request) {
+    $user = current_session($request)->user;
+
+    if ($user->role === 'User') {
+        return err(Status::HTTP_FORBIDDEN, ApiError::UNAUTHORIZED);
+    }
+
+    $title = $request->input('title');
+    $created_at = $request->input('created_at');
+    $duration = $request->input('duration');
+    $explicit = $request->input('is_explicit');
+    
+    $audio = $request->file('audio.mp3');
+    $thumbnail = $request->file('thumbnail.png');
+
+    if (!$title || !$duration || !$audio || !$thumbnail) {
+        // TODO: handle individually
+        return err(Status::HTTP_BAD_REQUEST);
+    }
+
+    $song_uuid = Song::create([
+        'title' => '',
+        'created_at' => $created_at || Date::now(),
+        'duration' => $duration,
+        'is_explicit' => $explicit || false
+    ])->getKey();
+
+    Storage::disk('public')->put('uploads/audio/{$song_uuid}.mp3', $audio);
+    Storage::disk('public')->put('uploads/thumbnails/song/{$song_uuid}.png', $thumbnail);
+
+    $song = Song::find($song_uuid);
+    return ok($song);
+})->middleware([RequiresLogin::class]);
+
+Route::delete('/song/{uuid}', function (Request $request, string $uuid) {
+    $user = current_session($request)->user;
+    $song = Song::find($uuid);
+
+    if (!$song) {
+        return err(Status::HTTP_NOT_FOUND, ApiError::SONG_NOT_FOUND);
+    }
+
+    if ($user->role !== 'Admin') {
+        return err(Status::HTTP_FORBIDDEN, ApiError::UNAUTHORIZED);
+    }
+
+    // TODO: create `ApiSuccess` enum?
+    return ok(1);
+})->middleware([RequiresLogin::class])->whereUuid('uuid');
+
+
+
+/// Returns the currently logged-in user
+Route::get('/user/@me', function (Request $request) {
+    $user = current_session($request)?->user;
+    return ok($user);
+});
+
+Route::get('/user/{id}', function (Request $request, string $id) {
+    $user = User::find((int) $id);
+
+    if ($user === null) {
+        return err(Status::HTTP_NOT_FOUND, ApiError::USER_NOT_FOUND);
+    }
+
+    return ok($user);
+})->middleware([RequiresLogin::class])->whereNumber('id');
