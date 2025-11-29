@@ -14,16 +14,15 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id()->primary();
             $table->string('email')->unique();
-            $table->binary('password_hash', 32, true);
-            $table->boolean('is_artist')->default(false);
-            $table->boolean('is_admin')->default(false);
+            $table->string('password_hash');
+            $table->enum('role', ['Admin', 'Artist', 'User'])->default('User');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
-            $table->binary('token_hash', 32, true)->primary();
+            $table->string('token_hash')->primary();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->foreignId('user_id')->nullable()->index();

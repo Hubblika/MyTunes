@@ -29,7 +29,9 @@ class User extends Model
     protected $fillable = [
         'email',
         'password_hash',
-        'name'
+        'role',
+        'name',
+        'description'
     ];
 
     /**
@@ -76,7 +78,11 @@ class User extends Model
     protected function casts(): array
     {
         return [
-            // 'password_hash' => 'hashed'
+            'email' => 'string',
+            // 'password_hash' => 'string',
+            'role' => 'string',
+            'name' => 'string',
+            'description' => 'string'
         ];
     }
 }

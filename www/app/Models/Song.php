@@ -67,7 +67,10 @@ class Song extends Model
     protected function casts(): array
     {
         return [
-            'created_at' => 'date'
+            'title' => 'string',
+            'created_at' => 'date',
+            'duration' => 'integer',
+            'is_explicit' => 'boolean'
         ];
     }
 }

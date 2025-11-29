@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -31,7 +30,6 @@ class Session extends Model
      */
     protected $fillable = [
         'token_hash',
-        'created_at',
         'ip_address',
         'user_agent',
         'user_id'
@@ -49,7 +47,7 @@ class Session extends Model
      * 
      * @var bool
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Get the user that owns the session
@@ -69,8 +67,10 @@ class Session extends Model
     protected function casts(): array
     {
         return [
-            // 'token_hash' => 'hashed'
-            'created_at' => 'datetime'
+            // 'token_hash' => 'string',
+            'ip_address' => 'string',
+            'user_agent' => 'string',
+            'user_id' => 'integer'
         ];
     }
 }

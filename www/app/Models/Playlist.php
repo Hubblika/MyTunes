@@ -88,6 +88,11 @@ class Playlist extends Model
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'creator_id' => 'integer',
+            'name' => 'string',
+            'description' => 'string',
+            'is_album' => 'boolean'
+        ];
     }
 }
