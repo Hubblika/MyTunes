@@ -8,6 +8,7 @@ export interface User {
     email: string,
     role: Role,
     name?: string,
+    description?: string,
     created_at: string,
     updated_at: string
 }
@@ -21,12 +22,11 @@ export enum Role {
 
 
 export interface Song {
-    id: number,
+    uuid: string,
     title: string,
+    created_at: string
     duration: number,
     is_explicit: boolean,
-    created_at: string,
-    updated_at: string
 }
 
 export interface OrderedSong extends Song {
@@ -34,8 +34,8 @@ export interface OrderedSong extends Song {
 }
 
 export interface Playlist {
-    id: number,
-    creator_id: string,
+    uuid: string,
+    creator_id: number,
     name: string,
     description?: string,
     is_album: boolean,
