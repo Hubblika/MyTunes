@@ -4,11 +4,12 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --color-x: #fff;
+    --color-mt-purple-500: #5d28fe;
 }
 
 @theme inline {
     --font-montserrat: Montserrat, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-mt-purple-800: color-mix(in oklch, #5d28fe, black 10%);
 }
 
 @variant dark (&:where(.dark, .dark *));

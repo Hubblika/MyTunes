@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Preview } from '@/components';
+import { Icon, Preview } from '@/components';
 import { MainLayout } from '@/layouts';
 import type { Playlist as IPlaylist, Song } from '@/types';
 
@@ -56,7 +56,12 @@ const temp__recent: Song[] = [
 <template>
     <MainLayout>
         <section class="flex flex-col gap-2">
-            <h1 class="font-bold text-2xl">My playlists</h1>
+            <h1 class="font-bold text-2xl">
+                My playlists
+                <button class="h-full aspect-square inline-flex translate-y-1.75 cursor-pointer">
+                    <Icon name="plus" class="h-full"></Icon>
+                </button>
+            </h1>
             <ul class="w-full overflow-x-scroll overflow-y-hidden flex gap-4">
                 <Preview :self="playlist" v-for="playlist in temp__playlists" :key="playlist.uuid"></Preview>
             </ul>
