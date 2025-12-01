@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Song extends Model
 {
@@ -18,7 +19,9 @@ class Song extends Model
      * 
      * @var string
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +30,7 @@ class Song extends Model
      */
     protected $fillable = [
         'title',
+        'created_at',
         'duration',
         'is_explicit'
     ];
@@ -43,7 +47,17 @@ class Song extends Model
      * 
      * @var bool
      */
-    public $timestamps = true;
+    public $timestamps = false;
+
+    public static function boot() {
+        parent::boot();
+
+        static::creating(function (Model $model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -52,6 +66,11 @@ class Song extends Model
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'title' => 'string',
+            'created_at' => 'date',
+            'duration' => 'integer',
+            'is_explicit' => 'boolean'
+        ];
     }
 }

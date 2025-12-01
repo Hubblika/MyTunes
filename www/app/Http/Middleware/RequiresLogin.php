@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Session;
 use Closure;
-use HttpError;
+use ApiError;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,19 +20,19 @@ class RequiresLogin
         $token = $request->cookie(AUTH_TOKEN);
 
         if ($token === null) {
-            return \err(Response::HTTP_UNAUTHORIZED, HttpError::UNAUTHORIZED);
+            return \err(Response::HTTP_UNAUTHORIZED, ApiError::UNAUTHORIZED);
         }
 
         $decoded = base64_decode($token, true);
 
         if (!$decoded) {
-            return \err(Response::HTTP_UNAUTHORIZED, HttpError::UNAUTHORIZED);
+            return \err(Response::HTTP_UNAUTHORIZED, ApiError::UNAUTHORIZED);
         }
 
         $session = Session::find(sha256($decoded));
 
         if ($session === null) {
-            return \err(Response::HTTP_UNAUTHORIZED, HttpError::UNAUTHORIZED);
+            return \err(Response::HTTP_UNAUTHORIZED, ApiError::UNAUTHORIZED);
         }
 
         return $next($request);

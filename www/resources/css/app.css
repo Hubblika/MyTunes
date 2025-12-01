@@ -4,11 +4,12 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    /* TODO: add themed colors */
-    --color-mytunes-50: #fff;
-    --color-mytunes-950: #000;
+    --color-mt-purple-500: #5d28fe;
 }
 
 @theme inline {
-    --font-sans: Instrument Sans, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-montserrat: Montserrat, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-mt-purple-800: color-mix(in oklch, #5d28fe, black 10%);
 }
+
+@variant dark (&:where(.dark, .dark *));

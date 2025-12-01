@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Playlist extends Model
 {
@@ -20,7 +21,9 @@ class Playlist extends Model
      * 
      * @var string
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'uuid';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -68,6 +71,16 @@ class Playlist extends Model
         return $this->hasMany(OrderedSong::class);
     }
 
+    public static function boot() {
+        parent::boot();
+
+        static::creating(function (Model $model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      * 
@@ -75,6 +88,11 @@ class Playlist extends Model
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'creator_id' => 'integer',
+            'name' => 'string',
+            'description' => 'string',
+            'is_album' => 'boolean'
+        ];
     }
 }

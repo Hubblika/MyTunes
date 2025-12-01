@@ -27,8 +27,8 @@ class OrderedSong extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'playlist_id',
-        'song_id',
+        'playlist_uuid',
+        'song_uuid',
         'index'
     ];
 
@@ -73,6 +73,10 @@ class OrderedSong extends Model
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'playlist_uuid' => 'string',
+            'song_uuid' => 'string',
+            'index' => 'integer'
+        ];
     }
 }
