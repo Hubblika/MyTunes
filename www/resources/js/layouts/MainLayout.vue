@@ -10,11 +10,11 @@ onMounted(() => {
     let theme = localStorage.getItem('mytunes:theme');
 
     if (theme === null) {
-        localStorage.setItem('mytunes:theme', 'dark');
-        theme = 'dark';
+        localStorage.setItem('mytunes:theme', 'light');
+        theme = 'light';
     }
 
-    dark.value = theme === 'dark';
+    dark.value = theme === 'light';
 });
 </script>
 
