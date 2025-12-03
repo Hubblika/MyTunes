@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
 import { Header } from '@/components';
+import { Toolbar } from '@/components';
 
 const layout = useTemplateRef('layout');
 
@@ -25,6 +26,6 @@ onMounted(() => {
         <main class="text-black dark:text-white bg-white dark:bg-black w-full min-h-screen px-8 pt-20 flex flex-col gap-2">
             <slot></slot>
         </main>
-        <!-- <Footer></Footer> -->
+        <Toolbar></Toolbar>
     </div>
 </template>

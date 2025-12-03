@@ -19,14 +19,14 @@ onMounted(resetSvg)
             <a href="/" class="size-14 flex justify-center items-center -translate-x-4" v-html="svg"></a>
         </div>
         <div class="justify-center flex items-center gap-4">
-            <a href="/" class="w-10 h-10 rounded-full border border-gray-800 text-black flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
+            <a href="/" class="w-10 h-10 rounded-full border border-black dark:border-white text-black dark:text-white flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
                 <Icon name="home"></Icon>
             </a>
 
             <Searchbar></Searchbar>
         </div>
         <div class="justify-end flex items-center gap-4">
-            <div class="flex items-center justify-center gap-2 px-3 py-1 border border-black text-black rounded-md cursor-pointer hover:bg-gray-100 transition">
+            <div class="flex items-center justify-center gap-2 px-3 py-1 border border-black dark:border-white text-black dark:text-white rounded-md cursor-pointer hover:bg-gray-100 transition">
                 <Icon name="download" class="size-4"></Icon>
                 <span>Download the desktop app</span>
             </div>
