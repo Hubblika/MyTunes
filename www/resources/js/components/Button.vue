@@ -16,7 +16,7 @@ const tag = computed(() => href ? 'a' : 'button');
 </script>
 
 <template>
-    <component :is="tag" :class="['h-9 px-3 bg-mt-purple-500 hover:bg-mt-purple-800 hover:bg rounded flex justify-center items-center gap-1.5 cursor-pointer', classList]" @click="$emit('click')">
+    <component :is="tag" :class="['h-9 px-3 bg-mt-purple-500 hover:bg rounded flex justify-center items-center gap-1.5 cursor-pointer', classList]" @click="$emit('click')">
         <slot></slot>
     </component>
 </template>
