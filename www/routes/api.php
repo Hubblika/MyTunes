@@ -7,7 +7,6 @@ use App\Models\Song;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Response as Status;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -133,11 +132,11 @@ Route::post('/account/register', function (Request $request) {
     $password = $request->json('password');
 
     if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_EMAIL);
+        return err(400, ApiError::INVALID_EMAIL);
     }
 
     if ($password === null || strlen($password) < 8) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_PASSWORD);
+        return err(400, ApiError::INVALID_PASSWORD);
     }
 
     $user_id = User::create([
@@ -148,7 +147,7 @@ Route::post('/account/register', function (Request $request) {
 
     $cookie = new_session($user, $request);
 
-    return ok($user, Status::HTTP_CREATED)->withCookie($cookie);
+    return ok($user, 201)->withCookie($cookie);
 })->middleware([RequiresJson::class]);
 
 /// Logs into an existing `User`, creating a `Session`
@@ -157,21 +156,21 @@ Route::post('/account/login', function (Request $request) {
     $password = $request->json('password');
 
     if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_EMAIL);
+        return err(400, ApiError::INVALID_EMAIL);
     }
 
     if ($password === null || strlen($password) < 8) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_PASSWORD);
+        return err(400, ApiError::INVALID_PASSWORD);
     }
 
     $user = User::where('email', $email)->first();
 
     if ($user === null) {
-        return err(Status::HTTP_NOT_FOUND, ApiError::USER_NOT_FOUND);
+        return err(404, ApiError::USER_NOT_FOUND);
     }
 
     if (sha256($password) === $user->password_hash) {
-        return err(Status::HTTP_UNAUTHORIZED, ApiError::INCORRECT_PASSWORD);
+        return err(401, ApiError::INCORRECT_PASSWORD);
     }
 
     $cookie = new_session($user, $request);
@@ -186,7 +185,7 @@ Route::put('/song', function (Request $request) {
     $user = current_session($request)->user;
 
     if ($user->role === 'User') {
-        return err(Status::HTTP_FORBIDDEN, ApiError::UNAUTHORIZED);
+        return err(403, ApiError::UNAUTHORIZED);
     }
 
     $title = $request->input('title');
@@ -199,7 +198,7 @@ Route::put('/song', function (Request $request) {
 
     if (!$title || !$duration || !$audio || !$thumbnail) {
         // TODO: handle individually
-        return err(Status::HTTP_BAD_REQUEST);
+        return err(400);
     }
 
     $song_uuid = Song::create([
@@ -221,11 +220,11 @@ Route::delete('/song/{uuid}', function (Request $request, string $uuid) {
     $song = Song::find($uuid);
 
     if (!$song) {
-        return err(Status::HTTP_NOT_FOUND, ApiError::SONG_NOT_FOUND);
+        return err(404, ApiError::SONG_NOT_FOUND);
     }
 
     if ($user->role !== 'Admin') {
-        return err(Status::HTTP_FORBIDDEN, ApiError::UNAUTHORIZED);
+        return err(403, ApiError::UNAUTHORIZED);
     }
 
     // TODO: create `ApiSuccess` enum?
@@ -244,7 +243,7 @@ Route::get('/user/{id}', function (Request $request, string $id) {
     $user = User::find((int) $id);
 
     if ($user === null) {
-        return err(Status::HTTP_NOT_FOUND, ApiError::USER_NOT_FOUND);
+        return err(404, ApiError::USER_NOT_FOUND);
     }
 
     return ok($user);
