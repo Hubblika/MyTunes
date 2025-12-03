@@ -7,14 +7,15 @@ const layout = useTemplateRef('layout');
 const dark = ref(true);
 
 onMounted(() => {
+    const defaultTheme: 'light' | 'dark' = 'light';
     let theme = localStorage.getItem('mytunes:theme');
 
     if (theme === null) {
-        localStorage.setItem('mytunes:theme', 'light');
-        theme = 'light';
+        localStorage.setItem('mytunes:theme', defaultTheme);
+        theme = defaultTheme;
     }
 
-    dark.value = theme === 'light';
+    dark.value = theme === 'dark';
 });
 </script>
 
