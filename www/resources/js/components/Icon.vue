@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import { onMounted, useTemplateRef, watch } from 'vue';
 import { ClassValue } from 'clsx';
-
-import icons from '@/lib/icons';
+import { icons as tabler } from '@iconify-json/tabler';
 
 const {
     name,
-    class: classList = 'size-6'
+    class: classList = 'size-5'
 } = defineProps<{
-    name: keyof typeof icons,
+    name: string,
     class?: ClassValue
 }>();
 
-function setIcon(name: keyof typeof icons) {
+const svg = useTemplateRef('svg');
+
+function setIcon(name: string) {
     if (svg.value) {
-        svg.value.innerHTML = icons[name];
+        svg.value.innerHTML = tabler.icons[name].body;
     }
 }
-
-const svg = useTemplateRef('svg');
 
 onMounted(() => setIcon(name));
 watch(() => name, setIcon);
