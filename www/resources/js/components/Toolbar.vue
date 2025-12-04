@@ -6,7 +6,7 @@ import { Icon, Button, Slider } from '.';
 
 <template>
   <div
-    class="fixed bottom-0 left-0 w-full bg-gray-500/5 dark:bg-white/3 backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between"
+    class="fixed bottom-0 left-0 w-full bg-white dark:bg-black backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between"
   >
     <div class="flex items-center gap-3">
       <div class="w-12 h-12 bg-gray-700 rounded"></div>
@@ -18,7 +18,6 @@ import { Icon, Button, Slider } from '.';
     </div>
 
     <div class="flex flex-col items-center w-168 space-y-1">
-      <!-- Controls -->
       <div class="flex items-center gap-4">
         <Button><Icon name="arrows-shuffle" class="size-5" /></Button>
         <Button><Icon name="skip-back" class="size-6" /></Button>

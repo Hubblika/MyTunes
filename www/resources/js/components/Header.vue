@@ -14,7 +14,7 @@ onMounted(resetSvg)
 </script>
 
 <template>
-    <header class="bg-gray-500/5 dark:bg-white/3 backdrop-blur-md w-full h-14 grid grid-rows-1 grid-cols-3 fixed top-0 left-0 *:h-full *:px-4 *:flex *:items-center *:gap-4">
+    <header class="bg-white dark:bg-black backdrop-blur-md w-full h-14 grid grid-rows-1 grid-cols-3 sticky top-0 left-0 *:h-full *:px-4 *:flex *:items-center *:gap-4">
         <div>
             <a href="/" class="size-14 flex justify-center items-center -translate-x-4" v-html="svg"></a>
         </div>

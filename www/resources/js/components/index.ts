@@ -5,3 +5,4 @@ export { default as Preview } from './Preview.vue';
 export { default as Searchbar } from './Searchbar.vue';
 export { default as Toolbar } from './Toolbar.vue';
 export { default as Slider } from './Slider.vue';
+export { default as Sidebar } from './sidebar.vue'
