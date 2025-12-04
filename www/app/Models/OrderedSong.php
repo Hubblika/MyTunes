@@ -49,7 +49,7 @@ class OrderedSong extends Model
     /**
      * Get the user that created the playlist
      * 
-     * @return BelongsTo<User, Playlist>
+     * @return BelongsTo<Song, Playlist>
      */
     public function song(): BelongsTo
     {

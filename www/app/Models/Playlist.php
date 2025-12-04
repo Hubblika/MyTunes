@@ -64,7 +64,7 @@ class Playlist extends Model
     /**
      * Get all songs in the playlist
      * 
-     * @return HasMany<Song, Playlist>
+     * @return HasMany<OrderedSong, Playlist>
      */
     public function songs(): HasMany
     {

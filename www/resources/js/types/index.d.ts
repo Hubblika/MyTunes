@@ -3,6 +3,21 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
     quote: { message: string; author: string }
 };
 
+export interface ApiResult<T extends object> {
+    data?: T,
+    error?: {
+        status: number,
+        name: ApiError,
+        message?: string
+    }
+}
+
+export enum ApiError {
+    // TODO
+}
+
+
+
 export interface User {
     id: number,
     email: string,
@@ -29,10 +44,6 @@ export interface Song {
     is_explicit: boolean,
 }
 
-export interface OrderedSong extends Song {
-    index: number
-}
-
 export interface Playlist {
     uuid: string,
     creator_id: number,
@@ -42,4 +53,3 @@ export interface Playlist {
     created_at: string,
     updated_at: string
 }
-

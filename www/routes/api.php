@@ -2,6 +2,8 @@
 
 use App\Http\Middleware\RequiresJson;
 use App\Http\Middleware\RequiresLogin;
+use App\Models\OrderedSong;
+use App\Models\Playlist;
 use App\Models\Session;
 use App\Models\Song;
 use App\Models\User;
@@ -64,6 +66,26 @@ function current_session(Request $request): ?Session {
     }
 
     return Session::find(sha256($decoded));
+}
+
+function get_playlist_with_songs(string $uuid) {
+    $playlist = Playlist::find($uuid);
+
+    if ($playlist === null) {
+        return null;
+    }
+
+    $songs = [];
+
+    foreach ($playlist->songs as $ordered) {
+        // TODO: make this better because it sucks
+        array_push($songs, $ordered->song);
+    }
+
+    return [
+        'playlist' => $playlist->makeHidden('songs'),
+        'songs' => $songs
+    ];
 }
 
 
