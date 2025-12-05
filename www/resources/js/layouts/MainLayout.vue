@@ -22,9 +22,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <div id="layout" :class="['**:transition-colors **:duration-250', { dark }]" ref="layout">
+    <div id="layout" class="flex flex-col h-screen" :class="['**:transition-colors **:duration-250', { dark }]" ref="layout">
         <Header></Header>
-        <main class="text-black dark:text-white bg-white dark:bg-black w-full min-h-screen flex flex-col gap-2">
+        <main class="flex-1 text-black dark:text-white bg-white dark:bg-black w-full flex flex-col gap-2 pl-2 pr-2">
             <slot><Sidebar></Sidebar></slot>
         </main>
         <Toolbar></Toolbar>

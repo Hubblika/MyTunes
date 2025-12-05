@@ -6,7 +6,7 @@ import { Icon, Button, Slider } from '.';
 
 <template>
   <div
-    class="fixed bottom-0 left-0 w-full bg-white dark:bg-black backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between"
+    class="flex-none left-0 w-full bg-white dark:bg-black backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between"
   >
     <div class="flex items-center gap-3">
       <div class="w-12 h-12 bg-gray-700 rounded"></div>
