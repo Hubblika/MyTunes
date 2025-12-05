@@ -3,6 +3,7 @@ import { onMounted, ref, useTemplateRef } from 'vue';
 import { Header } from '@/components';
 import { Toolbar } from '@/components';
 import { Sidebar } from '@/components';
+import { MainContent } from '@/components';
 
 const layout = useTemplateRef('layout');
 
@@ -24,8 +25,11 @@ onMounted(() => {
 <template>
     <div id="layout" class="flex flex-col h-screen" :class="['**:transition-colors **:duration-250', { dark }]" ref="layout">
         <Header></Header>
-        <main class="flex-1 text-black dark:text-white bg-white dark:bg-black w-full flex flex-col gap-2 pl-2 pr-2">
-            <slot><Sidebar></Sidebar></slot>
+        <main class="flex-1 text-black dark:text-white bg-white dark:bg-black w-full flex flex-row gap-2 pl-2 pr-2">
+            <slot>
+                <Sidebar></Sidebar>
+                <MainContent></MainContent>
+            </slot>
         </main>
         <Toolbar></Toolbar>
     </div>
