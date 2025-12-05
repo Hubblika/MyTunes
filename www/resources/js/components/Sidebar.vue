@@ -9,8 +9,8 @@ import Searchbar from './Searchbar.vue';
            dark:bg-black dark:text-white
            rounded-lg"
   >
-    <div class="flex items-center gap-3 mb-6">
-      <h1 class="text-lg font-semibold">Zenéim</h1>
+    <div class="flex items-center h-16">
+      <h1 class="text-lg font-bold">My music</h1>
     </div>
     <Searchbar></Searchbar>
   </aside>
