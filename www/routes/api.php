@@ -191,7 +191,7 @@ Route::post('/account/login', function (Request $request) {
         return err(404, ApiError::USER_NOT_FOUND);
     }
 
-    if (sha256($password) === $user->password_hash) {
+    if (sha256($password) !== $user->password_hash) {
         return err(401, ApiError::INCORRECT_PASSWORD);
     }
 
