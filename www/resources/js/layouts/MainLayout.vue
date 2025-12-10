@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
-import { Header } from '@/components';
-import { Toolbar } from '@/components';
-import { Sidebar } from '@/components';
-import { MainContent } from '@/components';
+import { Header, MainContent, Sidebar, Toolbar } from '@/components';
 
 const layout = useTemplateRef('layout');
 
@@ -23,7 +20,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div id="layout" class="flex flex-col h-screen" :class="['**:transition-colors **:duration-250', { dark }]" ref="layout">
+    <div id="layout" :class="['w-full min-h-screen flex flex-col **:transition-colors **:duration-250', { dark }]" ref="layout">
         <Header></Header>
         <main class="flex-1 text-black dark:text-white bg-white dark:bg-black w-full flex flex-row gap-2 pl-2 pr-2">
             <slot>

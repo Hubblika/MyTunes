@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { MainLayout } from '@/layouts';
-import type { Song } from '@/types';
+import type { Song } from '@/lib/types';
 
 const {
     song

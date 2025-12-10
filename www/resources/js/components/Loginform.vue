@@ -1,88 +1,98 @@
 <script setup lang="ts">
-import Button from "./Button.vue";
+import { onMounted, ref, useTemplateRef } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { ref } from "vue";
+import { Button } from '.';
+import type { ApiResult } from '@/lib/types';
+import { describeError } from '@/lib/utils';
 
-const email = ref("");
-const password = ref("");
+const email = ref('');
+const password = ref('');
 const isLogin = ref(true);
 
+const errorElement = useTemplateRef('errorElement');
+const showError = ref(false);
+
 const submitLogin = async () => {
-  try {
-    const res = await fetch("/api/account/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
-    });
+    try {
+        const data: ApiResult<any> = await fetch("/api/account/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value,
+            })
+        }).then(r => r.json());
 
-    const data = await res.json();
+        if (data.error) {
+            setError(data.error.message || describeError(data.error.name));
+            return;
+        }
 
-    if (!res.ok) {
-      console.error("Login failed:", data);
-      alert(`Error: ${data.error?.message || data.error?.name || "Unknown error"}`);
-      return;
+        router.get('/');
+    } catch (err) {
+        setError('Network error');
     }
-
-    console.log("Login successful:", data.data);
-    router.replace({url: '/'});
-  } catch (err) {
-    console.error("Network error:", err);
-    alert("Network error, please try again later.");
-  }
 };
 
-
 const submitSignup = async () => {
-  try {
-    const res = await fetch("/api/account/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
-    });
+    try {
+        const data: ApiResult<any> = await fetch("/api/account/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value,
+            })
+        }).then(r => r.json());
 
-    const data = await res.json();
+        if (data.error) {
+            setError(data.error.message || describeError(data.error.name));
+            return;
+        }
 
-    if (!res.ok) {
-      console.error("Signup failed:", data);
-      alert(`Error: ${data.message || "Unknown error"}`);
-      return;
+        router.get('/');
+    } catch (err) {
+        setError('Network error');
     }
-
-    console.log("Signup successful:", data);
-    router.replace({url: '/'});
-  } catch (err) {
-    console.error("Network error:", err);
-    alert("Network error, please try again later.");
-  }
 };
 
 
 const toggleMode = () => {
   isLogin.value = !isLogin.value;
 };
+
+function setError(error: string) {
+    if (!errorElement.value) {
+        alert(error);
+        return;
+    }
+
+    showError.value = true;
+    errorElement.value.textContent = error;
+    setTimeout(() => {
+        showError.value = false;
+        setTimeout(() => {
+            errorElement.value!.textContent = '';
+        }, 1200);
+    }, 10000);
+}
 </script>
 
 <template>
   <div
-    class="flex items-center justify-center p-6 min-h-screen 
-           bg-white text-black dark:bg-black dark:text-white 
+    class="flex flex-col items-center justify-center gap-6 p-6 min-h-screen
+           bg-white text-black dark:bg-black dark:text-white
            transition-colors duration-300">
     <div
-      class="w-full max-w-sm p-8 rounded-2xl shadow-xl 
-             bg-white/70 dark:bg-white/10 
-             backdrop-blur-xl border 
-             border-black/10 dark:border-white/20 
+      class="w-full max-w-sm p-8 rounded-2xl shadow-xl
+             bg-white/70 dark:bg-white/10
+             backdrop-blur-xl border
+             border-black/10 dark:border-white/20
              transition-colors duration-300">
       <h1 class="text-2xl font-bold mb-6 text-center">
         {{ isLogin ? "Log into MyTunes" : "Sign Up for MyTunes" }}
@@ -94,12 +104,12 @@ const toggleMode = () => {
           <input
             v-model="email"
             type="email"
-            class="w-full p-3 rounded-lg 
+            class="w-full p-3 rounded-lg
                     bg-gray-100 dark:bg-[#111]
                     text-black dark:text-white
                     border border-black/10 dark:border-white/10
-                    focus:outline-none 
-                    focus:ring-2 focus:ring-indigo-400 
+                    focus:outline-none
+                    focus:ring-2 focus:ring-indigo-400
                     dark:focus:ring-pink-500
                     transition-colors duration-300"
             placeholder="Enter your email"
@@ -111,12 +121,12 @@ const toggleMode = () => {
           <input
             v-model="password"
             type="password"
-            class="w-full p-3 rounded-lg 
+            class="w-full p-3 rounded-lg
                     bg-gray-100 dark:bg-[#111]
                     text-black dark:text-white
                     border border-black/10 dark:border-white/10
-                    focus:outline-none 
-                    focus:ring-2 focus:ring-indigo-400 
+                    focus:outline-none
+                    focus:ring-2 focus:ring-indigo-400
                     dark:focus:ring-pink-500
                     transition-colors duration-300"
             placeholder="Enter your password"
@@ -124,12 +134,12 @@ const toggleMode = () => {
         </div>
 
         <Button
-          class="w-full h-10  
+          class="w-full h-10
                   bg-white dark:bg-[#181818]
                   hover:bg-pink-500
                   text-black dark:text-white
                   border border-pink-500/50 dark:border-pink-400/40
-                  rounded-lg font-semibold 
+                  rounded-lg font-semibold
                   transition-all
                   shadow-sm dark:shadow-lg dark:shadow-pink-500/10"
           type="submit">
@@ -138,11 +148,11 @@ const toggleMode = () => {
       </form>
 
       <p
-        class="mt-4 text-center text-sm 
-               text-gray-600 dark:text-gray-400 
+        class="mt-4 text-center text-sm
+               text-gray-600 dark:text-gray-400
                transition-colors duration-300">
         {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
-        <a href="#" 
+        <a href="#"
            class="text-indigo-600 dark:text-indigo-400 hover:underline"
            @click.prevent="toggleMode">
           {{ isLogin ? "Sign up" : "Log in" }}
@@ -150,4 +160,5 @@ const toggleMode = () => {
       </p>
     </div>
   </div>
+    <span :class="['font-semibold text-white text-sm bg-red-600 rounded-md px-3.5 py-2.5 shadow-md flex justify-center items-center fixed bottom-6 left-1/2 -translate-1/2 transition-opacity pointer-events-none', { 'opacity-0 duration-1000': !showError }]" ref="errorElement"></span>
 </template>

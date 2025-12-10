@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { AuthLayout } from '@/layouts';
-
+import { Loginform } from '@/components';
 </script>
 
 <template>
-    <AuthLayout></AuthLayout>
+    <main class="text-black dark:text-white bg-white dark:bg-black w-full">
+        <Loginform></Loginform>
+    </main>
 </template>
