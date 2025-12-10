@@ -200,6 +200,16 @@ Route::post('/account/login', function (Request $request) {
     return ok($user)->withCookie($cookie);
 })->middleware([RequiresJson::class]);
 
+Route::post('/account/logout', function (Request $request) {
+    $user = current_session($request)?->user;
+
+    if ($user === null) {
+        return err(401, ApiError::UNAUTHORIZED);
+    }
+
+    return ok(1)->withoutCookie(AUTH_TOKEN);
+});
+
 
 
 /// Creates a new `Song` if the user is authorized
@@ -214,7 +224,7 @@ Route::put('/song', function (Request $request) {
     $created_at = $request->input('created_at');
     $duration = $request->input('duration');
     $explicit = $request->input('is_explicit');
-    
+
     $audio = $request->file('audio.mp3');
     $thumbnail = $request->file('thumbnail.png');
 

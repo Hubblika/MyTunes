@@ -15,6 +15,11 @@ Route::get('/login', function () {
 })
     ->name('login');
 
+Route::get('/logout', function () {
+    return Inertia::render('Logout');
+})
+    ->name('logout');
+
 Route::get('/song/{uuid}', function (Request $request, string $uuid) {
     $song = Song::find($uuid);
     return Inertia::render('Song', ['song' => $song]);
