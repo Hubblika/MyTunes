@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { Icon, Button, Slider } from '.';
-
-
+import { Button, Icon, Slider } from '@/components/common';
 </script>
 
 <template>

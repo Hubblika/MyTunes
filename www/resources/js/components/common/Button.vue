@@ -4,9 +4,11 @@ import { ClassValue } from 'clsx';
 
 const {
     href,
+    type = 'button',
     class: classList
 } = defineProps<{
     href?: string,
+    type?: 'button' | 'submit' | 'menu' | 'reset',
     class?: ClassValue
 }>();
 
@@ -16,7 +18,7 @@ const tag = computed(() => href ? 'a' : 'button');
 </script>
 
 <template>
-    <component :is="tag" :class="['h-9 px-3 bg-transparent hover:bg rounded flex justify-center items-center gap-1.5 cursor-pointer', classList]" @click="$emit('click')">
+    <component :is="tag" :href :type :class="['h-10 px-3 flex justify-center items-center gap-1.5 cursor-pointer', classList]" @click="$emit('click')">
         <slot></slot>
     </component>
 </template>

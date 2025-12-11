@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { Button } from '.';
+import { PrimaryButton } from './common';
 import type { ApiResult } from '@/lib/types';
 import { describeError } from '@/lib/utils';
 
@@ -32,7 +32,7 @@ const submitLogin = async () => {
         }
 
         router.get('/');
-    } catch (err) {
+    } catch {
         setError('Network error');
     }
 };
@@ -56,7 +56,7 @@ const submitSignup = async () => {
         }
 
         router.get('/');
-    } catch (err) {
+    } catch {
         setError('Network error');
     }
 };
@@ -133,18 +133,9 @@ function setError(error: string) {
             required/>
         </div>
 
-        <Button
-          class="w-full h-10
-                  bg-white dark:bg-[#181818]
-                  hover:bg-pink-500
-                  text-black dark:text-white
-                  border border-pink-500/50 dark:border-pink-400/40
-                  rounded-lg font-semibold
-                  transition-all
-                  shadow-sm dark:shadow-lg dark:shadow-pink-500/10"
-          type="submit">
+        <PrimaryButton>
           {{ isLogin ? "Log In" : "Sign Up" }}
-        </Button>
+        </PrimaryButton>
       </form>
 
       <p

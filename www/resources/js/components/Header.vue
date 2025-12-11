@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Icon, Searchbar } from '.';
+import { Searchbar } from '.';
+import { Icon, SecondaryButton } from './common';
 
 const svg = ref('');
 
@@ -36,16 +37,13 @@ onMounted(resetSvg)
   </div>
 
   <div class="flex items-center gap-4 flex-none">
-    <div
-      class="flex items-center justify-center gap-2 px-3 py-1 border border-black
-             dark:border-white text-black dark:text-white rounded-md cursor-pointer
-             hover:bg-gray-100 transition">
-      <Icon name="download" class="size-4" />
-      <span>Download the desktop app</span>
-    </div>
+    <SecondaryButton>
+        <Icon name="download" class="size-4" />
+        <span>Download the desktop app</span>
+    </SecondaryButton>
 
     <div
-      class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center
+      class="size-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center
              cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-600 transition"
     >
       <Icon name="user"/>
