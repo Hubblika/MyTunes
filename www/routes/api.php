@@ -141,7 +141,7 @@ function new_session(User $user, ?Request $request) {
         value: base64_encode($bytes),
         minutes: 60 * 24 * 93,
         path: '/',
-        secure: true,
+        secure: false,
         httpOnly: true
     );
 }
@@ -201,11 +201,14 @@ Route::post('/account/login', function (Request $request) {
 })->middleware([RequiresJson::class]);
 
 Route::post('/account/logout', function (Request $request) {
-    $user = current_session($request)?->user;
+    $session = current_session($request);
+    $user = $session?->user;
 
     if ($user === null) {
         return err(401, ApiError::UNAUTHORIZED);
     }
+
+    $session->delete();
 
     return ok(1)->withoutCookie(AUTH_TOKEN);
 });

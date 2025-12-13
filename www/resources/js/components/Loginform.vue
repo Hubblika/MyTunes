@@ -13,6 +13,7 @@ const errorElement = useTemplateRef('errorElement');
 const showError = ref(false);
 
 const submitLogin = async () => {
+    console.log("fasz")
     try {
         const data: ApiResult<any> = await fetch("/api/account/login", {
             method: "POST",
@@ -135,7 +136,7 @@ function setError(error: string) {
                 />
                 </div>
 
-                <PrimaryButton>{{ isLogin ? "Log In" : "Sign Up" }}</PrimaryButton>
+                <PrimaryButton type="submit">{{ isLogin ? "Log In" : "Sign Up" }}</PrimaryButton>
             </form>
             <p class="
                 mt-4 text-center text-sm

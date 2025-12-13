@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue';
 import { Searchbar } from '.';
 import { Icon, SecondaryButton } from './common';
+import { router } from '@inertiajs/vue3';
+import { ApiResult } from '@/types';
 
 const svg = ref('');
 
@@ -10,6 +12,27 @@ async function resetSvg() {
         ? await import('@/lib/logo_dark.svg?raw').then(r => r.default)
         : await import('@/lib/logo_light.svg?raw').then(r => r.default)
 }
+
+const logout = async () => {
+        // TODO: move to ../lib/api.ts
+    try {
+        const data: ApiResult<any> = await fetch('/api/account/logout', {
+        method: 'post',
+        credentials: 'include'
+    }).then(r => r.json());
+
+    if (data.error) {
+        alert(`${data.error.name}: ${data.error.message}`);
+        return;
+    }
+
+    router.get('/login?loggedout=1');
+    } catch {
+        
+    }
+}
+
+
 
 onMounted(resetSvg)
 </script>
@@ -41,9 +64,10 @@ onMounted(resetSvg)
             </SecondaryButton>
             <div
                 class="size-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center
-                        cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-600 transition"
-            >
-                <Icon name="user"/>
+                        cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+                <SecondaryButton @click="logout">
+                    <Icon name="user"/>
+                </SecondaryButton>
             </div>
         </div>
     </header>
