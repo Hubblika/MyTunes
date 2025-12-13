@@ -4,11 +4,13 @@ use App\Models\Song;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+//use App\Http\Middleware\RequiresLogin;
 
 Route::get('/', function () {
     return Inertia::render('Home');
 })
     ->name('home');
+    //->middleware(RequiresLogin::class);
 
 Route::get('/login', function () {
     return Inertia::render('Login');

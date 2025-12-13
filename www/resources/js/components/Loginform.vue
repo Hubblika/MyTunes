@@ -13,7 +13,6 @@ const errorElement = useTemplateRef('errorElement');
 const showError = ref(false);
 
 const submitLogin = async () => {
-    console.log("fasz")
     try {
         const data: ApiResult<any> = await fetch("/api/account/login", {
             method: "POST",
@@ -31,7 +30,6 @@ const submitLogin = async () => {
             setError(data.error.message || describeError(data.error.name));
             return;
         }
-
         router.get('/');
     } catch {
         setError('Network error');

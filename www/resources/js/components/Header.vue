@@ -15,21 +15,17 @@ async function resetSvg() {
 
 const logout = async () => {
         // TODO: move to ../lib/api.ts
-    try {
-        const data: ApiResult<any> = await fetch('/api/account/logout', {
-        method: 'post',
-        credentials: 'include'
-    }).then(r => r.json());
+         const data: ApiResult<any> = await fetch('/api/account/logout', {
+            method: 'post',
+            credentials: 'include'
+        }).then(r => r.json());
 
-    if (data.error) {
-        alert(`${data.error.name}: ${data.error.message}`);
-        return;
-    }
+        if (data.error) {
+            alert(`${data.error.name}: ${data.error.message}`);
+            return;
+        }
 
-    router.get('/login?loggedout=1');
-    } catch {
-        
-    }
+        router.get('/login?loggedout=1');
 }
 
 
