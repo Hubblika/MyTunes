@@ -1,14 +1,19 @@
 <script setup lang="ts">
-defineEmits(['input'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: number): void
+}>()
+
+defineProps<{
+  modelValue: number
+}>()
 </script>
 
 <template>
     <input
-        type="range"
-        min="0"
-        max="100"
-        value="30"
-        class="w-full h-1 rounded-lg bg-gray-700 accent-pink-500 cursor-pointer"
-        @input="$emit('input')"
-    />
+    type="range"
+    min="0"
+    max="100"
+    :value="modelValue"
+    class="w-full h-1 rounded-lg bg-gray-700 accent-pink-500 cursor-pointer"
+    @input="emit('update:modelValue', Number(($event.target as HTMLInputElement).value))"/>
 </template>

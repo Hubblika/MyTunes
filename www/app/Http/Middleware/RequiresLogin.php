@@ -45,6 +45,6 @@ class RequiresLogin {
             return \err(Response::HTTP_UNAUTHORIZED, ApiError::UNAUTHORIZED);
         }
 
-        return redirect('login')
+        return redirect('login');
     }
 }
