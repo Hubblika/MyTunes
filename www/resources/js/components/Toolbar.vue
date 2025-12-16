@@ -110,7 +110,7 @@ onMounted
             <Button @click="openLyrics" class="px-2!"><Icon name="microphone-2" class="size-5"/></Button>
             <Button @click="openQueue" class="px-2!"><Icon name="list" class="size-5"/></Button>
             <div class="flex items-center gap-2">
-            <Button @click="mute" class="px-2!"><Icon :name="volumeIcon" class="size-6"/></Button>
+            <Button @click="mute" class="px-2!"><Icon :name="volumeIcon" class="size-5"/></Button>
             <Slider v-model="volume"></Slider>
             </div>
         </div>

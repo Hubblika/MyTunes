@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { Icon } from './common';
+import { Icon } from '.';
 
 const query = ref('');
 
