@@ -73,8 +73,6 @@ function mute() {
         previousVolume = temp;
     }
 }
-
-onMounted
 </script>
 
 <template>
@@ -82,35 +80,49 @@ onMounted
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gray-700 rounded"></div>
             <div>
-                <p class="font-semibold text-sm">Song Title</p>
-                <p class="text-xs text-gray-600 dark:text-gray-300">Artist Name</p>
+                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">Song Title</p>
+                <p class="text-xs text-gray-600 dark:text-gray-300 hover:underline hover:cursor-pointer">Artist Name</p>
             </div>
-            <Button @click="like"><Icon :name="liked ? 'heart-filled' : 'heart'" class="size-6" /></Button>
+            <Button @click="like" class="group transition-all duration-150">
+                <Icon :name="liked ? 'heart-filled' : 'heart'" :class="['size-6 transition-colors duration-150', liked ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']"/>
+            </Button>
         </div>
 
         <div class="flex flex-col items-center w-168 space-y-1">
             <div class="flex items-center gap-4">
-                <Button @click="shufflebuttonClick"><Icon name="arrows-shuffle" class="size-5" :class="shuffle ? 'text-cyan-500' : 'text-black'"/></Button>
-                <Button @click="skipBack"><Icon name="skip-back" class="size-6" /></Button>
-                <Button @click="playButtonClick" class="w-12 h-12 !bg-cyan-500 rounded-full flex items-center justify-center">
+                <Button @click="shufflebuttonClick" class="group transition-all duration-150">
+                    <Icon name="arrows-shuffle" class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" :class="shuffle ? 'text-cyan-500!' : 'text-black dark:text-white'"/>
+                </Button>
+                <Button @click="skipBack" class="group transition-all duration-150">
+                    <Icon name="skip-back" class="size-6 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"/>
+                </Button>
+                <Button @click="playButtonClick"  class="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center transition-all duration-150 hover:bg-cyan-400">
                     <Icon :name="isPlaying ? 'player-pause-filled' : 'player-play-filled'" class="size-6 text-white"/>
                 </Button>
-                <Button @click="skipForward"><Icon name="skip-forward" class="size-6" /></Button>
-                <Button @click="loopbuttonClick"><Icon name="repeat" class="size-5" :class="loop ? 'text-cyan-500' : 'text-black'"/></Button>
+                <Button @click="skipForward" class="group transition-all duration-150">
+                    <Icon name="skip-forward" class="size-6 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"/>
+                </Button>
+                <Button @click="loopbuttonClick" class="group transition-all duration-150">
+                    <Icon name="repeat" class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" :class="loop ? 'text-cyan-500!' : 'text-black dark:text-white'"/>
+                </Button>
             </div>
 
             <div class="flex items-center gap-2 w-full text-xs text-gray-600 dark:text-gray-300">
-                <span>{{ formattedTime }}</span>
+                <span class="hover:cursor-default">{{ formattedTime }}</span>
                 <Slider v-model="time"></Slider>
-                <span>3:45</span>
+                <span class="hover:cursor-default">3:45</span>
             </div>
         </div>
 
         <div class="flex items-center">
-            <Button @click="openLyrics" class="px-2!"><Icon name="microphone-2" class="size-5"/></Button>
-            <Button @click="openQueue" class="px-2!"><Icon name="list" class="size-5"/></Button>
+            <Button @click="openLyrics" class="px-2! group transition-all duration-150">
+                <Icon name="microphone-2" class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"/>
+            </Button>
+            <Button @click="openQueue" class="px-2! group transition-all duration-150">
+                <Icon name="list" class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"/>
+            </Button>
             <div class="flex items-center gap-2">
-            <Button @click="mute" class="px-2!"><Icon :name="volumeIcon" class="size-5"/></Button>
+            <Button @click="mute" class="px-2! group transition-all duration-150"><Icon :name="volumeIcon" class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"/></Button>
             <Slider v-model="volume"></Slider>
             </div>
         </div>

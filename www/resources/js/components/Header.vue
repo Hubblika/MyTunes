@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Icon, SecondaryButton, Searchbar } from './common';
+import { Icon, SecondaryButton, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
 import { ApiResult } from '@/types';
 
@@ -40,6 +40,16 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 }
 
+function loadHomeContent() {
+    console.log('Home content');
+    //TODO: load home content into the maincontent component DO NOT redirect to the ./ directory
+}
+
+function download() {
+    console.log('Starting download');
+    //TODO: download the desktop app
+}
+
 onMounted(() => {
     resetSvg();
     document.addEventListener('click', handleClickOutside);
@@ -51,29 +61,27 @@ onMounted(() => {
 <header class="flex items-center justify-between
     bg-white dark:bg-black backdrop-blur-md
     w-full h-14 sticky top-0 left-0
-    text-black dark:text-white px-4">
+    text-black dark:text-white">
 
     <div class="flex items-center gap-3 flex-none">
-        <a href="/" class="size-12 flex justify-center items-center" v-html="svg"></a>
+        <Button @click="loadHomeContent" class="size-20 p-0 flex justify-center items-center" v-html="svg"></Button>
     </div>
 
     <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-4">
         <div class="flex items-center gap-4">
-            <a href="/" class="
-                size-10 rounded-full border border-black dark:border-white
-                flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
-                <Icon name="home" />
-            </a>
+            <Button @click="loadHomeContent" class="size-10 rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
+                <Icon name="home" class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80"/>
+            </Button>
             <Searchbar class="w-96"/>
         </div>
     </div>
 
     <div class="flex items-center gap-4 flex-none">
 
-        <SecondaryButton>
-            <Icon name="download" class="size-4" />
-            <span>Download the desktop app</span>
-        </SecondaryButton>
+        <Button @click="download" class="w-full rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
+            <Icon name="download" class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80"/>
+            <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">Download the desktop app</span>
+        </Button>
 
         <div class="relative" ref="dropdownRef">
             <button
@@ -83,7 +91,7 @@ onMounted(() => {
                 <Icon name="user"/>
             </button>
 
-            <ul v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg py-1 z-50">
+            <ul v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50">
                 <li @click="selectMenu('profile')" class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                     <span>Profile</span>
                     <Icon name="user"></Icon>

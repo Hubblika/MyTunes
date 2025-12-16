@@ -11,13 +11,26 @@ function search() {
 </script>
 
 <template>
-    <label class="w-3/4 h-11 border border-black dark:border-white rounded-full flex">
-        <div class="h-full aspect-square flex justify-center items-center">
+    <label class="w-3/4 h-11 border border-black dark:border-white rounded-full flex
+           transition-all duration-200 hover:border-black/60 dark:hover:border-white/80
+           shadow-sm hover:shadow-md">
+        <div
+            class="h-full aspect-square flex justify-center items-center transition-transform duration-200 hover:scale-110 hover:text-black/70 dark:hover:text-white/70">
             <Icon name="search" class="text-black dark:text-white size-5 translate-x-0.5"></Icon>
         </div>
-        <input id="search" type="text" class="font-semibold text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300 h-full outline-none grow placeholder:font-semibold" placeholder="Search" @submit="search" v-model.trim="query" />
-        <button :class="['h-full aspect-square flex justify-center items-center cursor-pointer', { 'collapse': query.length < 1 }]" @click="search">
-            <Icon name="send" class="size-5 -translate-x-0.5"></Icon>
+
+        <input id="search" type="text" class="font-semibold text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300
+             h-full outline-none grow placeholder:font-semibold
+             transition-colors duration-200 focus:text-black/90 dark:focus:text-white/90" placeholder="Search"
+            @submit="search" v-model.trim="query" />
+
+        <button :class="[
+            'h-full aspect-square flex justify-center items-center cursor-pointer transition-transform duration-200',
+            { 'collapse': query.length < 1 }
+        ]" @click="search" :style="{ transform: query.length > 0 ? 'scale(1)' : 'scale(0)' }">
+            <Icon name="send"
+                class="size-5 -translate-x-0.5 hover:rotate-12 hover:text-blue-600 dark:hover:text-blue-400 transition-transform duration-200">
+            </Icon>
         </button>
     </label>
 </template>
