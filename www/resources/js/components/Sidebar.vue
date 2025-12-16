@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Searchbar from './common/Searchbar.vue';
+import { Searchbar, PlaylistCard } from './common';
 </script>
 
 <template>
@@ -8,5 +8,17 @@ import Searchbar from './common/Searchbar.vue';
             <h1 class="text-lg font-bold pl-2">My music</h1>
         </div>
         <Searchbar class="w-full"></Searchbar>
+        <div class="space-y-1 pt-3">
+            <PlaylistCard
+                title="Liked Songs"
+                subtitle="128 songs"/>
+            <PlaylistCard
+                title="Playlist 1"
+                subtitle="42 songs"
+                cover-url="/covers/chill.jpg"/>
+            <PlaylistCard
+                title="Playlist 2"
+                subtitle="30 songs"/>
+        </div>
     </aside>
 </template>

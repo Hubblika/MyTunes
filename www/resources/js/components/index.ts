@@ -1,6 +1,5 @@
 export { default as Header } from './Header.vue';
 export { default as Preview } from './Preview.vue';
-export { default as Searchbar } from './common/Searchbar.vue';
 export { default as Toolbar } from './Toolbar.vue';
 export { default as Sidebar } from './Sidebar.vue';
 export { default as MainContent } from './Maincontent.vue';

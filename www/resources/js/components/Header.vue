@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Searchbar } from '.';
-import { Icon, SecondaryButton } from './common';
+import { Icon, SecondaryButton, Searchbar } from './common';
 import { router } from '@inertiajs/vue3';
 import { ApiResult } from '@/types';
 

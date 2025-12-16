@@ -6,7 +6,7 @@ const layout = useTemplateRef('layout');
 const dark = ref(true);
 
 onMounted(() => {
-    const defaultTheme: 'light' | 'dark' = 'light';
+    const defaultTheme: 'light' | 'dark' = 'dark';
     let theme = localStorage.getItem('mytunes:theme');
 
     if (theme === null) {
