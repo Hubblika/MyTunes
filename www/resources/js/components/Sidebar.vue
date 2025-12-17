@@ -39,6 +39,10 @@ function addPlaylist() {
 
   //TODO: save added playlist to database
 }
+
+function deletePlaylist(playlistID: number) {
+    playlists.value = playlists.value.filter(item => item.id !== playlistID);
+}
 </script>
 
 <template>
@@ -56,10 +60,11 @@ function addPlaylist() {
         <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto">
             <PlaylistCard
                  v-for="playlist in playlists"
-                :key="playlist.id"
+                :id="playlist.id"
                 :title="playlist.title"
                 :subtitle="playlist.subtitle"
-                :cover-url="playlist.coverUrl"/>
+                :cover-url="playlist.coverUrl"
+                @deletePlaylist="deletePlaylist"/>
         </div>
     </aside>
 </template>
