@@ -6,7 +6,7 @@ import { Layout } from '@/layouts';
 <template>
     <Layout>
         <main class="text-black dark:text-white bg-white dark:bg-black w-full">
-            <Loginform register></Loginform>
+            <Loginform></Loginform>
         </main>
     </Layout>
 </template>

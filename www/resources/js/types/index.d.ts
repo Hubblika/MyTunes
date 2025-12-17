@@ -17,3 +17,12 @@ export interface User {
     created_at: string,
     updated_at: string
 }
+
+
+
+export interface ButtonProps {
+    type?: 'button' | 'submit' | 'menu' | 'reset',
+    href?: string,
+    class?: ClassValue,
+    disabled?: boolean
+}
