@@ -1,17 +1,32 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+Route::get('/', function (Request $request) {
+    if ($request->user() !== null) {
+        return Inertia::render('Home');
+    }
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return redirect('/login', 303);
+})
+    ->name('home');
 
-require __DIR__.'/settings.php';
+Route::get('/login', function () {
+    return Inertia::render('Login');
+})
+    ->name('login');
+
+Route::get('/song/{uuid}', function () {
+    return Inertia::render('Song', []);
+})
+    ->whereUuid('uuid')
+    ->name('song.detail');
+
+Route::get('/{playlist}/{uuid}', function () {
+    return Inertia::render('Playlist', []);
+})
+    ->where('playlist', '/(playlist|album)/')
+    ->whereUuid('uuid')
+    ->name('playlist.detail');
