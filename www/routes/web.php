@@ -13,11 +13,6 @@ Route::get('/', function (Request $request) {
 })
     ->name('home');
 
-Route::get('/login', function () {
-    return Inertia::render('Login');
-})
-    ->name('login');
-
 Route::get('/song/{uuid}', function () {
     return Inertia::render('Song', []);
 })
