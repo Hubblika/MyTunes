@@ -42,8 +42,8 @@ function addPlaylist() {
 </script>
 
 <template>
-    <aside class="bg-gray-500/6 dark:text-white w-96 min-h-full px-4 rounded-lg">
-        <div class="flex items-center justify-between h-16">
+    <aside class="bg-gray-500/6 dark:text-white w-96 flex flex-col h-full px-4 rounded-lg">
+        <div class="flex items-center justify-between h-16 shrink-0">
             <h1 class="text-lg font-bold pl-2">My music</h1>
             <Button @click="addPlaylist" class="group relative">
                 <Icon
@@ -52,8 +52,8 @@ function addPlaylist() {
                         group-hover:text-black/60 dark:group-hover:text-white/80"/>
             </Button>
         </div>
-        <Searchbar class="w-full"></Searchbar>
-        <div class="space-y-1 pt-3">
+        <Searchbar class="w-full shrink-0"></Searchbar>
+        <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto">
             <PlaylistCard
                  v-for="playlist in playlists"
                 :key="playlist.id"
