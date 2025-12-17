@@ -42,6 +42,7 @@ function addPlaylist() {
 
 function deletePlaylist(playlistID: number) {
     playlists.value = playlists.value.filter(item => item.id !== playlistID);
+    //TODO: delete playlist from the database
 }
 </script>
 

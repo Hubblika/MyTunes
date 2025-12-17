@@ -44,7 +44,7 @@ onMounted(() => {
                     {{ subtitle }}
                 </p>
         </div>
-        <div class="relative" ref="dropdownRef">
+        <div v-if="title != 'Liked Songs'" class="relative" ref="dropdownRef">
             <Button @click="dropdownOpen = !dropdownOpen" class="group transition-all duration-150"><Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110"></Icon></Button>
                 <ul v-if="dropdownOpen" class="absolute mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
                     <li @click="selectMenu('delete')" class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
