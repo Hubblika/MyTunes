@@ -32,7 +32,7 @@ enum ApiError {
  * @return JsonResponse The json response
  */
 function ok(mixed $data, int $status = 200): JsonResponse {
-    return response()->json(['data' => $data], $status);
+    return response()->json(['data' => clean($data)], $status);
 }
 
 /**
@@ -44,11 +44,11 @@ function ok(mixed $data, int $status = 200): JsonResponse {
 function err(int $status, ApiError $error = ApiError::UNKNOWN, ?string $message = null): JsonResponse {
     return response()->json(
         [
-            'error' => [
+            'error' => clean([
                 'status' => $status,
                 'name' => $error->name,
                 'message' => $message
-            ]
+            ])
         ],
         $status
     );
@@ -65,6 +65,27 @@ function generate_username(int $length = 16) {
     }
 
     return $result;
+}
+
+function clean($data) {
+    if (is_array($data)) {
+        return array_filter(
+            array_map('clean', $data),
+            fn($v) => $v !== null
+        );
+    }
+
+    if (is_object($data)) {
+        foreach ($data as $k => $v) {
+            if ($v === null) {
+                unset($data->$k);
+            } else {
+                $data->$k = clean($v);
+            }
+        }
+    }
+
+    return $data;
 }
 
 function is_valid_email(?string $email) {
