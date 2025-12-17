@@ -15,13 +15,13 @@ const playlists = ref<Playlist[]>([
     id: 1,
     title: 'Liked Songs',
     subtitle: '128 songs',
-    coverUrl: '/covers/liked.png'
+    coverUrl: '/uploads/thumbnails/playlist/defaultThumbnail.png'
   },
   {
     id: 2,
     title: 'Playlist 1',
     subtitle: '42 songs',
-    coverUrl: '/covers/chill.jpg'
+    coverUrl: '/uploads/thumbnails/playlist/defaultThumbnail.png'
   }
 ]);
 
