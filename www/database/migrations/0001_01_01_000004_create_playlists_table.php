@@ -24,7 +24,7 @@ return new class extends Migration
         Schema::create('playlist_collaborators', function (Blueprint $table) {
             $table->id()->primary();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignUuid('playlist_uuid')->constrained('playlists')->cascadeOnDelete();
+            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
         });
 
         Schema::create('ordered_songs', function (Blueprint $table) {

@@ -18,10 +18,10 @@ class User extends Authenticatable
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'liked_songs_playlist_uuid',
+        // 'liked_songs_playlist_uuid',
         'username',
         'email',
-        'password_hash',
+        'password',
         'role',
         'description'
     ];
@@ -66,7 +66,7 @@ class User extends Authenticatable
             'username' => 'string',
             'email' => 'string',
             'email_verified_at' => 'datetime',
-            'password_hash' => 'hashed',
+            'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime'
         ];
     }
