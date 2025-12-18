@@ -49,7 +49,7 @@ onMounted(() => {
                 <ul v-if="dropdownOpen" class="absolute mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
                     <li @click="selectMenu('delete')" class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                         <span>Delete playlist</span>
-                        <Icon name="trash"></Icon>
+                        <Icon name="trash" class="size-5 text-red-500"></Icon>
                     </li>
                 </ul>
         </div>
