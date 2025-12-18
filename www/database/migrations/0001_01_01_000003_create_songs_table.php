@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('songs', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('title');
-            $table->date('created_at');
+            $table->date('created_at')->useCurrent();
             $table->unsignedMediumInteger('duration');
             $table->boolean('is_explicit');
         });

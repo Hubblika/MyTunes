@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Root } from '@/layouts';
+import { Layout } from '@/layouts';
 import { Header, Sidebar, Toolbar } from '@/components';
 </script>
 
 <template>
-    <Root class="h-screen flex flex-col">
+    <Layout>
         <Header></Header>
         <main  class="flex-1 min-h-0
              text-black dark:text-white
@@ -14,5 +14,5 @@ import { Header, Sidebar, Toolbar } from '@/components';
             <slot></slot>
         </main>
         <Toolbar></Toolbar>
-    </Root>
+    </Layout>
 </template>

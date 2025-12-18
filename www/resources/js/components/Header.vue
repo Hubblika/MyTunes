@@ -8,9 +8,9 @@ const svg = ref('');
 const dropdownOpen = ref(false);
 
 async function resetSvg() {
-    svg.value = document.querySelector('#layout')?.classList.contains('light')
-        ? await import('@/lib/logo_dark.svg?raw').then(r => r.default)
-        : await import('@/lib/logo_light.svg?raw').then(r => r.default)
+    // svg.value = document.querySelector('#layout')?.classList.contains('light')
+    //     ? await import('@/lib/logo_dark.svg?raw').then(r => r.default)
+    //     : await import('@/lib/logo_light.svg?raw').then(r => r.default)
 }
 
 const logout = async () => {
@@ -64,7 +64,7 @@ onMounted(() => {
     text-black dark:text-white pr-4">
 
     <div class="flex items-center gap-3 flex-none">
-        <Button @click="loadHomeContent" class="size-20 p-0 flex justify-center items-center" v-html="svg"></Button>
+        <Button @click="loadHomeContent" class="size-20 p-0 flex justify-center items-center"></Button>
     </div>
 
     <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-4">

@@ -50,7 +50,7 @@ export interface Song {
     title: string,
     created_at: string
     duration: number,
-    is_explicit: boolean,
+    is_explicit: boolean
 }
 
 export interface Playlist {

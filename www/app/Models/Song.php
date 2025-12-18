@@ -7,27 +7,11 @@ use Illuminate\Support\Str;
 
 class Song extends Model
 {
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
     protected $table = 'songs';
-
-    /**
-     * The primary key associated with the table.
-     * 
-     * @var string
-     */
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';
     public $incrementing = false;
 
-    /**
-     * The attributes that are mass assignable.
-     * 
-     * @var list<string>
-     */
     protected $fillable = [
         'title',
         'created_at',
@@ -35,18 +19,9 @@ class Song extends Model
         'is_explicit'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * 
-     * @var list<string>
-     */
+
     protected $hidden = [];
 
-    /**
-     * Indicates if the model should be timestamped.
-     * 
-     * @var bool
-     */
     public $timestamps = false;
 
     public static function boot() {
@@ -67,10 +42,7 @@ class Song extends Model
     protected function casts(): array
     {
         return [
-            'title' => 'string',
-            'created_at' => 'date',
-            'duration' => 'integer',
-            'is_explicit' => 'boolean'
+            'created_at' => 'date'
         ];
     }
 }

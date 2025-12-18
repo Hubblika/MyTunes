@@ -1,5 +1,28 @@
+export interface Auth {
+    self: User
+}
+
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    name: string,
-    quote: { message: string; author: string }
+    app: string,
+    self: User
 };
 
+export interface User {
+    id: number,
+    username: string,
+    email: string,
+    email_verified_at?: string,
+    description?: string,
+    role: 'Admin' | 'Artist' | 'User',
+    created_at: string,
+    updated_at: string
+}
+
+
+
+export interface ButtonProps {
+    type?: 'button' | 'submit' | 'menu' | 'reset',
+    href?: string,
+    class?: ClassValue,
+    disabled?: boolean
+}
