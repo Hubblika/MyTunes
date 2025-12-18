@@ -22,6 +22,7 @@ const emit = defineEmits<{
     --p-toggleswitch-hover-background: #00ffff;
     --p-toggleswitch-checked-background: #ff00ff;
     --p-toggleswitch-checked-hover-background: #ff00ff;
-    --p-toggleswitch-handle-background: white;  
+    --p-toggleswitch-handle-background: white;
+    z-index: 1 !important;
 }
 </style>
