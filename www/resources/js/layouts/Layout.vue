@@ -1,25 +1,31 @@
 <script setup lang="ts">
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { onMounted, ref, watch } from 'vue'
 
-const layout = useTemplateRef('layout');
-
-const dark = ref(true);
+const dark = ref(false)
 
 onMounted(() => {
-    const defaultTheme: 'light' | 'dark' = 'light';
-    let theme = localStorage.getItem('mytunes:theme');
+  const defaultTheme: 'light' | 'dark' = 'light'
+  let theme = localStorage.getItem('theme') as 'light' | 'dark' | null
 
-    if (theme === null) {
-        localStorage.setItem('mytunes:theme', defaultTheme);
-        theme = defaultTheme;
-    }
+  if (!theme) {
+    theme = defaultTheme
+    localStorage.setItem('theme', theme)
+  }
 
-    dark.value = theme === 'dark';
-});
+  dark.value = theme === 'dark'
+})
+
+// 🔥 This is the important part
+watch(dark, (value) => {
+  document.documentElement.classList.toggle('dark', value)
+  localStorage.setItem('theme', value ? 'dark' : 'light')
+})
 </script>
 
 <template>
-    <div id="layout" :class="['w-full min-h-screen flex flex-col **:transition-colors **:duration-250', { dark }]" ref="layout">
-        <slot></slot>
-    </div>
+  <div
+    id="layout"
+    class="w-full min-h-screen flex flex-col **:transition-colors **:duration-250">
+    <slot/>
+  </div>
 </template>

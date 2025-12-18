@@ -8,7 +8,7 @@ const svg = ref('');
 const dropdownOpen = ref(false);
 
 async function resetSvg() {
-    // svg.value = document.querySelector('#layout')?.classList.contains('light')
+    //ű svg.value = document.querySelector('#layout')?.classList.contains('light')
     //     ? await import('@/lib/logo_dark.svg?raw').then(r => r.default)
     //     : await import('@/lib/logo_light.svg?raw').then(r => r.default)
 }

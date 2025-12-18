@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import ToggleSwitch from 'primevue/toggleswitch';
+
+const props = defineProps<{
+  modelValue: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
 </script>
 
 <template>
-    <ToggleSwitch class="custom-toggle"></ToggleSwitch>
+    <ToggleSwitch :modelValue="modelValue"
+        @update:modelValue="emit('update:modelValue', $event)"
+        class="custom-toggle"></ToggleSwitch>
 </template>
 
 <style scoped>
