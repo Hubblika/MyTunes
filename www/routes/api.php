@@ -1,77 +1,187 @@
 <?php
 
+use App\Models\Playlist;
+use App\Models\Song;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/utils.php';
 
 
-// Route::middleware(['web'])->group(fn () => [
-//     Route::post('/account/register', function (Request $request) {
-//         if (!$request->isJson()) {
-//             return err(400, ApiError::INVALID_CONTENT_TYPE);
-//         }
 
-//         $email = $request->json('email');
-//         $password = $request->json('password');
+Route::middleware([])->group(fn () => [
+    Route::post('/song', function (Request $request) {
+        $user = $request->user();
 
-//         if (is_valid_email($email)) {
-//             return err(400, ApiError::INVALID_EMAIL);
-//         }
+        if (!$user) {
+            return err(401);
+        }
 
-//         if (is_valid_password($password)) {
-//             return err(400, ApiError::INVALID_PASSWORD);
-//         }
+        $audio = $request->file('audio.mp3');
+        $cover = $request->file('cover.png');
 
-//         $user_id = User::create([
-//             'username' => generate_username(),
-//             'email' => $email,
-//             'password' => $password
-//         ])->getKey();
+        if (!$audio) {
+            return err(400, ['field' => 'audio']);
+        }
 
-//         $user = User::find($user_id);
-//         Auth::login($user, true);
+        $uuid = uuid_create();
 
-//         return redirect('/');
-//     }),
+        Storage::disk('local')->put('uploads/songs/{$uuid}/.txt', file_get_contents($audio));
+        Storage::disk('local')->put('uploads/songs/{$uuid}/cover.png', file_get_contents($cover));
 
-//     Route::post('/account/login', function (Request $request): JsonResponse {
-//         if (!$request->isJson()) {
-//             return err(400, ApiError::INVALID_CONTENT_TYPE);
-//         }
+        return ok(1);
+    })
+        ->name('api.song.new'),
 
-//         $email = $request->json('email');
-//         $password = $request->json('password');
+    Route::get('/song/{uuid}', function (Request $request, string $uuid) {
+        $song = Song::find($uuid);
 
-//         if (is_valid_email($email)) {
-//             return err(400, ApiError::INVALID_EMAIL);
-//         }
+        if (!$song) {
+            return err(404);
+        }
 
-//         if (is_valid_password($password)) {
-//             return err(400, ApiError::INVALID_PASSWORD);
-//         }
-
-//         $user = User::whereEmail($email)->first();
-
-//         if ($user === null) {
-//             return err(404, ApiError::USER_NOT_FOUND);
-//         }
-
-//         if (!Hash::check($password, $user->password)) {
-//             return err(401, ApiError::INCORRECT_PASSWORD);
-//         }
-
-//         Auth::login($user, true);
-
-//         return ok('done');
-//     })
-// ]);
+        return ok($song);
+    })
+        ->whereUuid('uuid')
+        ->name('api.song.by-uuid'),
 
 
 
-// Route::get('/user', function (Request $request): JsonResponse {
-//     return ok($request->user());
-// })->middleware('auth:sanctum');
+    Route::post('/playlist', function (Request $request) {
+        $user = $request->user();
+
+        if (!$user) {
+            return err(401);
+        }
+
+        $name = $request->json('name');
+        $description = $request->json('description');
+        $public = $request->json('public');
+
+        if (!$name || strlen($name) < 1) {
+            return err(400, ['field' => 'name']);
+        } else if ($public !== true && $public !== false) {
+            return err(400, ['field' => 'name']);
+        }
+
+        $playlist_id = Playlist::create([
+            'creator_id' => $user->id,
+            'name' => $name,
+            'description' => $description,
+            'public' => $public
+        ])->getKey();
+
+        $playlist = Playlist::find($playlist_id);
+
+        return ok($playlist);
+    })
+        ->name('api.playlist.new'),
+
+    Route::get('/playlist/{uuid}', function (Request $request, string $uuid) {
+        $playlist = Playlist::find($uuid);
+
+        if (!$playlist) {
+            return err(404);
+        }
+
+        $songs = $playlist->songs->song;
+        Log::info($songs);
+
+        return ok($playlist);
+    })
+        ->whereUuid('uuid')
+        ->name('api.playlist.by-uuid'),
+
+    Route::post('/playlist/{uuid}/modify', function (Request $request, string $uuid) {
+        $name = $request->json('name');
+        $description = $request->json('description');
+        $public = $request->json('public');
+
+        $playlist = Playlist::find($uuid);
+
+        if (!$playlist) {
+            return err(404);
+        }
+
+        $user = $request->user();
+
+        if (!$user || $user->id !== $playlist->creator_id) {
+            return err(403);
+        }
+
+        if ($name !== null && strlen($name) > 0) {
+            $playlist->name = $name;
+        }
+
+        if ($description && strlen($description) === 0) {
+            $playlist->description = null;
+        } else if ($description) {
+            $playlist->description = $description;
+        }
+
+        if ($public !== null) {
+            $playlist->public = $public;
+        }
+
+        $playlist->save();
+
+        return ok($playlist);
+    })
+        ->whereUuid('uuid')
+        ->name('api.playlist.modify'),
+
+    Route::post('/playlist/{uuid}/delete', function (Request $request, string $uuid) {
+        $playlist = Playlist::find($uuid);
+
+        if (!$playlist) {
+            return err(404);
+        }
+
+        $user = $request->user();
+
+        if (!$user) {
+            return err(401);
+        } else if ($user->id !== $playlist->creator_id) {
+            return err(403);
+        }
+
+        $playlist->delete();
+
+        return ok('done');
+    })
+        ->whereUuid('uuid')
+        ->name('api.playlist.delete'),
+
+
+
+    Route::get('/user', function (Request $request) {
+        return ok($request->user());
+    })
+        ->name('api.user.me'),
+
+    Route::get('/user/@{username}', function (Request $request, string $username): JsonResponse {
+        $user = User::whereUsername($username)->first();
+
+        if (!$user) {
+            return err(404);
+        }
+
+        return ok($user);
+    })
+        ->where('username', '/[a-zA-Z0-9_]{4,20}/')
+        ->name('api.user.by-username'),
+
+    Route::get('/user/{id}', function (Request $request, string $id): JsonResponse {
+        $user = User::find($id);
+
+        if (!$user) {
+            return err(404);
+        }
+
+        return ok($user);
+    })
+        ->whereNumber('id')
+        ->name('api.user.by-id')
+]);

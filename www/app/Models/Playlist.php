@@ -18,6 +18,7 @@ class Playlist extends Model
         'creator_id',
         'name',
         'description',
+        'public',
         'is_album'
     ];
 
@@ -66,6 +67,7 @@ class Playlist extends Model
             'creator_id' => 'integer',
             'name' => 'string',
             'description' => 'string',
+            'public' => 'boolean',
             'is_album' => 'boolean'
         ];
     }

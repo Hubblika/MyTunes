@@ -19,9 +19,14 @@ Route::get('/song/{uuid}', function () {
     ->whereUuid('uuid')
     ->name('song.detail');
 
-Route::get('/{playlist}/{uuid}', function () {
+Route::get('/playlist/{uuid}', function () {
     return Inertia::render('Playlist', []);
 })
-    ->where('playlist', '/(playlist|album)/')
     ->whereUuid('uuid')
     ->name('playlist.detail');
+
+Route::get('/album/{uuid}', function () {
+    return Inertia::render('Playlist', []);
+})
+    ->whereUuid('uuid')
+    ->name('album.detail');

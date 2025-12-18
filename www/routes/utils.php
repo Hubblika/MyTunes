@@ -1,29 +1,7 @@
 <?php
 
 use Illuminate\Http\JsonResponse;
-
-/**
- * Enum containing common http errors to be handled by the Vue frontend
- */
-enum ApiError {
-    case UNKNOWN;
-
-    // 400 Bad Request
-    case INVALID_CONTENT_TYPE;
-    case INVALID_EMAIL;
-    case INVALID_PASSWORD;
-
-    // 401 Unauthorized
-    case UNAUTHORIZED;
-    case INCORRECT_PASSWORD;
-
-    // 404 Not Found
-    case USER_NOT_FOUND;
-    case SONG_NOT_FOUND;
-    case PLAYLIST_NOT_FOUND;
-}
-
-
+use Illuminate\Http\Request;
 
 /**
  * Shorthand for returning json data to the client
@@ -38,17 +16,16 @@ function ok(mixed $data, int $status = 200): JsonResponse {
 /**
  * Shorthand for returning a json error response to the client
  * @param int $status Status code of the error
- * @param ApiError $error The HTTP error kind which will determine what data is displayed
+ * @param ?array $info Optional additional information
  * @return JsonResponse The json response
  */
-function err(int $status, ApiError $error = ApiError::UNKNOWN, ?string $message = null): JsonResponse {
+function err(int $status, ?array $info = null): JsonResponse {
     return response()->json(
         [
-            'error' => clean([
+            'error' => [
                 'status' => $status,
-                'name' => $error->name,
-                'message' => $message
-            ])
+                'info' => clean($info)
+            ]
         ],
         $status
     );
@@ -56,18 +33,28 @@ function err(int $status, ApiError $error = ApiError::UNKNOWN, ?string $message 
 
 
 
-function generate_username(int $length = 16) {
+/**
+ * Generates a random string of `$n` length
+ * @param int $n Length of the result string
+ * @return string Generated username
+ */
+function generate_username(int $n = 16) {
     $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $result = '';
 
-    for ($i = 0; $i < $length; $i++) {
+    for ($i = 0; $i < $n; $i++) {
         $result .= $alphabet[random_int(0, strlen($alphabet) - 1)];
     }
 
     return $result;
 }
 
-function clean($data) {
+/**
+ * Removes all entries in an object where the value is `null` 
+ * @param ?object $data Object
+ * @return mixed
+ */
+function clean(mixed $data) {
     if (is_array($data)) {
         return array_filter(
             array_map('clean', $data),
