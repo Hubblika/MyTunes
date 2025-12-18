@@ -13,8 +13,12 @@ Route::get('/', function (Request $request) {
 })
     ->name('home');
 
-Route::get('/settings', function () {
-    return Inertia::render('Settings');
+Route::get('/settings', function (Request $request) {
+    if ($request->user() !== null) {
+        return Inertia::render('Settings');
+    }
+
+    return redirect('/login', 303);
 })
     ->name('Settings');
 

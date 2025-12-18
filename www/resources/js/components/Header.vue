@@ -30,6 +30,7 @@ const logout = async () => {
 const selectMenu = (item: string) => {
     dropdownOpen.value = false;
     if (item === 'logout') logout();
+    else if(item === 'settings') router.get('settings');
     else console.log(`Selected ${item}`);
 }
 
@@ -41,8 +42,7 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 function loadHomeContent() {
-    console.log('Home content');
-    //TODO: load home content into the maincontent component DO NOT redirect to the ./ directory
+    router.get('/');
 }
 
 function download() {
