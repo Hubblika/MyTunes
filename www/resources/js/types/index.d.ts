@@ -1,21 +1,54 @@
 export interface Auth {
-    self: User
+    self: Self
 }
 
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     app: string,
-    self: User
+    auth: Auth
 };
 
 export interface User {
     id: number,
     username: string,
     email: string,
-    email_verified_at?: string,
     description?: string,
-    role: 'Admin' | 'Artist' | 'User',
     created_at: string,
     updated_at: string
+}
+
+export interface Self {
+    email_verified_at?: string,
+}
+
+
+
+export interface _Song {
+    uuid: string,
+    title: string,
+    duration: number,
+    is_explicit: boolean,
+    genre?: string,
+    created_at: string
+}
+
+export interface Song extends _Song {
+    authors: User[]
+}
+
+export interface _Playlist {
+    uuid: string,
+    creator_id: string,
+    name: string,
+    description?: string,
+    public: boolean,
+    is_album: boolean,
+    created_at?: string,
+    updated_at?: string
+}
+
+export interface Playlist extends _Playlist {
+    creator: User,
+    songs: Song[]
 }
 
 

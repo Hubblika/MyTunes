@@ -21,12 +21,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('playlist_collaborators', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
-        });
-
         Schema::create('ordered_songs', function (Blueprint $table) {
             $table->id()->primary();
             $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
@@ -37,6 +31,18 @@ return new class extends Migration
             $table->unique(['playlist_uuid', 'song_uuid']);
             $table->unique(['playlist_uuid', 'index']);
         });
+
+        Schema::create('_playlist_collaborators', function (Blueprint $table) {
+            $table->id()->primary();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
+        });
+
+        Schema::create('_user_saved_playlists', function (Blueprint $table) {
+            $table->id()->primary();
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
+            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
+        });
     }
 
     /**
@@ -45,7 +51,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('playlists');
-        Schema::dropIfExists('playlist_collaborators');
         Schema::dropIfExists('ordered_songs');
+        Schema::dropIfExists('_playlist_collaborators');
+        Schema::dropIfExists('_user_saved_playlists');
     }
 };
