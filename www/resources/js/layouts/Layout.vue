@@ -25,7 +25,7 @@ watch(dark, (value) => {
 <template>
   <div
     id="layout"
-    class="w-full min-h-screen flex flex-col **:transition-colors **:duration-250">
+    class="w-full min-h-screen max-h-screen flex flex-col **:transition-colors **:duration-250">
     <slot/>
   </div>
 </template>

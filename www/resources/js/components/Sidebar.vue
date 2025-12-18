@@ -47,7 +47,7 @@ function deletePlaylist(playlistID: number) {
 </script>
 
 <template>
-    <aside class="bg-gray-500/6 dark:text-white w-96 flex flex-col min-h-full px-4 rounded-lg">
+    <aside class="bg-gray-500/6 dark:text-white w-96 flex flex-col min-h-full max-h-full px-4 rounded-lg">
         <div class="flex items-center justify-between h-16 shrink-0">
             <h1 class="text-lg font-bold pl-2">My music</h1>
             <Button @click="addPlaylist" class="group relative">

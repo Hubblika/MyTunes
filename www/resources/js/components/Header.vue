@@ -61,7 +61,7 @@ onMounted(() => {
 <header class="flex items-center justify-between
     bg-white dark:bg-black backdrop-blur-md
     w-full h-14 sticky top-0 left-0
-    text-black dark:text-white pr-4">
+    text-black dark:text-white pr-4 shrink-0">
 
     <div class="flex items-center gap-3 flex-none">
         <Button @click="loadHomeContent" class="size-20 p-0 flex justify-center items-center"></Button>
