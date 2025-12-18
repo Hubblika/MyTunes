@@ -17,11 +17,18 @@ return new class extends Migration
             $table->date('created_at')->useCurrent();
             $table->unsignedMediumInteger('duration');
             $table->boolean('is_explicit');
+            $table->string('genre', 60)->nullable();
         });
 
-        Schema::create('_song_to_user', function (Blueprint $table) {
+        Schema::create('_user_songs', function (Blueprint $table) {
             $table->foreignUuid('song_uuid')->constrained('songs', 'uuid')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+        });
+
+        Schema::create('_user_likes', function (Blueprint $table) {
+            $table->id()->primary();
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
+            $table->foreignUuid('song_uuid')->constrained('songs', 'uuid')->cascadeOnDelete();
         });
     }
 
@@ -31,6 +38,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('songs');
-        Schema::dropIfExists('_song_to_user');
+        Schema::dropIfExists('_user_songs');
+        Schema::dropIfExists('_user_likes');
     }
 };

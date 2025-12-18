@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 
 class Song extends Model
@@ -32,6 +34,23 @@ class Song extends Model
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
         });
+    }
+
+    /**
+     * Get all songs in the playlist
+     * 
+     * @return BelongsToMany<Song, User, Pivot>
+     */
+    public function likedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            '_user_likes',
+            'song_uuid',
+            'user_id',
+            'uuid',
+            'id'
+        );
     }
 
     /**

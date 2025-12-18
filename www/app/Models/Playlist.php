@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 
 class Playlist extends Model
@@ -37,13 +39,27 @@ class Playlist extends Model
     }
 
     /**
-     * Get all songs in the playlist
+     * Get all ordered_songs in the playlist
      * 
      * @return HasMany<OrderedSong, Playlist>
      */
-    public function songs(): HasMany
+    public function orderedSongs(): HasMany
     {
         return $this->hasMany(OrderedSong::class);
+    }
+
+    /**
+     * Get all songs in the playlist
+     * 
+     * @return BelongsToMany<Song, Playlist, Pivot>
+     */
+    public function songs(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(Song::class, 'ordered_songs')
+            ->using(OrderedSong::class)
+            ->withPivot(['id', 'index'])
+            ->orderBy('pivot_index');
     }
 
     public static function boot() {

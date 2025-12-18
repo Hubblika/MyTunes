@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id()->primary();
-            // $table->foreignUuid('liked_songs_playlist_uuid')->unique()->constrained('playlists', 'uuid')->cascadeOnDelete();
-            $table->string('username');
+            $table->string('username', 20)->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password', 60);
+            $table->boolean('is_admin')->default(false);
+            $table->boolean('is_searchable')->default(false);
             $table->text('description')->nullable();
             $table->rememberToken();
             $table->timestamps();

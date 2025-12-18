@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class OrderedSong extends Model
+class OrderedSong extends Pivot
 {
     protected $table = 'ordered_songs';
     protected $primaryKey = 'id';
