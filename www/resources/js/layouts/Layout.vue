@@ -15,7 +15,6 @@ onMounted(() => {
   dark.value = theme === 'dark'
 })
 
-// 🔥 This is the important part
 watch(dark, (value) => {
   document.documentElement.classList.toggle('dark', value)
   localStorage.setItem('theme', value ? 'dark' : 'light')
