@@ -5,3 +5,4 @@ export { default as Icon } from './Icon.vue';
 export { default as Slider } from './Slider.vue';
 export { default as Searchbar} from './Searchbar.vue';
 export { default as PlaylistCard } from './PlaylistCard.vue';
+export { default as ToggleSwitch } from './ToggleSwitch.vue';

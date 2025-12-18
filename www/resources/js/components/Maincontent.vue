@@ -8,5 +8,6 @@
         bg-gray-500/6
         dark:text-white
         rounded-lg">
+        <slot></slot>
     </div>
 </template>

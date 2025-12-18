@@ -4,3 +4,4 @@ export { default as Toolbar } from './Toolbar.vue';
 export { default as Sidebar } from './Sidebar.vue';
 export { default as MainContent } from './Maincontent.vue';
 export { default as Loginform } from './Loginform.vue';
+export { default as SettingsMenu } from './SettingsMenu.vue';

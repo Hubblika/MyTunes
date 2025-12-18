@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { MainContent } from '@/components';
+import { MainContent, SettingsMenu } from '@/components';
 import { MainLayout } from '@/layouts';
 </script>
 
 <template>
     <MainLayout>
-        <MainContent></MainContent>
+        <MainContent>
+            <SettingsMenu></SettingsMenu>
+        </MainContent>
     </MainLayout>
 </template>
