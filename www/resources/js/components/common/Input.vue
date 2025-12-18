@@ -23,8 +23,8 @@
 </script>
 
 <template>
-    <label>
-        <span class="font-semibold text-cyan-500 pb-1 block">
+    <label class="space-y-1">
+        <span class="font-semibold text-cyan-500 block">
             <slot></slot>
         </span>
         <input
@@ -33,7 +33,11 @@
             :type
             :name="id"
             :tabindex
-            class="text-black dark:text-white bg-gray-100 dark:bg-[#111] w-full rounded-lg p-3 border border-black/10 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-pink-500"
+            class="
+                text-black dark:text-white bg-gray-100 dark:bg-[#111]
+                w-full rounded-lg p-3 border border-black/10 dark:border-white/10
+                outline-2 focus:outline-indigo-400 dark:focus:outline-pink-500 user-invalid:outline-red-500
+            "
             :autofocus
             :autocomplete="type === 'email' ? type : undefined"
             :placeholder

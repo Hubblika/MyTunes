@@ -33,8 +33,8 @@ const password2 = ref('');
             >
                 <input id="username" type="text" name="username" value="bob" class="hidden" required readonly hidden :aria-hidden="true" />
                 <Input id="email" type="email" :tabindex="1" autofocus placeholder="Enter your email" required :pattern="/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/">Email</Input>
-                <Input v-model="password" id="password" type="password" :tabindex="2" placeholder="Enter your password" required>Password</Input>
-                <Input v-if="register" v-model="password2" id="password_confirmation" type="password" :tabindex="3" placeholder="Enter your password" required :pattern="new RegExp(password)">Password</Input>
+                <Input v-model="password" id="password" type="password" :tabindex="2" placeholder="Enter your password" required :pattern="/.{8-16}/">Password</Input>
+                <Input v-if="register" v-model="password2" id="password_confirmation" type="password" :tabindex="3" placeholder="Enter your password again" required :pattern="new RegExp(password)">Confirm password</Input>
                 <PrimaryButton type="submit" class="my-4" :tabindex="4" :disabled="processing">
                     <span v-if="processing">Please wait...</span>
                     <span v-else>{{ register ? 'Sign Up' : 'Log in' }}</span>
@@ -43,7 +43,7 @@ const password2 = ref('');
             <span class="text-center text-sm text-gray-600 dark:text-gray-400">
                 {{ register ? 'Already have an account?' : 'Don\'t have an account?' }}
                 <TextLink @click="() => router.get(register ? '/login' : '/register')">
-                    {{ register ? 'Sign up' : 'Log in' }}
+                    {{ register ? 'Log in' : 'Sign up' }}
                 </TextLink>
             </span>
         </div>

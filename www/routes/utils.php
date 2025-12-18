@@ -87,11 +87,3 @@ function clean($data) {
 
     return $data;
 }
-
-function is_valid_email(?string $email) {
-    return $email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email);
-}
-
-function is_valid_password(?string $password) {
-    return $password === null || strlen($password) < 8;
-}
