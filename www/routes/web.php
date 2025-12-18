@@ -22,6 +22,11 @@ Route::get('/logout', function () {
 })
     ->name('logout');
 
+Route::get('/settings', function () {
+    return Inertia::render('Settings');
+})
+    ->name('Settings');
+
 Route::get('/song/{uuid}', function (Request $request, string $uuid) {
     $song = Song::find($uuid);
     return Inertia::render('Song', ['song' => $song]);
