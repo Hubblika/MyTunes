@@ -16,8 +16,15 @@ return new class extends Migration
             $table->foreignId('creator_id')->constrained('users')->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->boolean('public')->default(true);
             $table->boolean('is_album')->default(false);
             $table->timestamps();
+        });
+
+        Schema::create('playlist_collaborators', function (Blueprint $table) {
+            $table->id()->primary();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
         });
 
         Schema::create('ordered_songs', function (Blueprint $table) {
@@ -38,6 +45,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('playlists');
+        Schema::dropIfExists('playlist_collaborators');
         Schema::dropIfExists('ordered_songs');
     }
 };

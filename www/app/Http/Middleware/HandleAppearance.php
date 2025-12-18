@@ -3,11 +3,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use ApiError;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
 
-class RequiresJson
+class HandleAppearance
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,7 @@ class RequiresJson
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $contentType = $request->header('content-type');
-        $needle = 'application/json';
-
-        if ($contentType === null || !str_starts_with($contentType, $needle)) {
-            \err(Response::HTTP_BAD_REQUEST, ApiError::INVALID_CONTENT_TYPE);
-        }
+        View::share('appearance', $request->cookie('appearance') ?? 'system');
 
         return $next($request);
     }

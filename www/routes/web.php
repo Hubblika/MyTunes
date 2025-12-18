@@ -1,37 +1,32 @@
 <?php
 
-use App\Models\Song;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-//use App\Http\Middleware\RequiresLogin;
 
-Route::get('/', function () {
-    return Inertia::render('Home');
+Route::get('/', function (Request $request) {
+    if ($request->user() !== null) {
+        return Inertia::render('Home');
+    }
+
+    return redirect('/login', 303);
 })
     ->name('home');
-    //->middleware(RequiresLogin::class);
 
-Route::get('/login', function () {
-    return Inertia::render('Login');
-})
-    ->name('login');
-
-Route::get('/logout', function () {
-    return Inertia::render('Logout');
-})
-    ->name('logout');
-
-Route::get('/song/{uuid}', function (Request $request, string $uuid) {
-    $song = Song::find($uuid);
-    return Inertia::render('Song', ['song' => $song]);
+Route::get('/song/{uuid}', function () {
+    return Inertia::render('Song', []);
 })
     ->whereUuid('uuid')
-    ->name('song_detail');
+    ->name('song.detail');
 
-Route::get('/playlist/{uuid}', function (Request $request, string $uuid) {
-    $playlist = get_playlist_with_songs($uuid);
-    return Inertia::render('Playlist', $playlist);
+Route::get('/playlist/{uuid}', function () {
+    return Inertia::render('Playlist', []);
 })
     ->whereUuid('uuid')
-    ->name('playlist_detail');
+    ->name('playlist.detail');
+
+Route::get('/album/{uuid}', function () {
+    return Inertia::render('Playlist', []);
+})
+    ->whereUuid('uuid')
+    ->name('album.detail');

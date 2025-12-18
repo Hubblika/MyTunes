@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import { Button, Icon, Slider } from '@/components/common';
-import { ref, computed, onMounted } from "vue";
 
 const isPlaying = ref(false);
 const shuffle = ref(false);
@@ -68,7 +68,7 @@ function mute() {
         volume.value = previousVolume;
     }
     else {
-        let temp = volume.value;
+        const temp = volume.value;
         volume.value = 0;
         previousVolume = temp;
     }
@@ -88,7 +88,7 @@ function mute() {
             </Button>
         </div>
 
-        <div class="flex flex-col items-center w-168 space-y-1">
+        <div class="flex flex-col items-center w-2xl space-y-1">
             <div class="flex items-center gap-4">
                 <Button @click="shufflebuttonClick" class="group transition-all duration-150">
                     <Icon name="arrows-shuffle" class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" :class="shuffle ? 'text-cyan-500!' : 'text-black dark:text-white'"/>

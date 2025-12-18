@@ -1,285 +1,187 @@
 <?php
 
-use App\Http\Middleware\RequiresJson;
-use App\Http\Middleware\RequiresLogin;
-use App\Models\OrderedSong;
 use App\Models\Playlist;
-use App\Models\Session;
 use App\Models\Song;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/**
- * Enum containing common http errors to be handled by the Vue frontend
- */
-enum ApiError {
-    case UNKNOWN;
-
-    // 400 Bad Request
-    case INVALID_CONTENT_TYPE;
-    case INVALID_EMAIL;
-    case INVALID_PASSWORD;
-
-    // 401 Unauthorized
-    case UNAUTHORIZED;
-    case INCORRECT_PASSWORD;
-
-    // 404 Not Found
-    case USER_NOT_FOUND;
-    case SONG_NOT_FOUND;
-    case PLAYLIST_NOT_FOUND;
-}
-
-/**
- * Name of the cookie storing the session token
- * @var string
- */
-const AUTH_TOKEN = 'mytunes_auth_token';
-
-/**
- * Shorthand for hashing data using SHA256 and returning the binary result
- * @param string $data
- * @return string
- */
-function sha256(string $data) {
-    return hash('sha256', $data);
-}
-
-/**
- * Gets the current session being used to make the request, or `null` if `AUTH_TOKEN` isn't in the `cookie` header
- * @param Request $request
- * @return ?Session
- */
-function current_session(Request $request): ?Session {
-    $token = $request->cookie(AUTH_TOKEN);
-
-    if ($token === null) {
-        return null;
-    }
-
-    $decoded = base64_decode($token, true);
-
-    if (!$decoded) {
-        return null;
-    }
-
-    return Session::find(sha256($decoded));
-}
-
-function get_playlist_with_songs(string $uuid) {
-    $playlist = Playlist::find($uuid);
-
-    if ($playlist === null) {
-        return null;
-    }
-
-    $songs = [];
-
-    foreach ($playlist->songs as $ordered) {
-        // TODO: make this better because it sucks
-        array_push($songs, $ordered->song);
-    }
-
-    return [
-        'playlist' => $playlist->makeHidden('songs'),
-        'songs' => $songs
-    ];
-}
+require __DIR__.'/utils.php';
 
 
 
-/**
- * Shorthand for returning json data to the client
- * @param int $status Status code
- * @param mixed $data Deserializable data
- * @return JsonResponse The json response
- */
-function ok(mixed $data, int $status = 200): JsonResponse {
-    return response()->json(['data' => $data], $status);
-}
+Route::middleware([])->group(fn () => [
+    Route::post('/song', function (Request $request) {
+        $user = $request->user();
 
-/**
- * Shorthand for returning a json error response to the client
- * @param int $status Status code of the error
- * @param ApiError $error The HTTP error kind which will determine what data is displayed
- * @return JsonResponse The json response
- */
-function err(int $status, ApiError $error = ApiError::UNKNOWN, ?string $message = null): JsonResponse {
-    return response()->json(
-        [
-            'error' => [
-                'status' => $status,
-                'name' => $error->name,
-                'message' => $message
-            ]
-        ],
-        $status
-    );
-}
+        if (!$user) {
+            return err(401);
+        }
 
+        $audio = $request->file('audio.mp3');
+        $cover = $request->file('cover.png');
 
+        if (!$audio) {
+            return err(400, ['field' => 'audio']);
+        }
 
-/**
- * Inserts a new `Session` into the database and returns the auth cookie value
- * @param User $user
- * @param ?Request $request
- * @return Symfony\Component\HttpFoundation\Cookie The base64 encoded cookie
- */
-function new_session(User $user, ?Request $request) {
-    $bytes = random_bytes(64);
-    Session::create([
-        'token_hash' => sha256($bytes),
-        'ip_address' => $request?->ip(),
-        'user_agent' => $request?->userAgent(),
-        'user_id' => $user->getKey()
-    ]);
+        $uuid = uuid_create();
 
-    return cookie(
-        name: AUTH_TOKEN,
-        value: base64_encode($bytes),
-        minutes: 60 * 24 * 93,
-        path: '/',
-        secure: false,
-        httpOnly: true
-    );
-}
+        Storage::disk('local')->put('uploads/songs/{$uuid}/.txt', file_get_contents($audio));
+        Storage::disk('local')->put('uploads/songs/{$uuid}/cover.png', file_get_contents($cover));
+
+        return ok(1);
+    })
+        ->name('api.song.new'),
+
+    Route::get('/song/{uuid}', function (Request $request, string $uuid) {
+        $song = Song::find($uuid);
+
+        if (!$song) {
+            return err(404);
+        }
+
+        return ok($song);
+    })
+        ->whereUuid('uuid')
+        ->name('api.song.by-uuid'),
 
 
 
-/// Creates and returns a new `User`, creating a `Session`
-Route::post('/account/register', function (Request $request) {
-    $email = $request->json('email');
-    $password = $request->json('password');
+    Route::post('/playlist', function (Request $request) {
+        $user = $request->user();
 
-    if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-        return err(400, ApiError::INVALID_EMAIL);
-    }
+        if (!$user) {
+            return err(401);
+        }
 
-    if ($password === null || strlen($password) < 8) {
-        return err(400, ApiError::INVALID_PASSWORD);
-    }
+        $name = $request->json('name');
+        $description = $request->json('description');
+        $public = $request->json('public');
 
-    $user_id = User::create([
-        'email' => $email,
-        'password_hash' => sha256($password)
-    ])->getKey();
-    $user = User::find($user_id);
+        if (!$name || strlen($name) < 1) {
+            return err(400, ['field' => 'name']);
+        } else if ($public !== true && $public !== false) {
+            return err(400, ['field' => 'name']);
+        }
 
-    $cookie = new_session($user, $request);
+        $playlist_id = Playlist::create([
+            'creator_id' => $user->id,
+            'name' => $name,
+            'description' => $description,
+            'public' => $public
+        ])->getKey();
 
-    return ok($user, 201)->withCookie($cookie);
-})->middleware([RequiresJson::class]);
+        $playlist = Playlist::find($playlist_id);
 
-/// Logs into an existing `User`, creating a `Session`
-Route::post('/account/login', function (Request $request) {
-    $email = $request->json('email');
-    $password = $request->json('password');
+        return ok($playlist);
+    })
+        ->name('api.playlist.new'),
 
-    if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-        return err(400, ApiError::INVALID_EMAIL);
-    }
+    Route::get('/playlist/{uuid}', function (Request $request, string $uuid) {
+        $playlist = Playlist::find($uuid);
 
-    if ($password === null || strlen($password) < 8) {
-        return err(400, ApiError::INVALID_PASSWORD);
-    }
+        if (!$playlist) {
+            return err(404);
+        }
 
-    $user = User::where('email', $email)->first();
+        $songs = $playlist->songs->song;
+        Log::info($songs);
 
-    if ($user === null) {
-        return err(404, ApiError::USER_NOT_FOUND);
-    }
+        return ok($playlist);
+    })
+        ->whereUuid('uuid')
+        ->name('api.playlist.by-uuid'),
 
-    if (sha256($password) !== $user->password_hash) {
-        return err(401, ApiError::INCORRECT_PASSWORD);
-    }
+    Route::post('/playlist/{uuid}/modify', function (Request $request, string $uuid) {
+        $name = $request->json('name');
+        $description = $request->json('description');
+        $public = $request->json('public');
 
-    $cookie = new_session($user, $request);
+        $playlist = Playlist::find($uuid);
 
-    return ok($user)->withCookie($cookie);
-})->middleware([RequiresJson::class]);
+        if (!$playlist) {
+            return err(404);
+        }
 
-Route::post('/account/logout', function (Request $request) {
-    $session = current_session($request);
-    $user = $session?->user;
+        $user = $request->user();
 
-    if ($user === null) {
-        return err(401, ApiError::UNAUTHORIZED);
-    }
+        if (!$user || $user->id !== $playlist->creator_id) {
+            return err(403);
+        }
 
-    $session->delete();
+        if ($name !== null && strlen($name) > 0) {
+            $playlist->name = $name;
+        }
 
-    return ok(1)->withoutCookie(AUTH_TOKEN);
-});
+        if ($description && strlen($description) === 0) {
+            $playlist->description = null;
+        } else if ($description) {
+            $playlist->description = $description;
+        }
 
+        if ($public !== null) {
+            $playlist->public = $public;
+        }
 
+        $playlist->save();
 
-/// Creates a new `Song` if the user is authorized
-Route::put('/song', function (Request $request) {
-    $user = current_session($request)->user;
+        return ok($playlist);
+    })
+        ->whereUuid('uuid')
+        ->name('api.playlist.modify'),
 
-    if ($user->role === 'User') {
-        return err(403, ApiError::UNAUTHORIZED);
-    }
+    Route::post('/playlist/{uuid}/delete', function (Request $request, string $uuid) {
+        $playlist = Playlist::find($uuid);
 
-    $title = $request->input('title');
-    $created_at = $request->input('created_at');
-    $duration = $request->input('duration');
-    $explicit = $request->input('is_explicit');
+        if (!$playlist) {
+            return err(404);
+        }
 
-    $audio = $request->file('audio.mp3');
-    $thumbnail = $request->file('thumbnail.png');
+        $user = $request->user();
 
-    if (!$title || !$duration || !$audio || !$thumbnail) {
-        // TODO: handle individually
-        return err(400);
-    }
+        if (!$user) {
+            return err(401);
+        } else if ($user->id !== $playlist->creator_id) {
+            return err(403);
+        }
 
-    $song_uuid = Song::create([
-        'title' => '',
-        'created_at' => $created_at || Date::now(),
-        'duration' => $duration,
-        'is_explicit' => $explicit || false
-    ])->getKey();
+        $playlist->delete();
 
-    Storage::disk('public')->put('uploads/audio/{$song_uuid}.mp3', $audio);
-    Storage::disk('public')->put('uploads/thumbnails/song/{$song_uuid}.png', $thumbnail);
-
-    $song = Song::find($song_uuid);
-    return ok($song);
-})->middleware([RequiresLogin::class]);
-
-Route::delete('/song/{uuid}', function (Request $request, string $uuid) {
-    $user = current_session($request)->user;
-    $song = Song::find($uuid);
-
-    if (!$song) {
-        return err(404, ApiError::SONG_NOT_FOUND);
-    }
-
-    if ($user->role !== 'Admin') {
-        return err(403, ApiError::UNAUTHORIZED);
-    }
-
-    // TODO: create `ApiSuccess` enum?
-    return ok(1);
-})->middleware([RequiresLogin::class])->whereUuid('uuid');
+        return ok('done');
+    })
+        ->whereUuid('uuid')
+        ->name('api.playlist.delete'),
 
 
 
-/// Returns the currently logged-in user
-Route::get('/user/@me', function (Request $request) {
-    $user = current_session($request)?->user;
-    return ok($user);
-});
+    Route::get('/user', function (Request $request) {
+        return ok($request->user());
+    })
+        ->name('api.user.me'),
 
-Route::get('/user/{id}', function (Request $request, string $id) {
-    $user = User::find((int) $id);
+    Route::get('/user/@{username}', function (Request $request, string $username): JsonResponse {
+        $user = User::whereUsername($username)->first();
 
-    if ($user === null) {
-        return err(404, ApiError::USER_NOT_FOUND);
-    }
+        if (!$user) {
+            return err(404);
+        }
 
-    return ok($user);
-})->middleware([RequiresLogin::class])->whereNumber('id');
+        return ok($user);
+    })
+        ->where('username', '/[a-zA-Z0-9_]{4,20}/')
+        ->name('api.user.by-username'),
+
+    Route::get('/user/{id}', function (Request $request, string $id): JsonResponse {
+        $user = User::find($id);
+
+        if (!$user) {
+            return err(404);
+        }
+
+        return ok($user);
+    })
+        ->whereNumber('id')
+        ->name('api.user.by-id')
+]);

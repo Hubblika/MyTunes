@@ -7,43 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderedSong extends Model
 {
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
     protected $table = 'ordered_songs';
-
-    /**
-     * The primary key associated with the table.
-     * 
-     * @var string
-     */
     protected $primaryKey = 'id';
 
-    /**
-     * The attributes that are mass assignable.
-     * 
-     * @var list<string>
-     */
     protected $fillable = [
         'playlist_uuid',
         'song_uuid',
         'index'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * 
-     * @var list<string>
-     */
     protected $hidden = [];
 
-    /**
-     * Indicates if the model should be timestamped.
-     * 
-     * @var bool
-     */
     public $timestamps = true;
 
     /**

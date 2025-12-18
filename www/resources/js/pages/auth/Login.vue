@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Loginform } from '@/components';
-import { Root } from '@/layouts';
+import { Layout } from '@/layouts';
 </script>
 
 <template>
-    <Root>
+    <Layout>
         <main class="text-black dark:text-white bg-white dark:bg-black w-full">
             <Loginform></Loginform>
         </main>
-    </Root>
+    </Layout>
 </template>

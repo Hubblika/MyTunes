@@ -2,63 +2,38 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
-    protected $table = 'users';
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
-    /**
-     * The primary key associated with the table.
-     * 
-     * @var string
-     */
+    protected $table = 'users';
     protected $primaryKey = 'id';
 
-    /**
-     * The attributes that are mass assignable.
-     * 
-     * @var list<string>
-     */
     protected $fillable = [
+        // 'liked_songs_playlist_uuid',
+        'username',
         'email',
-        'password_hash',
+        'password',
         'role',
-        'name',
         'description'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * 
-     * @var list<string>
-     */
     protected $hidden = [
-        'password_hash'
+        'password',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'remember_token'
     ];
 
-    /**
-     * Indicates if the model should be timestamped.
-     * 
-     * @var bool
-     */
     public $timestamps = true;
-
-    /**
-     * Get all sessions for the user
-     * 
-     * @return HasMany<Session, User>
-     */
-    public function sessions(): HasMany
-    {
-        return $this->hasMany(Session::class);
-    }
 
     /**
      * Get all playlists the user has created
@@ -71,6 +46,16 @@ class User extends Model
     }
 
     /**
+     * Get all songs published by the user
+     * 
+     * @return HasMany<Song, User>
+     */
+    public function songs(): HasMany
+    {
+        return $this->hasMany(Song::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      * 
      * @return array<string, string>
@@ -78,11 +63,11 @@ class User extends Model
     protected function casts(): array
     {
         return [
+            'username' => 'string',
             'email' => 'string',
-            // 'password_hash' => 'string',
-            'role' => 'string',
-            'name' => 'string',
-            'description' => 'string'
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'two_factor_confirmed_at' => 'datetime'
         ];
     }
 }
