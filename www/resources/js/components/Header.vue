@@ -14,19 +14,9 @@ function updateLogo() {
   logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg';
 }
 
-const logout = async () => {
-    const data: ApiResult<any> = await fetch('/api/account/logout', {
-        method: 'post',
-        credentials: 'include'
-    }).then(r => r.json());
-
-    if (data.error) {
-        alert(`${data.error.name}: ${data.error.message}`);
-        return;
-    }
-
-    router.get('/login?loggedout=1');
-}
+const logout = () => {
+  router.post('/logout');
+};
 
 const selectMenu = (item: string) => {
     dropdownOpen.value = false;
