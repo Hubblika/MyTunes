@@ -70,7 +70,7 @@ onMounted(() => {
                     <Icon name="home"
                         class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
                 </Button>
-                <Searchbar class="w-96" />
+                <Searchbar class="w-96" :placeholder="$t('header.searchBar')" />
             </div>
         </div>
 
@@ -80,8 +80,7 @@ onMounted(() => {
                 class="w-full rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
                 <Icon name="download"
                     class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
-                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">Download the
-                    desktop app</span>
+                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">{{ $t('header.downloadButton') }}</span>
             </Button>
 
             <div class="relative" ref="dropdownRef">
@@ -94,17 +93,17 @@ onMounted(() => {
                     class="absolute right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50">
                     <li @click="selectMenu('profile')"
                         class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        <span>Profile</span>
+                        <span>{{ $t('header.profileButton') }}</span>
                         <Icon name="user"></Icon>
                     </li>
                     <li @click="selectMenu('settings')"
                         class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        <span>Settings</span>
+                        <span>{{ $t('header.settingButton') }}</span>
                         <Icon name="settings"></Icon>
                     </li>
                     <li @click="selectMenu('logout')"
                         class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        <span>Logout</span>
+                        <span>{{ $t('header.logoutButton') }}</span>
                         <Icon name="logout"></Icon>
                     </li>
                 </ul>

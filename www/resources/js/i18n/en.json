@@ -23,5 +23,13 @@
         "statusMessage": "Please wait...",
         "loginText": "Already have an account?",
         "loginButton": "Log In"
+    },
+
+    "header": {
+        "searchBar": "Search",
+        "downloadButton": "Download the desktop app",
+        "profileButton": "Profile",
+        "settingButton": "Settings",
+        "logoutButton": "Logout"
     }
 }

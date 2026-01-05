@@ -3,6 +3,10 @@ import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { Icon } from '.';
 
+defineProps<{
+  placeholder: string
+}>()
+
 const query = ref('');
 
 function search() {
@@ -21,7 +25,7 @@ function search() {
 
         <input id="search" type="text" class="font-semibold text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300
              h-full outline-none grow placeholder:font-semibold
-             transition-colors duration-200 focus:text-black/90 dark:focus:text-white/90" placeholder="Search"
+             transition-colors duration-200 focus:text-black/90 dark:focus:text-white/90" :placeholder="placeholder"
             @submit="search" v-model.trim="query" />
 
         <button :class="[

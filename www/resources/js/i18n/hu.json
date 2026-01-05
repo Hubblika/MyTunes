@@ -23,5 +23,13 @@
         "statusMessage": "Kérem, várjon...",
         "loginText": "Már van fiókja?",
         "loginButton": "Bejelentkezés"
+    },
+
+    "header": {
+        "searchBar": "Keresés",
+        "downloadButton": "Alkalmazás letöltése",
+        "profileButton": "Profil",
+        "settingButton": "Beállítások",
+        "logoutButton": "Kijelentkezés"
     }
 }
