@@ -80,8 +80,8 @@ function mute() {
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gray-700 rounded"></div>
             <div>
-                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">Song Title</p>
-                <p class="text-xs text-gray-600 dark:text-gray-300 hover:underline hover:cursor-pointer">Artist Name</p>
+                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">{{ $t('toolbar.songTitle') }}</p>
+                <p class="text-xs text-gray-600 dark:text-gray-300 hover:underline hover:cursor-pointer">{{ $t('toolbar.artistName') }}</p>
             </div>
             <Button @click="like" class="group transition-all duration-150">
                 <Icon :name="liked ? 'heart-filled' : 'heart'" :class="['size-6 transition-colors duration-150', liked ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']"/>

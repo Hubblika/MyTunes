@@ -39,5 +39,10 @@
         "likedSongs": "Kedvelt Zenéim",
         "playlistNumber": "zene",
         "deletePlaylistButton": "Lejátszási lista törlése"
+    },
+
+     "toolbar": {
+        "songTitle": "Zene címe",
+        "artistName": "Előadó neve"
     }
 }

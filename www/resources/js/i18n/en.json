@@ -39,5 +39,10 @@
         "likedSongs": "Liked Songs",
         "playlistNumber": "songs",
         "deletePlaylistButton": "Delete playlist"
+    },
+
+    "toolbar": {
+        "songTitle": "Song Title",
+        "artistName": "Artist Name"
     }
 }
