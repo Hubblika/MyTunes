@@ -1,0 +1,27 @@
+{
+    "login": {
+        "title": "Log in to MyTunes",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "mainButton": "Log In",
+        "statusMessage": "Please wait...",
+        "signUpText": "Don't have an account?",
+        "signUpButton": "Sign Up"
+    },
+
+    "register": {
+        "title": "Sign up for MyTunes",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPasswordLabel": "Confirm Password",
+        "confirmPasswordPlaceholder": "Re-enter your password",
+        "mainButton": "Sign Up",
+        "statusMessage": "Please wait...",
+        "loginText": "Already have an account?",
+        "loginButton": "Log In"
+    }
+}

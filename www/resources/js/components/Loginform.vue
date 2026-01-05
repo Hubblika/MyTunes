@@ -23,7 +23,7 @@ const password2 = ref('');
             border-black/10 dark:border-white/20"
         >
             <h1 class="text-2xl font-bold mb-6 text-center">
-                {{ register ? 'Sign Up for MyTunes' : 'Log into MyTunes' }}
+                {{ register ? $t('register.title') : $t('login.title') }}
             </h1>
             <Form
                 v-bind="register ? registerStore.form() : loginStore.form()"
@@ -32,18 +32,18 @@ const password2 = ref('');
                 class="flex flex-col gap-3"
             >
                 <input id="username" type="text" name="username" value="bob" class="hidden" required readonly hidden :aria-hidden="true" />
-                <Input id="email" type="email" :tabindex="1" autofocus placeholder="Enter your email" required :pattern="/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/">Email</Input>
-                <Input v-model="password" id="password" type="password" :tabindex="2" placeholder="Enter your password" required :pattern="/.{8-16}/">Password</Input>
-                <Input v-if="register" v-model="password2" id="password_confirmation" type="password" :tabindex="3" placeholder="Enter your password again" required :pattern="new RegExp(password)">Confirm password</Input>
+                <Input id="email" type="email" :tabindex="1" autofocus :placeholder="register ? $t('register.emailPlaceholder') : $t('login.emailPlaceholder')" required :pattern="/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/">{{ register ? $t('register.emailLabel') : $t('login.emailLabel') }}</Input>
+                <Input v-model="password" id="password" type="password" :tabindex="2" :placeholder="register ? $t('register.passwordPlaceholder') : $t('login.passwordPlaceholder')" required :pattern="/.{8-16}/">{{ register ? $t('register.passwordLabel') : $t('login.passwordLabel') }}</Input>
+                <Input v-if="register" v-model="password2" id="password_confirmation" type="password" :tabindex="3" :placeholder="$t('register.confirmPasswordPlaceholder')" required :pattern="new RegExp(password)">{{ $t('register.confirmPasswordLabel') }}</Input>
                 <PrimaryButton type="submit" class="my-4" :tabindex="4" :disabled="processing">
-                    <span v-if="processing">Please wait...</span>
-                    <span v-else>{{ register ? 'Sign Up' : 'Log in' }}</span>
+                    <span v-if="processing">{{register ? $t('register.statusMessage') : $t('login.statusMessage') }}</span>
+                    <span v-else>{{ register ? $t('register.mainButton') : $t('login.mainButton') }}</span>
                 </PrimaryButton>
             </Form>
             <span class="text-center text-sm text-gray-600 dark:text-gray-400">
-                {{ register ? 'Already have an account?' : 'Don\'t have an account?' }}
+                {{ register ? $t('register.loginText') : $t('login.signUpText') }}
                 <TextLink @click="() => router.get(register ? '/login' : '/register')">
-                    {{ register ? 'Log in' : 'Sign up' }}
+                    {{ register ? $t('register.loginButton') : $t('login.signUpButton') }}
                 </TextLink>
             </span>
         </div>

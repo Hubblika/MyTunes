@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ToggleSwitch, Icon } from './common';
 import { ref, watch, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { locale } = useI18n();
 
 const isDark = ref(false);
 const isEnglish = ref(true);
@@ -10,8 +13,18 @@ watch(isDark, (value) => {
     localStorage.setItem('theme', value ? 'dark' : 'light');
 })
 
+watch(isEnglish, (value) => {
+    const lang = value ? 'en' : 'hu';
+    locale.value = lang;
+    localStorage.setItem('lang', lang);
+})
+
 onMounted(() => {
-    isDark.value = localStorage.getItem('theme') === 'dark'
+    isDark.value = localStorage.getItem('theme') === 'dark';
+
+     const savedLang = localStorage.getItem('lang') || 'en';
+    isEnglish.value = savedLang === 'en';
+    locale.value = savedLang;
 })
 </script>
 

@@ -1,0 +1,27 @@
+{
+    "login": {
+        "title": "Bejelentkezés MyTunes-ba",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "Adja meg az e-mail címét",
+        "passwordLabel": "Jelszó",
+        "passwordPlaceholder": "Adja meg a jelszavát",
+        "mainButton": "Bejelentkezés",
+        "statusMessage": "Kérem, várjon...",
+        "signUpText": "Nincs még fiókja?",
+        "signUpButton": "Regisztráció"
+    },
+
+    "register": {
+        "title": "Regisztráció MyTunes-ba",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "Adja meg az e-mail címét",
+        "passwordLabel": "Jelszó",
+        "passwordPlaceholder": "Adja meg a jelszavát",
+        "confirmPasswordLabel": "Jelszó megerősítése",
+        "confirmPasswordPlaceholder": "Adja meg a jelszót újra",
+        "mainButton": "Regisztráció",
+        "statusMessage": "Kérem, várjon...",
+        "loginText": "Már van fiókja?",
+        "loginButton": "Bejelentkezés"
+    }
+}
