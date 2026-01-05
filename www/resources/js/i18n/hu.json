@@ -44,5 +44,14 @@
      "toolbar": {
         "songTitle": "Zene címe",
         "artistName": "Előadó neve"
+    },
+
+    "settings": {
+        "title": "Általános Beállítások",
+        "themeTitle": "Téma - váltás világos és sötét téma között",
+        "darkTheme": "Sötét",
+        "lightTheme": "Világos",
+        "languageTitle": "Nyelv - az applikáció nyelvének váltása (Magyar/Angol)",
+        "languageLabel": "Magyar"
     }
 }

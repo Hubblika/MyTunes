@@ -30,18 +30,18 @@ onMounted(() => {
 
 <template>
     <div class="flex flex-col gap-4">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">General Settings</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('settings.title') }}</h1>
 
         <div
             class="flex justify-between items-center w-full p-4 bg-gray-100 dark:bg-black rounded-xl shadow-inner transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
 
             <p class="text-gray-800 dark:text-gray-200 font-medium">
-                Theme - switch between light and dark mode
+                {{ $t('settings.themeTitle') }}
             </p>
 
             <div class="flex items-center gap-3">
                 <p class="text-gray-800 dark:text-gray-200 font-semibold">
-                    {{ isDark ? 'Dark' : 'Light' }}
+                    {{ isDark ? $t('settings.darkTheme') : $t('settings.lightTheme') }}
                 </p>
 
                 <Icon :name="isDark ? 'moon' : 'sun'" class="w-5 h-5 text-yellow-500 dark:text-white"/>
@@ -54,12 +54,12 @@ onMounted(() => {
             class="flex justify-between items-center w-full p-4 bg-gray-100 dark:bg-black rounded-xl shadow-inner transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
 
             <p class="text-gray-800 dark:text-gray-200 font-medium">
-                Theme - switch app language (EN/HUN)
+                {{ $t('settings.languageTitle') }}
             </p>
 
             <div class="flex items-center gap-3">
                 <p class="text-gray-800 dark:text-gray-200 font-semibold">
-                    {{ isEnglish ? 'English' : 'Magyar' }}
+                    {{ $t('settings.languageLabel') }}
                 </p>
 
                 <ToggleSwitch v-model="isEnglish"/>
