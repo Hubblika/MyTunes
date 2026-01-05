@@ -13,14 +13,8 @@ type Playlist = {
 const playlists = ref<Playlist[]>([
   {
     id: 1,
-    title: 'Liked Songs',
-    subtitle: '128 songs',
-    coverUrl: '/uploads/thumbnails/playlist/defaultThumbnail.png'
-  },
-  {
-    id: 2,
     title: 'Playlist 1',
-    subtitle: '42 songs',
+    subtitle: '42',
     coverUrl: '/uploads/thumbnails/playlist/defaultThumbnail.png'
   }
 ]);
@@ -49,7 +43,7 @@ function deletePlaylist(playlistID: number) {
 <template>
     <aside class="bg-gray-500/6 dark:text-white w-96 flex flex-col min-h-full max-h-full px-4 rounded-lg">
         <div class="flex items-center justify-between h-16 shrink-0">
-            <h1 class="text-lg font-bold pl-2">My music</h1>
+            <h1 class="text-lg font-bold pl-2">{{ $t('sidebar.title')}}</h1>
             <Button @click="addPlaylist" class="group relative">
                 <Icon
                     name="circle-plus"
@@ -57,13 +51,20 @@ function deletePlaylist(playlistID: number) {
                         group-hover:text-black/60 dark:group-hover:text-white/80"/>
             </Button>
         </div>
-        <Searchbar class="w-full shrink-0"></Searchbar>
+        <Searchbar class="w-full shrink-0" :placeholder="$t('sidebar.searchbar')"></Searchbar>
         <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto">
+            <PlaylistCard
+                :id="0"
+                :title="$t('sidebar.likedSongs')"
+                :subtitle="128 + ' ' + $t('sidebar.playlistNumber')"
+                :cover-url="'/uploads/thumbnails/playlist/defaultThumbnail.png'"
+                @deletePlaylist="deletePlaylist"/>
+
             <PlaylistCard
                  v-for="playlist in playlists"
                 :id="playlist.id"
                 :title="playlist.title"
-                :subtitle="playlist.subtitle"
+                :subtitle="playlist.subtitle + ' ' + $t('sidebar.playlistNumber')"
                 :cover-url="playlist.coverUrl"
                 @deletePlaylist="deletePlaylist"/>
         </div>

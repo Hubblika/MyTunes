@@ -26,10 +26,18 @@
     },
 
     "header": {
-        "searchBar": "Keresés",
+        "searchbar": "Keresés",
         "downloadButton": "Alkalmazás letöltése",
         "profileButton": "Profil",
         "settingButton": "Beállítások",
         "logoutButton": "Kijelentkezés"
+    },
+
+    "sidebar": {
+        "title": "Zenéim",
+        "searchbar": "Keresés",
+        "likedSongs": "Kedvelt Zenéim",
+        "playlistNumber": "zene",
+        "deletePlaylistButton": "Lejátszási lista törlése"
     }
 }

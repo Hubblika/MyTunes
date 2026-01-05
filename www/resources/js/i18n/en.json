@@ -26,10 +26,18 @@
     },
 
     "header": {
-        "searchBar": "Search",
+        "searchbar": "Search",
         "downloadButton": "Download the desktop app",
         "profileButton": "Profile",
         "settingButton": "Settings",
         "logoutButton": "Logout"
+    }, 
+
+    "sidebar": {
+        "title": "My music",
+        "searchbar": "Search",
+        "likedSongs": "Liked Songs",
+        "playlistNumber": "songs",
+        "deletePlaylistButton": "Delete playlist"
     }
 }

@@ -70,7 +70,7 @@ onMounted(() => {
                     <Icon name="home"
                         class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
                 </Button>
-                <Searchbar class="w-96" :placeholder="$t('header.searchBar')" />
+                <Searchbar class="w-96" :placeholder="$t('header.searchbar')" />
             </div>
         </div>
 
