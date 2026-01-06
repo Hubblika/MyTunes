@@ -22,7 +22,7 @@ const password2 = ref('');
             backdrop-blur-xl border
             border-black/10 dark:border-white/20"
         >
-            <h1 class="text-2xl font-bold mb-6 text-center">
+            <h1 class="text-xl font-bold mb-6 text-center">
                 {{ register ? $t('register.title') : $t('login.title') }}
             </h1>
             <Form
