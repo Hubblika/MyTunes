@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { MainContent } from '@/components';
 import { MainLayout } from '@/layouts';
+
+defineOptions({
+    layout: MainLayout
+});
 </script>
 
 <template>
-    <MainLayout>
-        <MainContent></MainContent>
-    </MainLayout>
+    <MainContent></MainContent>
 </template>

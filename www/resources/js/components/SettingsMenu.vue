@@ -22,7 +22,7 @@ watch(isEnglish, (value) => {
 onMounted(() => {
     isDark.value = localStorage.getItem('theme') === 'dark';
 
-     const savedLang = localStorage.getItem('lang') || 'en';
+    const savedLang = localStorage.getItem('lang') || 'en';
     isEnglish.value = savedLang === 'en';
     locale.value = savedLang;
 })
@@ -44,9 +44,9 @@ onMounted(() => {
                     {{ isDark ? $t('settings.darkTheme') : $t('settings.lightTheme') }}
                 </p>
 
-                <Icon :name="isDark ? 'moon' : 'sun'" class="w-5 h-5 text-yellow-500 dark:text-white"/>
+                <Icon :name="isDark ? 'moon' : 'sun'" class="w-5 h-5 text-yellow-500 dark:text-white" />
 
-                <ToggleSwitch v-model="isDark"/>
+                <ToggleSwitch v-model="isDark" />
             </div>
         </div>
 
@@ -62,7 +62,7 @@ onMounted(() => {
                     {{ $t('settings.languageLabel') }}
                 </p>
 
-                <ToggleSwitch v-model="isEnglish"/>
+                <ToggleSwitch v-model="isEnglish" />
             </div>
         </div>
     </div>

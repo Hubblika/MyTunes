@@ -2,7 +2,6 @@
 import { onMounted, ref, watch } from 'vue';
 import { Icon, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
-import { ApiResult } from '@/types';
 
 const svg = ref('');
 const dropdownOpen = ref(false);
