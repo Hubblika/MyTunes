@@ -107,6 +107,8 @@ watch(volume, (newVolume) => {
 onMounted(() => {
     if (!audio.value) return;
 
+    time.value = 0;
+
     audio.value.addEventListener('timeupdate', () => {
         time.value = Math.floor(audio.value!.currentTime);
     });
