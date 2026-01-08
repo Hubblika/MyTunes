@@ -9,11 +9,13 @@ const {
     playlist?: Playlist,
     songs?: Song[]
 }>();
+
+defineOptions({
+    layout: MainLayout
+});
 </script>
 
 <template>
-    <MainLayout>
-        <pre>playlist = {{ playlist }}</pre>
-        <pre>songs = {{ songs }}</pre>
-    </MainLayout>
+    <pre>playlist = {{ playlist }}</pre>
+    <pre>songs = {{ songs }}</pre>
 </template>

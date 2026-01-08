@@ -7,10 +7,12 @@ const {
 } = defineProps<{
     song?: Song
 }>();
+
+defineOptions({
+    layout: MainLayout
+});
 </script>
 
 <template>
-    <MainLayout>
-        <pre>song = {{ song }}</pre>
-    </MainLayout>
+    <pre>song = {{ song }}</pre>
 </template>
