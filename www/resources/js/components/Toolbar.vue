@@ -1,19 +1,105 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Button, Icon, Slider } from '@/components/common';
 
+type Track = {
+    id: number;
+    title: string;
+    artist: string;
+    src: string;
+    duration?: number;
+};
+
+const queue = ref<Track[]>([
+    {
+        id: 1,
+        title: 'Rise Up',
+        artist: 'TheFatRat',
+        src: 'audio/RISE UP.mp3',
+    },
+    {
+        id: 2,
+        title: 'Fly Away',
+        artist: 'TheFatRat',
+        src: 'audio/FLY AWAY.mp3',
+    },
+    {
+        id: 3,
+        title: 'Mayday',
+        artist: 'TheFatRat',
+        src: 'audio/MAYDAY.mp3',
+    },
+    {
+        id: 4,
+        title: 'Unity',
+        artist: 'TheFatRat',
+        src: 'audio/UNITY.mp3',
+    },
+    {
+        id: 5,
+        title: 'Xenogenesis',
+        artist: 'TheFatRat',
+        src: 'audio/XENOGENESIS.mp3',
+    },
+]);
+
+const currentIndex = ref(0);
+
+const currentTrack = computed(() => queue.value[currentIndex.value]);
+
+const audioSrc = computed(() => currentTrack.value?.src ?? '');
+
 const audio = ref<HTMLAudioElement | null>(null);
-const audioSrc = 'audio/default.mp3';
+
+const originalQueue = ref<Track[]>([]);
 
 const isPlaying = ref(false);
 const shuffle = ref(false);
 const loop = ref(false);
 const liked = ref(false);
 const duration = ref(0);
+const autoplay = true;
 
-const time = ref(30);
+const time = ref(0);
 const volume = ref(20);
 let previousVolume = 0;
+
+async function loadTrack(index: number, autoplay: boolean) {
+    if (!audio.value) return;
+    if (index < 0 || index >= queue.value.length) return;
+
+    currentIndex.value = index;
+    isPlaying.value = false;
+    time.value = 0;
+
+    await nextTick();
+
+    audio.value.load();
+
+    if (autoplay) {
+        audio.value.play();
+        isPlaying.value = true;
+    }
+}
+
+function addToQueue(track: Track) {
+    queue.value.push(track);
+}
+
+function removeFromQueue(index: number) {
+    queue.value.splice(index, 1);
+}
+
+function clearQueue() {
+    queue.value = [];
+}
+
+function shuffleArray<T>(array: T[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
 
 function playButtonClick() {
     if (!audio.value) return;
@@ -29,20 +115,57 @@ function playButtonClick() {
 
 function shufflebuttonClick() {
     shuffle.value = !shuffle.value;
-    //TODO: shuffle the music in the queue
+
+    const currentTrack = queue.value[currentIndex.value];
+
+    if (shuffle.value) {
+        // Save original order once
+        if (originalQueue.value.length === 0) {
+            originalQueue.value = [...queue.value];
+        }
+
+        // Shuffle everything except current track
+        const rest = queue.value.filter(t => t.id !== currentTrack.id);
+        shuffleArray(rest);
+
+        queue.value = [
+            currentTrack,
+            ...rest
+        ];
+
+        currentIndex.value = 0;
+    } else {
+        // Restore original order
+        queue.value = [...originalQueue.value];
+
+        currentIndex.value = queue.value.findIndex(
+            t => t.id === currentTrack.id
+        );
+    }
 }
 
 function loopbuttonClick() {
     loop.value = !loop.value;
-    //TODO: change looping
 }
 
 function skipForward() {
-    //TODO: skip to the next music
+    if (currentIndex.value < queue.value.length - 1) {
+        loadTrack(currentIndex.value + 1, autoplay);
+    } else if (loop.value) {
+        loadTrack(0, autoplay);
+    }
 }
 
 function skipBack() {
-    //TODO: skip to the beginning of the music
+    if (audio.value && audio.value.currentTime > 3) {
+        audio.value.currentTime = 0;
+        time.value = 0;
+        return;
+    }
+
+    if (currentIndex.value > 0) {
+        loadTrack(currentIndex.value - 1, autoplay);
+    }
 }
 
 function like() {
@@ -107,7 +230,9 @@ watch(volume, (newVolume) => {
 onMounted(() => {
     if (!audio.value) return;
 
+    originalQueue.value = [...queue.value];
     time.value = 0;
+    volume.value = 10;
 
     audio.value.addEventListener('timeupdate', () => {
         time.value = Math.floor(audio.value!.currentTime);
@@ -118,14 +243,13 @@ onMounted(() => {
     });
 
     audio.value.addEventListener('ended', () => {
-        if(!loop.value) {
+        if (currentIndex.value < queue.value.length - 1) {
+            loadTrack(currentIndex.value + 1, autoplay);
+        } else if (loop.value) {
+            loadTrack(0, autoplay);
+        } else {
             isPlaying.value = false;
             time.value = 0;
-        }
-        else {
-            time.value = 0;
-            audio.value!.currentTime = 0;
-            audio.value!.play();
         }
     });
 });
@@ -138,9 +262,9 @@ onMounted(() => {
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gray-700 rounded"></div>
             <div>
-                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">{{ $t('toolbar.songTitle') }}</p>
+                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">{{ currentTrack?.title }}</p>
                 <p class="text-xs text-gray-600 dark:text-gray-300 hover:underline hover:cursor-pointer">{{
-                    $t('toolbar.artistName') }}</p>
+                    currentTrack?.artist }}</p>
             </div>
             <Button @click="like" class="group transition-all duration-150">
                 <Icon :name="liked ? 'heart-filled' : 'heart'"
