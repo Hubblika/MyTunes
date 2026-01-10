@@ -119,12 +119,10 @@ function shufflebuttonClick() {
     const currentTrack = queue.value[currentIndex.value];
 
     if (shuffle.value) {
-        // Save original order once
         if (originalQueue.value.length === 0) {
             originalQueue.value = [...queue.value];
         }
 
-        // Shuffle everything except current track
         const rest = queue.value.filter(t => t.id !== currentTrack.id);
         shuffleArray(rest);
 
@@ -135,7 +133,6 @@ function shufflebuttonClick() {
 
         currentIndex.value = 0;
     } else {
-        // Restore original order
         queue.value = [...originalQueue.value];
 
         currentIndex.value = queue.value.findIndex(

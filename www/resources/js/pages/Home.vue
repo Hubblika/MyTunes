@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MainContent } from '@/components';
+import { MainContent, HomeContent } from '@/components';
 import { MainLayout } from '@/layouts';
 
 defineOptions({
@@ -8,5 +8,7 @@ defineOptions({
 </script>
 
 <template>
-    <MainContent></MainContent>
+    <MainContent>
+        <HomeContent/>
+    </MainContent>
 </template>
