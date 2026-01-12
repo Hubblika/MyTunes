@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { SongCard, Icon } from '.'
+import { _Song } from '@/types';
+
+defineProps<{
+    title: string,
+    songs: _Song[]
+}>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
 
@@ -33,28 +39,28 @@ function scroll(direction: 'left' | 'right') {
 
 <template>
     <div class="relative w-full pl-3">
-            <h1 class="text-lg font-medium">
-                Section 1
-            </h1>
+        <h1 class="text-lg font-medium">
+            {{ title }}
+        </h1>
 
-            <div v-if="canScroll" class="absolute top-0 right-0 flex gap-2">
-                <button type="button" @click="scroll('left')" class="inline-flex items-center justify-center rounded-full
-             bg-cyan-500 text-white hover:bg-cyan-200
-             transition-colors h-9 w-9">
-                    <Icon name="arrow-badge-left-filled" />
-                </button>
+        <div v-if="canScroll" class="absolute top-0 right-0 flex gap-2">
+            <button @click="scroll('left')" class="inline-flex items-center justify-center rounded-full
+                bg-cyan-500 text-white hover:bg-cyan-200 transition-colors h-9 w-9">
+                <Icon name="arrow-badge-left-filled" />
+            </button>
 
-                <button type="button" @click="scroll('right')" class="inline-flex items-center justify-center rounded-full
-             bg-cyan-500 text-white hover:bg-cyan-200
-             transition-colors h-9 w-9">
-                    <Icon name="arrow-badge-right-filled"/>
-                </button>
-            </div>
+            <button @click="scroll('right')" class="inline-flex items-center justify-center rounded-full
+                bg-cyan-500 text-white hover:bg-cyan-200 transition-colors h-9 w-9">
+                <Icon name="arrow-badge-right-filled" />
+            </button>
         </div>
+    </div>
 
-        <section ref="scrollContainer" class="flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory no-scrollbar">
-            <div v-for="i in 10" :key="i" class="shrink-0 w-48 snap-start">
-                <SongCard title="Rise Up" image="/uploads/thumbnails/playlist/defaultThumbnail.png" />
-            </div>
-        </section>
+    <section ref="scrollContainer"
+        class="flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory no-scrollbar">
+        <div v-for="song in songs" :key="song.uuid" class="shrink-0 w-48 snap-start">
+            <SongCard :title="song.title"
+                :image="song.covereurl ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'" />
+        </div>
+    </section>
 </template>

@@ -23,12 +23,15 @@ export interface Self {
 
 
 export interface _Song {
-    uuid: string,
-    title: string,
-    duration: number,
-    is_explicit: boolean,
-    genre?: string,
-    created_at: string
+    uuid: string;
+    title: string;
+    artist: string;
+    url: string;
+    cover_url: string;
+    duration: number;
+    is_explicit: boolean;
+    genre?: string;
+    covereurl?: string;
 }
 
 export interface Song extends _Song {

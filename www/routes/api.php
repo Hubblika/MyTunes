@@ -20,7 +20,7 @@ Route::get('/songs/{uuid}', [SongController::class, 'show']);
 Route::put('/songs/{uuid}', [SongController::class, 'update']);
 Route::delete('/songs/{uuid}', [SongController::class, 'destroy']);
 
-// Route::get('/users', [UserController::class, 'index']);
+//Route::get('/users', [UserController::class, 'index']);
 // Route::get('/users/{id}', [UserController::class, 'store']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/{id}', [UserController::class, 'update']);
