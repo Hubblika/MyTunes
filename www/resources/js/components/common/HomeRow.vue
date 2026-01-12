@@ -60,7 +60,7 @@ function scroll(direction: 'left' | 'right') {
         class="flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory no-scrollbar">
         <div v-for="song in songs" :key="song.uuid" class="shrink-0 w-48 snap-start">
             <SongCard :title="song.title"
-                :image="song.covereurl ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'" />
+                :image="song.covereurl ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'" :song="song"/>
         </div>
     </section>
 </template>

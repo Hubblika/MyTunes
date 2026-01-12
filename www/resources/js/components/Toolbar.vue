@@ -1,267 +1,139 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import { Button, Icon, Slider } from '@/components/common';
+import { onMounted, watch, nextTick, computed, ref } from 'vue'
+import { Button, Icon, Slider } from '@/components/common'
+import { usePlayerStore } from '@/stores/player'
 
-type Track = {
-    id: number;
-    title: string;
-    artist: string;
-    src: string;
-    duration?: number;
-};
-
-const queue = ref<Track[]>([
-    {
-        id: 1,
-        title: 'Rise Up',
-        artist: 'TheFatRat',
-        src: 'audio/RISE UP.mp3',
-    },
-    {
-        id: 2,
-        title: 'Fly Away',
-        artist: 'TheFatRat',
-        src: 'audio/FLY AWAY.mp3',
-    },
-    {
-        id: 3,
-        title: 'Mayday',
-        artist: 'TheFatRat',
-        src: 'audio/MAYDAY.mp3',
-    },
-    {
-        id: 4,
-        title: 'Unity',
-        artist: 'TheFatRat',
-        src: 'audio/UNITY.mp3',
-    },
-    {
-        id: 5,
-        title: 'Xenogenesis',
-        artist: 'TheFatRat',
-        src: 'audio/XENOGENESIS.mp3',
-    },
-]);
-
-const currentIndex = ref(0);
-
-const currentTrack = computed(() => queue.value[currentIndex.value]);
-
-const audioSrc = computed(() => currentTrack.value?.src ?? '');
-
-const audio = ref<HTMLAudioElement | null>(null);
-
-const originalQueue = ref<Track[]>([]);
-
-const isPlaying = ref(false);
-const shuffle = ref(false);
-const loop = ref(false);
+const player = usePlayerStore()
+const audio = ref<HTMLAudioElement | null>(null)
 const liked = ref(false);
-const duration = ref(0);
-const autoplay = true;
 
-const time = ref(0);
-const volume = ref(20);
-let previousVolume = 0;
+const volumeIcon = computed(() => {
+    if (player.volume === 0) return 'volume-3'
+    if (player.volume < 50) return 'volume-2'
+    return 'volume'
+})
 
-async function loadTrack(index: number, autoplay: boolean) {
-    if (!audio.value) return;
-    if (index < 0 || index >= queue.value.length) return;
-
-    currentIndex.value = index;
-    isPlaying.value = false;
-    time.value = 0;
-
-    await nextTick();
-
-    audio.value.load();
-
-    if (autoplay) {
-        audio.value.play();
-        isPlaying.value = true;
-    }
-}
-
-function addToQueue(track: Track) {
-    queue.value.push(track);
-}
-
-function removeFromQueue(index: number) {
-    queue.value.splice(index, 1);
-}
-
-function clearQueue() {
-    queue.value = [];
-}
-
-function shuffleArray<T>(array: T[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-
-function playButtonClick() {
-    if (!audio.value) return;
-
-    if (isPlaying.value) {
-        audio.value.pause();
-        isPlaying.value = false;
-    } else {
-        audio.value.play();
-        isPlaying.value = true;
-    }
-}
-
-function shufflebuttonClick() {
-    shuffle.value = !shuffle.value;
-
-    const currentTrack = queue.value[currentIndex.value];
-
-    if (shuffle.value) {
-        if (originalQueue.value.length === 0) {
-            originalQueue.value = [...queue.value];
+async function loadTrack() {
+    if (!audio.value || !player.audioSrc) return
+    audio.value.src = player.audioSrc
+    audio.value.load()
+    if (player.isPlaying) {
+        try {
+            await audio.value.play()
+        } catch (e) {
+            console.warn('Autoplay blocked', e)
         }
-
-        const rest = queue.value.filter(t => t.id !== currentTrack.id);
-        shuffleArray(rest);
-
-        queue.value = [
-            currentTrack,
-            ...rest
-        ];
-
-        currentIndex.value = 0;
-    } else {
-        queue.value = [...originalQueue.value];
-
-        currentIndex.value = queue.value.findIndex(
-            t => t.id === currentTrack.id
-        );
     }
 }
 
-function loopbuttonClick() {
-    loop.value = !loop.value;
+function togglePlay() {
+    player.togglePlay()
+    loadTrack()
+    if (!audio.value) return
+    if (player.isPlaying) {
+        audio.value.play()
+    } else {
+        audio.value.pause()
+    }
 }
 
 function skipForward() {
-    if (currentIndex.value < queue.value.length - 1) {
-        loadTrack(currentIndex.value + 1, autoplay);
-    } else if (loop.value) {
-        loadTrack(0, autoplay);
-    }
+    player.next()
+    loadTrack()
 }
 
 function skipBack() {
-    if (audio.value && audio.value.currentTime > 3) {
-        audio.value.currentTime = 0;
-        time.value = 0;
-        return;
-    }
+    player.previous()
+    loadTrack()
+}
 
-    if (currentIndex.value > 0) {
-        loadTrack(currentIndex.value - 1, autoplay);
-    }
+function mute() {
+    if (player.volume === 0) player.volume = 10
+    else player.volume = 0
 }
 
 function like() {
-    console.log(liked.value);
+    //TODO: implement like functionality
     liked.value = !liked.value;
 }
 
-function openQueue() {
-    //TODO: open the queue
-    console.log('open q');
-}
-
 function openLyrics() {
-    //TODO:open lyrics
-    console.log('open lyrics');
+    //TODO: implement open lyrics functionality
 }
 
-const formattedTime = computed(() => {
-    const minutes = Math.floor(time.value / 60);
-    const seconds = time.value % 60;
-
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-});
-
-const formattedDuration = computed(() => {
-    const minutes = Math.floor(duration.value / 60);
-    const seconds = duration.value % 60;
-
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-});
-
-
-const volumeIcon = computed(() => {
-    if (volume.value === 0) return 'volume-3';
-    if (volume.value < 50) return 'volume-2';
-    return 'volume';
-});
-
-function mute() {
-    if (volume.value === 0) {
-        volume.value = previousVolume;
-    }
-    else {
-        const temp = volume.value;
-        volume.value = 0;
-        previousVolume = temp;
-    }
+function openQueue() {
+    //TODO: implement open queue functionality
 }
 
-watch(time, (newTime) => {
-    if (audio.value && Math.abs(audio.value.currentTime - newTime) > 1) {
-        audio.value.currentTime = newTime;
-    }
-});
 
-watch(volume, (newVolume) => {
-    if (audio.value) {
-        audio.value.volume = newVolume / 100;
+watch(
+    () => player.volume,
+    (v) => {
+        if (audio.value) audio.value.volume = v / 100
     }
-});
+)
+
+watch(
+    () => player.time,
+    (newTime) => {
+        if (!audio.value) return
+        if (Math.abs(audio.value.currentTime - newTime) > 0.5) {
+            audio.value.currentTime = newTime
+        }
+    }
+)
+
+watch(
+    () => player.isPlaying,
+    (isPlaying) => {
+        if (!isPlaying) {
+            if (!audio.value) return
+            audio.value.pause()
+            return
+        } else {
+            loadTrack()
+
+            if (!audio.value) return
+            audio.value.play()
+        }
+    }
+)
 
 onMounted(() => {
-    if (!audio.value) return;
-
-    originalQueue.value = [...queue.value];
-    time.value = 0;
-    volume.value = 10;
+    if (!audio.value) return
+    audio.value.volume = player.volume / 100
 
     audio.value.addEventListener('timeupdate', () => {
-        time.value = Math.floor(audio.value!.currentTime);
-    });
+        player.time = Math.floor(audio.value!.currentTime)
+    })
 
     audio.value.addEventListener('loadedmetadata', () => {
-        duration.value = Math.floor(audio.value!.duration);
-    });
+        player.duration = Math.floor(audio.value!.duration)
+    })
 
     audio.value.addEventListener('ended', () => {
-        if (currentIndex.value < queue.value.length - 1) {
-            loadTrack(currentIndex.value + 1, autoplay);
-        } else if (loop.value) {
-            loadTrack(0, autoplay);
-        } else {
-            isPlaying.value = false;
-            time.value = 0;
-        }
-    });
-});
+        skipForward()
+    })
+
+    loadTrack()
+})
 </script>
 
 <template>
-    <audio ref="audio" :src="audioSrc"></audio>
+    <audio ref="audio"></audio>
     <div
         class="flex-none left-0 w-full bg-white dark:bg-black backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-gray-700 rounded"></div>
+            <div class="w-12 h-12 bg-gray-700 rounded">
+                <img :src="player.currentTrack?.cover_url ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'"
+                    alt="Album Art" class="w-full h-full object-cover rounded" />
+            </div>
             <div>
-                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">{{ currentTrack?.title }}</p>
+                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">{{ player.currentTrack?.title ??
+                    $t('toolbar.songTitle') }}
+                </p>
                 <p class="text-xs text-gray-600 dark:text-gray-300 hover:underline hover:cursor-pointer">{{
-                    currentTrack?.artist }}</p>
+                    player.currentTrack?.artist ?? $t('toolbar.artistName') }}</p>
             </div>
             <Button @click="like" class="group transition-all duration-150">
                 <Icon :name="liked ? 'heart-filled' : 'heart'"
@@ -271,34 +143,35 @@ onMounted(() => {
 
         <div class="flex flex-col items-center w-2xl space-y-1">
             <div class="flex items-center gap-4">
-                <Button @click="shufflebuttonClick" class="group transition-all duration-150">
+                <Button @click="player.shuffle = !player.shuffle" class="group transition-all duration-150">
                     <Icon name="arrows-shuffle"
                         class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"
-                        :class="shuffle ? 'text-cyan-500!' : 'text-black dark:text-white'" />
+                        :class="player.shuffle ? 'text-cyan-500 group-hover:text-cyan-300' : ''" />
                 </Button>
                 <Button @click="skipBack" class="group transition-all duration-150">
                     <Icon name="skip-back"
                         class="size-6 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
                 </Button>
-                <Button @click="playButtonClick"
+                <Button @click="togglePlay"
                     class="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center transition-all duration-150 hover:bg-cyan-400">
-                    <Icon :name="isPlaying ? 'player-pause-filled' : 'player-play-filled'" class="size-6 text-white" />
+                    <Icon :name="player.isPlaying ? 'player-pause-filled' : 'player-play-filled'"
+                        class="size-6 text-white" />
                 </Button>
                 <Button @click="skipForward" class="group transition-all duration-150">
                     <Icon name="skip-forward"
                         class="size-6 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
                 </Button>
-                <Button @click="loopbuttonClick" class="group transition-all duration-150">
+                <Button @click="player.loop = !player.loop" class="group transition-all duration-150">
                     <Icon name="repeat"
                         class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"
-                        :class="loop ? 'text-cyan-500!' : 'text-black dark:text-white'" />
+                        :class="player.loop ? 'text-cyan-500 group-hover:text-cyan-300' : ''" />
                 </Button>
             </div>
 
             <div class="flex items-center gap-2 w-full text-xs text-gray-600 dark:text-gray-300">
-                <span class="hover:cursor-default">{{ formattedTime }}</span>
-                <Slider v-model="time" :max="duration"></Slider>
-                <span class="hover:cursor-default">{{ formattedDuration }}</span>
+                <span class="hover:cursor-default">{{ player.time }}</span>
+                <Slider v-model="player.time" :max="player.duration"></Slider>
+                <span class="hover:cursor-default">{{ player.duration }}</span>
             </div>
         </div>
 
@@ -316,7 +189,7 @@ onMounted(() => {
                     <Icon :name="volumeIcon"
                         class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
                 </Button>
-                <Slider v-model="volume" :max="100"></Slider>
+                <Slider v-model="player.volume" :max="100"></Slider>
             </div>
         </div>
     </div>

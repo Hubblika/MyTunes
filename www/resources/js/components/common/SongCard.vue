@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import song from '@/routes/song';
 import { Icon } from '.'
+import { usePlayerStore } from '@/stores/player'
+import { _Song } from '@/types';
 
-defineProps<{
-    title: string
-    image: string
+const props = defineProps<{
+    song: _Song 
 }>()
+
+const player = usePlayerStore()
+
+function play() {
+    player.playSong(props.song)
+}
 </script>
 
 <template>
@@ -13,11 +21,11 @@ defineProps<{
            transition-colors duration-200
            hover:bg-white dark:hover:bg-black">
         <div class="relative mb-3 aspect-square overflow-hidden rounded-md">
-            <img :src="image" alt="" class="h-full w-full object-cover
+            <img :src="props.song.covereurl ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'" alt="" class="h-full w-full object-cover
                transition-transform duration-300
                group-hover:scale-105" />
 
-            <button class="absolute bottom-2 right-2
+            <button @click="play" class="absolute bottom-2 right-2
                flex h-10 w-10 items-center justify-center
                rounded-full bg-cyan-500 text-white shadow-lg
 
@@ -34,7 +42,7 @@ defineProps<{
         </div>
 
         <h3 class="truncate text-sm font-semibold text-pink-500 text-center">
-            {{ title }}
+            {{ props.song.title }}
         </h3>
     </div>
 </template>
