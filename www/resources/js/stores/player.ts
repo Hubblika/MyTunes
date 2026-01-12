@@ -25,7 +25,7 @@ export const usePlayerStore = defineStore("player", {
         async playSong(song: _Song) {
             if (this.isPlaying) {
                 this.togglePlay();
-                await new Promise(resolve => setTimeout(resolve, 50));
+                await new Promise((resolve) => setTimeout(resolve, 50));
                 this.emptyQueue();
                 this.queue = [song];
                 this.currentIndex = 0;
@@ -62,6 +62,30 @@ export const usePlayerStore = defineStore("player", {
 
         emptyQueue() {
             this.queue = [];
+        },
+
+        shuffleQueue() {
+            this.originalQueue = [...this.queue];
+            const currentTrack = this.queue[this.currentIndex];
+
+            for (let i = this.queue.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
+            }
+
+            this.currentIndex = this.queue.findIndex(
+                (song) => song === currentTrack,
+            );
+        },
+
+        sortQueue() {
+            const currentTrack = this.queue[this.currentIndex];
+
+            this.queue = [...this.originalQueue];
+
+            this.currentIndex = this.queue.findIndex(
+                (song) => song === currentTrack,
+            );
         },
     },
 });

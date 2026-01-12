@@ -99,6 +99,14 @@ watch(
     }
 )
 
+watch(() => player.shuffle, (shuffle) => {
+    if (shuffle) {
+        player.shuffleQueue()
+    } else {
+        player.sortQueue()
+    }
+})
+
 onMounted(() => {
     if (!audio.value) return
     audio.value.volume = player.volume / 100

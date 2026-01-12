@@ -11,7 +11,7 @@ const props = defineProps<{
 const player = usePlayerStore()
 
 function play() {
-    player.playSong(props.song)
+    player.addToQueue(props.song)
 }
 </script>
 
