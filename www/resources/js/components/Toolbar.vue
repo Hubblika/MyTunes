@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted, watch, nextTick, computed, ref } from 'vue'
+import { onMounted, watch, computed, ref, Ref } from 'vue'
 import { Button, Icon, Slider } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
 
 const player = usePlayerStore()
 const audio = ref<HTMLAudioElement | null>(null)
 const liked = ref(false);
+const hasTrack = computed(() => !!player.currentTrack);
 
 const volumeIcon = computed(() => {
     if (player.volume === 0) return 'volume-3'
@@ -107,6 +108,13 @@ watch(() => player.shuffle, (shuffle) => {
     }
 })
 
+const formattedTime = (time: number) => computed(() => {
+    const totalSeconds = time;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+});
+
 onMounted(() => {
     if (!audio.value) return
     audio.value.volume = player.volume / 100
@@ -131,74 +139,91 @@ onMounted(() => {
     <audio ref="audio"></audio>
     <div
         class="flex-none left-0 w-full bg-white dark:bg-black backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between">
+
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gray-700 rounded">
                 <img :src="player.currentTrack?.cover_url ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'"
                     alt="Album Art" class="w-full h-full object-cover rounded" />
             </div>
             <div>
-                <p class="font-semibold text-sm hover:underline hover:cursor-pointer">{{ player.currentTrack?.title ??
-                    $t('toolbar.songTitle') }}
+                <p
+                    :class="!hasTrack ? 'text-gray-400 dark:text-gray-600 font-semibold text-sm' : 'hover:underline hover:cursor-pointer font-semibold text-sm'">
+                    {{ player.currentTrack?.title ?? $t('toolbar.songTitle') }}
                 </p>
-                <p class="text-xs text-gray-600 dark:text-gray-300 hover:underline hover:cursor-pointer">{{
-                    player.currentTrack?.artist ?? $t('toolbar.artistName') }}</p>
+                <p
+                    :class="!hasTrack ? 'text-gray-400 dark:text-gray-600 text-xs' : 'hover:underline hover:cursor-pointer text-xs text-gray-600 dark:text-gray-300'">
+                    {{ player.currentTrack?.artist ?? $t('toolbar.artistName') }}
+                </p>
             </div>
-            <Button @click="like" class="group transition-all duration-150">
+            <Button @click="like" :disabled="!hasTrack"
+                :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                 <Icon :name="liked ? 'heart-filled' : 'heart'"
                     :class="['size-6 transition-colors duration-150', liked ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
             </Button>
         </div>
 
         <div class="flex flex-col items-center w-2xl space-y-1">
+
             <div class="flex items-center gap-4">
-                <Button @click="player.shuffle = !player.shuffle" class="group transition-all duration-150">
-                    <Icon name="arrows-shuffle"
-                        class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"
-                        :class="player.shuffle ? 'text-cyan-500 group-hover:text-cyan-300' : ''" />
+                <Button @click="player.shuffle = !player.shuffle" :disabled="!hasTrack"
+                    :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '', player.shuffle ? 'text-cyan-500 group-hover:text-cyan-300' : '']">
+                    <Icon name="arrows-shuffle" class="size-5 transition-colors duration-150" />
                 </Button>
-                <Button @click="skipBack" class="group transition-all duration-150">
-                    <Icon name="skip-back"
-                        class="size-6 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
+
+                <Button @click="skipBack" :disabled="!hasTrack"
+                    :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
+                    <Icon name="skip-back" class="size-6 transition-colors duration-150" />
                 </Button>
-                <Button @click="togglePlay"
-                    class="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center transition-all duration-150 hover:bg-cyan-400">
+
+                <Button @click="togglePlay" :disabled="!hasTrack"
+                    :class="['w-12 h-12 rounded-full flex items-center justify-center transition-all duration-150', !hasTrack ? 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed' : 'bg-cyan-500 hover:bg-cyan-400']">
                     <Icon :name="player.isPlaying ? 'player-pause-filled' : 'player-play-filled'"
                         class="size-6 text-white" />
                 </Button>
-                <Button @click="skipForward" class="group transition-all duration-150">
-                    <Icon name="skip-forward"
-                        class="size-6 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
+
+                <Button @click="skipForward" :disabled="!hasTrack"
+                    :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
+                    <Icon name="skip-forward" class="size-6 transition-colors duration-150" />
                 </Button>
-                <Button @click="player.loop = !player.loop" class="group transition-all duration-150">
-                    <Icon name="repeat"
-                        class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80"
-                        :class="player.loop ? 'text-cyan-500 group-hover:text-cyan-300' : ''" />
+
+                <Button @click="player.loop = !player.loop" :disabled="!hasTrack"
+                    :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '', player.loop ? 'text-cyan-500 group-hover:text-cyan-300' : '']">
+                    <Icon name="repeat" class="size-5 transition-colors duration-150" />
                 </Button>
             </div>
 
             <div class="flex items-center gap-2 w-full text-xs text-gray-600 dark:text-gray-300">
-                <span class="hover:cursor-default">{{ player.time }}</span>
-                <Slider v-model="player.time" :max="player.duration"></Slider>
-                <span class="hover:cursor-default">{{ player.duration }}</span>
+                <span :class="!hasTrack ? 'text-gray-400 dark:text-gray-600' : ''">
+                    {{ formattedTime(player.time) }}
+                </span>
+                <Slider :class="!hasTrack ? 'opacity-50' : ''" v-model="player.time" :max="player.duration"
+                    :disabled="!hasTrack"></Slider>
+                <span :class="!hasTrack ? 'text-gray-400 dark:text-gray-600' : ''">
+                    {{ formattedTime(player.duration) }}
+                </span>
             </div>
         </div>
 
-        <div class="flex items-center">
-            <Button @click="openLyrics" class="px-2! group transition-all duration-150">
-                <Icon name="microphone-2"
-                    class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
+        <div class="flex items-center gap-2">
+            <Button @click="openLyrics" :disabled="!hasTrack"
+                :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
+                <Icon name="microphone-2" class="size-5 transition-colors duration-150" />
             </Button>
-            <Button @click="openQueue" class="px-2! group transition-all duration-150">
-                <Icon name="list"
-                    class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
+
+            <Button @click="openQueue" :disabled="!hasTrack"
+                :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
+                <Icon name="list" class="size-5 transition-colors duration-150" />
             </Button>
+
             <div class="flex items-center gap-2">
-                <Button @click="mute" class="px-2! group transition-all duration-150">
-                    <Icon :name="volumeIcon"
-                        class="size-5 transition-colors duration-150 group-hover:text-black/60 dark:group-hover:text-white/80" />
+                <Button @click="mute" :disabled="!hasTrack"
+                    :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
+                    <Icon :name="volumeIcon" class="size-5 transition-colors duration-150" />
                 </Button>
-                <Slider v-model="player.volume" :max="100"></Slider>
+                <Slider :class="!hasTrack ? 'opacity-50' : ''" v-model="player.volume" :max="100" :disabled="!hasTrack">
+                </Slider>
             </div>
         </div>
     </div>
+
 </template>
