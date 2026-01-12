@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('artist');
             $table->string('url');
+            $table->string('cover_url');
             $table->date('created_at')->useCurrent();
             $table->unsignedMediumInteger('duration');
             $table->boolean('is_explicit');

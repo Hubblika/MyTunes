@@ -18,6 +18,7 @@ class Song extends Model
         'title',
         'artist',
         'url',
+        'cover_url',
         'created_at',
         'duration',
         'is_explicit'
