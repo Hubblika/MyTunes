@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import i18n from './i18n';
+import { createPinia } from 'pinia';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -16,7 +17,7 @@ createInertiaApp({
             `./pages/${name}.vue`,
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
-    setup({ el, App, props, plugin }) {
+    setup({ el, App, props, plugin}) {
         const vueApp = createApp({ render: () => h(App, props) });
 
         vueApp.use(plugin);
@@ -26,6 +27,9 @@ createInertiaApp({
                 preset: Aura
             }
         });
+
+        const pinia = createPinia()
+        vueApp.use(pinia)
 
         vueApp.use(i18n);
            
