@@ -49,3 +49,9 @@ Route::get('/admin', function (Request $request) {
 
     return response(null, 403);
 });
+
+
+
+Route::fallback(function () {
+    return Inertia::render('Error', ['status' => 404, 'message' => 'Not Found']);
+});
