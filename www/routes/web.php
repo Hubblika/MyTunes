@@ -20,7 +20,7 @@ Route::get('/settings', function (Request $request) {
 
     return redirect('/login', 303);
 })
-    ->name('Settings');
+    ->name('settings');
 
 Route::get('/song/{uuid}', function () {
     return Inertia::render('Song', []);
@@ -40,6 +40,12 @@ Route::get('/album/{uuid}', function () {
     ->whereUuid('uuid')
     ->name('album.detail');
 
+Route::get('/search/{query}', function (Request $request, string $query) {
+    return Inertia::render('Search', ['query' => $query]);
+})
+    ->where('query', '.+')
+    ->name('search');
+
 
 
 Route::get('/admin', function (Request $request) {
@@ -48,10 +54,12 @@ Route::get('/admin', function (Request $request) {
     }
 
     return response(null, 403);
-});
+})
+    ->name('admin');
 
 
 
 Route::fallback(function () {
     return Inertia::render('Error', ['status' => 404, 'message' => 'Not Found']);
-});
+})
+    ->name('fallback');

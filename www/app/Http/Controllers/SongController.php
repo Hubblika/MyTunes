@@ -13,10 +13,35 @@ class SongController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $songs = Song::all();
-        return ok($songs);
+        $query = $request->query('q');
+        
+        if (!$query) {
+            $songs = Song::all();
+            return ok($songs);
+        }
+
+        $cursor = $request->query('cursor');
+
+        $songs = Song::when($query, function ($q) use ($query) {
+            $q
+                ->where('title', 'like', '%'.$query.'%')
+                ->orWhere('genre', 'like', '%'.$query.'%');
+                // TODO: allow search to find song by artist name?
+                // ->orWhereHas('user', function ($q) use ($query) {
+                //     $q
+                //         ->where('is_searchable', true)
+                //         ->where('username', 'like', '%'.$query.'%');
+                // });
+        })
+            ->orderBy('updated_at')
+            ->cursorPaginate(LIMIT, ['*'], 'cursor', $cursor);
+
+        return response()->json([
+            'data' => $songs->items(),
+            'next_cursor' => optional($songs->nextCursor())->encode()
+        ]);
     }
 
     /**
@@ -48,7 +73,7 @@ class SongController extends Controller
         } else if (!$title) {
             return $json ? err(400, ['field' => 'title']) : Inertia::render('Admin', ['error' => 'title']);
         } else if (!$date) {
-            return $json ? err(400, ['field' => 'created_at']) : Inertia::render('Admin', ['error' => 'created_at']);
+            return $json ? err(400, ['field' => 'date']) : Inertia::render('Admin', ['error' => 'date']);
         } else if (!$duration) {
             return $json ? err(400, ['field' => 'duration']) : Inertia::render('Admin', ['error' => 'duration']);
         }

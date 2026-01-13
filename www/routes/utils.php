@@ -3,6 +3,8 @@
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+const LIMIT = 40;
+
 /**
  * Shorthand for returning json data to the client
  * @param int $status Status code

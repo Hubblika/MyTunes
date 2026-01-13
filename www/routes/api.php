@@ -3,6 +3,7 @@
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\UserController;
+use App\Models\Song;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

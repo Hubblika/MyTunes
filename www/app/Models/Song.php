@@ -19,15 +19,13 @@ class Song extends Model
         'artist',
         'url',
         'cover_url',
-        'created_at',
+        'date',
         'duration',
         'is_explicit'
     ];
 
 
     protected $hidden = [];
-
-    public $timestamps = false;
 
     public static function boot() {
         parent::boot();
@@ -64,7 +62,7 @@ class Song extends Model
     protected function casts(): array
     {
         return [
-            'created_at' => 'date'
+            'date' => 'date'
         ];
     }
 }
