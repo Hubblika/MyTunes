@@ -62,7 +62,7 @@ Route::get('/admin', function (Request $request) {
         return Inertia::render('Admin');
     }
 
-    return response(null, 403);
+    return Inertia::render('Error', ['status' => 403, 'message' => 'Forbidden']);
 })
     ->name('admin');
 
