@@ -19,6 +19,7 @@ class Song extends Model
         'is_explicit',
         'genre'
     ];
+    public $timestamps = true;
 
     protected static function boot(): void
     {
@@ -37,5 +38,19 @@ class Song extends Model
         return $this->belongsToMany(Playlist::class, 'playlist_songs')
                     ->withPivot('position')
                     ->withTimestamps();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'title' => 'string',
+            'artist' => 'string',
+            'url' => 'string',
+            'cover_url' => 'string',
+            'date' => 'date',
+            'duration' => 'integer',
+            'is_explicit' => 'boolean',
+            'genre' => 'string'
+        ];
     }
 }

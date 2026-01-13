@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('playlist_songs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('playlist_id');
-            $table->uuid('song_id');
+            $table->foreignUuid('playlist_id')->references('id')->on('playlists')->onDelete('cascade');
+            $table->foreignUuid('song_id')->references('id')->on('songs')->onDelete('cascade');
             $table->integer('position')->nullable();
             $table->timestamps();
-
-            $table->foreign('playlist_id')->references('id')->on('playlists')->onDelete('cascade');
-            $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade');
 
             $table->unique(['playlist_id', 'song_id']);
         });

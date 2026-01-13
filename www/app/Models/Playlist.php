@@ -21,6 +21,7 @@ class Playlist extends Model
             }
         });
     }
+    public $timestamps = true;
 
     // Relationships
     public function user()
@@ -33,5 +34,14 @@ class Playlist extends Model
         return $this->belongsToMany(Song::class, 'playlist_songs')
                     ->withPivot('position')
                     ->withTimestamps();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'string',
+            'name' => 'string',
+            'description' => 'string'
+        ];
     }
 }
