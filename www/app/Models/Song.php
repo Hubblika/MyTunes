@@ -3,68 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 
 class Song extends Model
 {
-    protected $table = 'songs';
-    protected $primaryKey = 'uuid';
     protected $keyType = 'string';
     public $incrementing = false;
-
     protected $fillable = [
-        'title',
-        'artist',
-        'url',
-        'cover_url',
-        'created_at',
-        'duration',
-        'is_explicit'
+        'title', 'artist', 'url', 'cover_url', 'duration', 'is_explicit', 'genre'
     ];
 
-
-    protected $hidden = [];
-
-    public $timestamps = false;
-
-    public static function boot() {
+    protected static function boot(): void
+    {
         parent::boot();
 
-        static::creating(function (Model $model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
+        static::creating(function ($model) {
+            if (!$model->id) {
+                $model->id = (string) Str::uuid();
             }
         });
     }
 
-    /**
-     * Get all songs in the playlist
-     * 
-     * @return BelongsToMany<Song, User, Pivot>
-     */
-    public function likedByUsers(): BelongsToMany
+    // Relationships
+    public function playlists()
     {
-        return $this->belongsToMany(
-            User::class,
-            '_user_likes',
-            'song_uuid',
-            'user_id',
-            'uuid',
-            'id'
-        );
-    }
-
-    /**
-     * Get the attributes that should be cast.
-     * 
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'created_at' => 'date'
-        ];
+        return $this->belongsToMany(Playlist::class, 'playlist_songs')
+                    ->withPivot('position')
+                    ->withTimestamps();
     }
 }

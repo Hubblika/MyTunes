@@ -2,112 +2,35 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use Notifiable;
 
-    protected $table = 'users';
-    protected $primaryKey = 'id';
-
+    protected $keyType = 'string';       // UUID
+    public $incrementing = false;        // Not auto-incrementing
     protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'is_admin',
-        'is_searchable',
-        'description'
+        'username', 'email', 'password', 'is_admin', 'is_searchable', 'description'
     ];
 
-    protected $hidden = [
-        'is_admin',
-        'is_searchable',
-        'password',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
-        'remember_token'
-    ];
+    // Boot method to auto-generate UUIDs
+    protected static function boot(): void
+    {
+        parent::boot();
 
-    public $timestamps = true;
+        static::creating(function ($model) {
+            if (!$model->id) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
 
-    /**
-     * Get all playlists the user has created
-     * 
-     * @return HasMany<Playlist, User>
-     */
-    public function playlists(): HasMany
+    // Relationships
+    public function playlists()
     {
         return $this->hasMany(Playlist::class);
-    }
-
-    /**
-     * Get all songs published by the user
-     * 
-     * @return HasMany<Song, User>
-     */
-    public function uploadedSongs(): HasMany
-    {
-        return $this->hasMany(Song::class);
-    }
-
-    /**
-     * Get all songs in the playlist
-     * 
-     * @return BelongsToMany<Song, User, Pivot>
-     */
-    public function likedSongs(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Song::class,
-            '_user_likes',
-            'user_id',
-            'song_uuid',
-            'id',
-            'uuid'
-        );
-    }
-
-    /**
-     * Get all songs in the playlist
-     * 
-     * @return BelongsToMany<Playlist, User, Pivot>
-     */
-    public function savedPlaylists(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Playlist::class,
-            '_user_saved_playlists',
-            'user_id',
-            'playlist_uuid',
-            'id',
-            'uuid'
-        );
-    }
-
-    /**
-     * Get the attributes that should be cast.
-     * 
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'username' => 'string',
-            'email' => 'string',
-            'email_verified_at' => 'datetime',
-            'is_admin' => 'boolean',
-            'is_searchable' => 'boolean',
-            'password' => 'hashed',
-            'two_factor_confirmed_at' => 'datetime'
-        ];
     }
 }

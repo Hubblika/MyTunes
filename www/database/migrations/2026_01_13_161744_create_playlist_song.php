@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('playlist_songs', function (Blueprint $table) {
-            $table->id(); // Primary key
-            $table->foreignId('playlist_id')->constrained()->onDelete('cascade');
-            $table->foreignId('song_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->uuid('playlist_id');
+            $table->uuid('song_id');
             $table->integer('position')->nullable();
             $table->timestamps();
+
+            $table->foreign('playlist_id')->references('id')->on('playlists')->onDelete('cascade');
+            $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade');
 
             $table->unique(['playlist_id', 'song_id']);
         });

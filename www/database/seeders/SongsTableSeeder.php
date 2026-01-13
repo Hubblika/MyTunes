@@ -39,14 +39,13 @@ class SongsTableSeeder extends Seeder
 
         foreach ($songs as $song) {
             DB::table('songs')->insert([
-                'uuid' => Str::uuid(),
+                'id' => Str::uuid(),
                 'title' => $song['title'],
                 'artist' => 'TheFatRat',
                 'url' => '/audio/' . $song['title'] . '.mp3',
                 'cover_url' => 'uploads/thumbnails/defaultThumbnail.png',
                 'created_at' => now(),
                 'duration' => $song['duration'],
-                'is_explicit' => false,
                 'genre' => 'Electronic',
             ]);
         }
