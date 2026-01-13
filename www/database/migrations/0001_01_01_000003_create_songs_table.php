@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('songs', function (Blueprint $table) {
-            $table->uuid()->primary();
+            $table->uuid('id')->primary();
             $table->string('title');
             $table->string('artist');
             $table->string('url');
             $table->string('cover_url');
             $table->date('date');
             $table->unsignedMediumInteger('duration');
-            $table->boolean('is_explicit');
             $table->string('genre', 60)->nullable();
             $table->timestamps();
         });
@@ -42,7 +41,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('songs');
-        Schema::dropIfExists('_user_songs');
-        Schema::dropIfExists('_user_likes');
     }
 };

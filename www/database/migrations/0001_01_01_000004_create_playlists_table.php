@@ -12,36 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('playlists', function (Blueprint $table) {
-            $table->uuid()->primary();
-            $table->foreignId('creator_id')->constrained('users')->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->uuid('user_id');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->boolean('public')->default(true);
-            $table->boolean('is_album')->default(false);
-            $table->timestamps();
-        });
-
-        Schema::create('ordered_songs', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
-            $table->foreignUuid('song_uuid')->constrained('songs', 'uuid')->cascadeOnDelete();
-            $table->unsignedMediumInteger('index');
             $table->timestamps();
 
-            $table->unique(['playlist_uuid', 'song_uuid']);
-            $table->unique(['playlist_uuid', 'index']);
-        });
-
-        Schema::create('_playlist_collaborators', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
-        });
-
-        Schema::create('_user_saved_playlists', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
-            $table->foreignUuid('playlist_uuid')->constrained('playlists', 'uuid')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -51,8 +28,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('playlists');
-        Schema::dropIfExists('ordered_songs');
-        Schema::dropIfExists('_playlist_collaborators');
-        Schema::dropIfExists('_user_saved_playlists');
     }
 };

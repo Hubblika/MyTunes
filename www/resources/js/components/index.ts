@@ -6,3 +6,4 @@ export { default as MainContent } from './Maincontent.vue';
 export { default as Loginform } from './Loginform.vue';
 export { default as SettingsMenu } from './SettingsMenu.vue';
 export { default as HomeContent } from './HomeContent.vue';
+export { default as LyricsContent } from './QueueContent.vue';

@@ -53,5 +53,10 @@
         "lightTheme": "Világos",
         "languageTitle": "Nyelv - az applikáció nyelvének váltása (Magyar/Angol)",
         "languageLabel": "Magyar"
+    },
+    "queue": {
+        "title": "Műsor",
+        "headerTitle": "Cím",
+        "headerDuration": "Időtartam"
     }
 }

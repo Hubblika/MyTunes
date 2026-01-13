@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Icon, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
 
@@ -91,17 +91,17 @@ onMounted(() => {
                 <ul v-if="dropdownOpen"
                     class="absolute right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50">
                     <li @click="selectMenu('profile')"
-                        class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
                         <span>{{ $t('header.profileButton') }}</span>
                         <Icon name="user"></Icon>
                     </li>
                     <li @click="selectMenu('settings')"
-                        class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
                         <span>{{ $t('header.settingButton') }}</span>
                         <Icon name="settings"></Icon>
                     </li>
                     <li @click="selectMenu('logout')"
-                        class="flex justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
                         <span>{{ $t('header.logoutButton') }}</span>
                         <Icon name="logout"></Icon>
                     </li>
