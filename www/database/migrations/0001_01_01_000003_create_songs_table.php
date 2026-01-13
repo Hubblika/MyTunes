@@ -17,10 +17,11 @@ return new class extends Migration
             $table->string('artist');
             $table->string('url');
             $table->string('cover_url');
-            $table->date('created_at')->useCurrent();
+            $table->date('date');
             $table->unsignedMediumInteger('duration');
             $table->boolean('is_explicit');
             $table->string('genre', 60)->nullable();
+            $table->timestamps();
         });
 
         Schema::create('_user_songs', function (Blueprint $table) {

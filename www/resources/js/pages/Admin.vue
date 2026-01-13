@@ -17,12 +17,12 @@ const { error } = defineProps<{ error: string }>();
                 v-bind="songStore.form()"
                 v-slot="{ processing }"
             >
-                <Input id="title" type="text" :tabindex="1">title</Input>
-                <Input id="created_at" type="date" :tabindex="2">created_at</Input>
-                <Input id="duration" type="number" :tabindex="3">duration</Input>
+                <Input id="title" type="text" :tabindex="1" required>title</Input>
+                <Input id="date" type="date" :tabindex="2" required>created_at</Input>
+                <Input id="duration" type="number" :tabindex="3" required>duration</Input>
                 <Input id="genre" type="text" :tabindex="4">genre?</Input>
-                <Input id="audio" type="file" :tabindex="5">audio (mp3)</Input>
-                <Input id="cover" type="file" :tabindex="6">cover (jpg)</Input>
+                <Input id="audio" type="file" :tabindex="5" required>audio (mp3)</Input>
+                <Input id="cover" type="file" :tabindex="6" required>cover (jpg)</Input>
                 <PrimaryButton type="submit" class="my-4" :tabindex="7" :disabled="processing">
                     <span v-if="processing">Please wait...</span>
                     <span v-else>Submit</span>

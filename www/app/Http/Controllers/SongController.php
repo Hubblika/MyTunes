@@ -37,7 +37,7 @@ class SongController extends Controller
         $cover = $request->file('cover');
 
         $title = $request->input('title');
-        $created_at = $request->input('created_at');
+        $date = $request->input('date');
         $duration = $request->input('duration');
         $explicit = $request->input('is_explicit', false);
 
@@ -47,7 +47,7 @@ class SongController extends Controller
             return $json ? err(400, ['field' => 'cover']) : Inertia::render('Admin', ['error' => 'cover']);
         } else if (!$title) {
             return $json ? err(400, ['field' => 'title']) : Inertia::render('Admin', ['error' => 'title']);
-        } else if (!$created_at) {
+        } else if (!$date) {
             return $json ? err(400, ['field' => 'created_at']) : Inertia::render('Admin', ['error' => 'created_at']);
         } else if (!$duration) {
             return $json ? err(400, ['field' => 'duration']) : Inertia::render('Admin', ['error' => 'duration']);
@@ -63,7 +63,7 @@ class SongController extends Controller
             'artist' => 'todo',
             'url' => '/storage/songs/'.$uuid.'/audio.mp3',
             'cover_url' => '/storage/songs/'.$uuid.'/cover.jpg',
-            'created_at' => Date::parse($created_at),
+            'date' => Date::parse($date),
             'duration' => $duration,
             'is_explicit' => $explicit
         ])->getKey();
