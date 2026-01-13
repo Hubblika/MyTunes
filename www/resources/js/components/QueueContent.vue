@@ -1,41 +1,16 @@
 <script setup lang="ts">
-import PlaylistSong from './common/QueueSong.vue';
+import { storeToRefs } from "pinia";
+import { usePlayerStore } from "@/stores/player";
+import PlaylistSong from "./common/QueueSong.vue";
 
-type Song = {
-    id: number
-    cover: string
-    title: string
-    artist: string
-    addedAt: string
-    duration: string
+const player = usePlayerStore();
+const { queue } = storeToRefs(player);
+
+function formatDuration(seconds: number) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
 }
-
-const songs: Song[] = [
-    {
-        id: 1,
-        cover: '/uploads/thumbnails/defaultThumbnail.png',
-        title: 'Blinding Lights',
-        artist: 'The Weeknd',
-        addedAt: '3 days ago',
-        duration: '3:20'
-    },
-    {
-        id: 2,
-        cover: '/uploads/thumbnails/defaultThumbnail.png',
-        title: 'Levitating',
-        artist: 'Dua Lipa',
-        addedAt: '1 week ago',
-        duration: '3:23'
-    },
-    {
-        id: 3,
-        cover: '/uploads/thumbnails/defaultThumbnail.png',
-        title: 'Save Your Tears',
-        artist: 'The Weeknd',
-        addedAt: '2 weeks ago',
-        duration: '3:35'
-    }
-]
 </script>
 
 <template>
@@ -57,8 +32,8 @@ const songs: Song[] = [
         </div>
 
         <div class="flex flex-col overflow-y-auto">
-            <PlaylistSong v-for="(song, index) in songs" :key="song.id" :index="index + 1" :cover="song.cover"
-                :title="song.title" :artist="song.artist" :added-at="song.addedAt" :duration="song.duration" />
+            <PlaylistSong v-for="(song, index) in queue" :key="song.uuid" :index="index + 1" :cover="song.cover_url"
+                :title="song.title" :artist="song.artist" :duration="formatDuration(song.duration)" />
         </div>
     </section>
 </template>

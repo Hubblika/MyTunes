@@ -1,4 +1,3 @@
-// stores/player.ts
 import { defineStore } from "pinia";
 import type { _Song } from "@/types";
 

@@ -41,7 +41,7 @@ function play() {
             </button>
         </div>
 
-        <h3 class="truncate text-sm font-semibold text-pink-500 text-center">
+        <h3 class="truncate text-sm font-semibold text-black dark:text-white text-center">
             {{ props.song.title }}
         </h3>
     </div>
