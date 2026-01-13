@@ -16,7 +16,8 @@ class Song extends Model
         'cover_url',
         'date',
         'duration',
-        'is_explicit'
+        'is_explicit',
+        'genre'
     ];
 
     protected static function boot(): void
