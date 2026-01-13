@@ -8,23 +8,25 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/utils.php';
 
-// Route::get('/playlists', [PlaylistController::class, 'index']);
-Route::post('/playlists', [PlaylistController::class, 'store']);
-Route::get('/playlists/{uuid}', [PlaylistController::class, 'show']);
-Route::put('/playlists/{uuid}', [PlaylistController::class, 'update']);
-Route::delete('/playlists/{uuid}', [PlaylistController::class, 'destroy']);
+Route::middleware(['web'])->group(fn () => [
+    // Route::get('/playlists', [PlaylistController::class, 'index']),
+    Route::post('/playlists', [PlaylistController::class, 'store']),
+    Route::get('/playlists/{uuid}', [PlaylistController::class, 'show']),
+    Route::put('/playlists/{uuid}', [PlaylistController::class, 'update']),
+    Route::delete('/playlists/{uuid}', [PlaylistController::class, 'destroy']),
 
-Route::get('/songs', [SongController::class, 'index']);
-Route::post('/songs', [SongController::class, 'store']);
-Route::get('/songs/{uuid}', [SongController::class, 'show']);
-Route::put('/songs/{uuid}', [SongController::class, 'update']);
-Route::delete('/songs/{uuid}', [SongController::class, 'destroy']);
+    Route::get('/songs', [SongController::class, 'index']),
+    Route::post('/songs', [SongController::class, 'store']),
+    Route::get('/songs/{uuid}', [SongController::class, 'show']),
+    Route::put('/songs/{uuid}', [SongController::class, 'update']),
+    Route::delete('/songs/{uuid}', [SongController::class, 'destroy']),
 
-//Route::get('/users', [UserController::class, 'index']);
-// Route::get('/users/{id}', [UserController::class, 'store']);
-Route::get('/users/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    //Route::get('/users', [UserController::class, 'index']),
+    // Route::get('/users/{id}', [UserController::class, 'store']),
+    Route::get('/users/{id}', [UserController::class, 'show']),
+    Route::put('/users/{id}', [UserController::class, 'update']),
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])
+]);
 
 Route::get('/me', function (Request $request) {
     $user = $request->user();

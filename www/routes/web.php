@@ -39,3 +39,13 @@ Route::get('/album/{uuid}', function () {
 })
     ->whereUuid('uuid')
     ->name('album.detail');
+
+
+
+Route::get('/admin', function (Request $request) {
+    if ($request->user()->is_admin) {
+        return Inertia::render('Admin');
+    }
+
+    return response(null, 403);
+});

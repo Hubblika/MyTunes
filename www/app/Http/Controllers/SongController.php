@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Song;
 use Date;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Storage;
 
 class SongController extends Controller
@@ -24,45 +25,51 @@ class SongController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
+        $json = $request->acceptsJson();
 
         if (!$user) {
-            return err(401);
+            return $json ? err(401) : Inertia::render('Admin', ['error' => 'Unauthenticated']);
         } else if (!$user->is_admin) {
-            return err(403);
+            return $json ? err(403) : Inertia::render('Admin', ['error' => 'Forbidden']);
         }
 
-        $audio = $request->file('audio.mp3');
-        $cover = $request->file('cover.png');
+        $audio = $request->file('audio');
+        $cover = $request->file('cover');
 
         $title = $request->input('title');
         $created_at = $request->input('created_at');
         $duration = $request->input('duration');
-        $explicit = $request->input('is_explicit');
+        $explicit = $request->input('is_explicit', false);
 
         if (!$audio) {
-            return err(400, ['field' => 'audio']);
-        } else if (!$audio) {
-            return err(400, ['field' => 'cover']);
+            return $json ? err(400, ['field' => 'audio']) : Inertia::render('Admin', ['error' => 'audio']);
+        } else if (!$cover) {
+            return $json ? err(400, ['field' => 'cover']) : Inertia::render('Admin', ['error' => 'cover']);
         } else if (!$title) {
-            return err(400, ['field' => 'title']);
+            return $json ? err(400, ['field' => 'title']) : Inertia::render('Admin', ['error' => 'title']);
+        } else if (!$created_at) {
+            return $json ? err(400, ['field' => 'created_at']) : Inertia::render('Admin', ['error' => 'created_at']);
         } else if (!$duration) {
-            return err(400, ['field' => 'duration']);
+            return $json ? err(400, ['field' => 'duration']) : Inertia::render('Admin', ['error' => 'duration']);
         }
 
         $uuid = uuid_create();
 
-        Storage::disk('local')->put('uploads/songs/{$uuid}/audio.mp3', file_get_contents($audio));
-        Storage::disk('local')->put('uploads/songs/{$uuid}/cover.png', file_get_contents($cover));
+        Storage::disk('public')->put('songs/'.$uuid.'/audio.mp3', file_get_contents($audio));
+        Storage::disk('public')->put('songs/'.$uuid.'/cover.jpg', file_get_contents($cover));
 
         $uuid = Song::create([
             'title' => $title,
-            'created_at' => Date::parse($created_at) || Date::now(),
+            'artist' => 'todo',
+            'url' => '/storage/songs/'.$uuid.'/audio.mp3',
+            'cover_url' => '/storage/songs/'.$uuid.'/cover.jpg',
+            'created_at' => Date::parse($created_at),
             'duration' => $duration,
-            'is_explicit' => $explicit || false
+            'is_explicit' => $explicit
         ])->getKey();
 
         $song = Song::find($uuid);
-        return ok($song);
+        return $json ? ok($song) : Inertia::render('Admin');
     }
 
     /**
