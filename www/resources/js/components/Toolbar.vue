@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, watch, computed, ref, Ref } from 'vue'
+import { onMounted, watch, computed, ref, } from 'vue'
 import { Button, Icon, Slider } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
+import { router } from '@inertiajs/vue3';
 
 const player = usePlayerStore()
 const audio = ref<HTMLAudioElement | null>(null)
@@ -59,11 +60,11 @@ function like() {
 }
 
 function openLyrics() {
-    //TODO: implement open lyrics functionality
+    //open lyrics panel
 }
 
 function openQueue() {
-    //TODO: implement open queue functionality
+    router.get('/queue');
 }
 
 

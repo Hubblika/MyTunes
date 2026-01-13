@@ -10,3 +10,4 @@ export { default as TextLink } from './TextLink.vue';
 export { default as ToggleSwitch } from './ToggleSwitch.vue';
 export { default as SongCard } from './SongCard.vue';
 export { default as HomeRow } from './HomeRow.vue';
+export { default as PlaylistSong } from './QueueSong.vue';

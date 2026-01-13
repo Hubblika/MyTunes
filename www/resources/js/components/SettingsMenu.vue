@@ -33,7 +33,7 @@ onMounted(() => {
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('settings.title') }}</h1>
 
         <div
-            class="flex justify-between items-center w-full p-4 bg-gray-100 dark:bg-black rounded-xl shadow-inner transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+            class="flex justify-between items-center w-full p-4 bg-gray-100 dark:bg-black rounded-xl shadow-inner transition-colors duration-300 hover:bg-gray-500/10 dark:hover:bg-white/10">
 
             <p class="text-gray-800 dark:text-gray-200 font-medium">
                 {{ $t('settings.themeTitle') }}
@@ -51,7 +51,7 @@ onMounted(() => {
         </div>
 
         <div
-            class="flex justify-between items-center w-full p-4 bg-gray-100 dark:bg-black rounded-xl shadow-inner transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+            class="flex justify-between items-center w-full p-4 bg-gray-100 dark:bg-black rounded-xl shadow-inner transition-colors duration-300 hover:bg-gray-500/10 dark:hover:bg-white/10">
 
             <p class="text-gray-800 dark:text-gray-200 font-medium">
                 {{ $t('settings.languageTitle') }}

@@ -22,6 +22,15 @@ Route::get('/settings', function (Request $request) {
 })
     ->name('Settings');
 
+Route::get('/queue', function (Request $request) {
+    if ($request->user() !== null) {
+        return Inertia::render('Queue');
+    }
+
+    return redirect('/login', 303);
+})
+    ->name('Queue');
+
 Route::get('/song/{uuid}', function () {
     return Inertia::render('Song', []);
 })
