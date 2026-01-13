@@ -29,16 +29,14 @@ class PlaylistController extends Controller
 
         $name = $request->json('name');
         $description = $request->json('description');
-        $public = $request->json('public');
+        $public = $request->json('public', true);
 
-        if (!$name || strlen($name) < 1) {
-            return err(400, ['field' => 'name']);
-        } else if ($public !== true && $public !== false) {
+        if (!$name || \strlen($name) < 1) {
             return err(400, ['field' => 'name']);
         }
 
         $playlist_id = Playlist::create([
-            'creator_id' => $user->id,
+            'user_id' => $user->id,
             'name' => $name,
             'description' => $description,
             'public' => $public
