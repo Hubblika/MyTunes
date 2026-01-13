@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Playlist;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PlaylistController extends Controller
@@ -10,9 +11,30 @@ class PlaylistController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $playlists = Playlist::all();
+        $username = $request->query('username');
+
+        if (!$username) {
+            // Only admins can get all playlists from all users
+            if ($request->user()?->is_admin) {
+                $playlists = Playlist::all();
+                return ok($playlists);
+            }
+
+            return err(404, ['field' => 'username']);
+        }
+
+        $target = User::whereUsername($username)->first();
+
+        if (!$target) {
+            return err(404, ['field' => 'username']);
+        }
+
+        $playlists = Playlist::whereUserId($target->getKey())
+            ->withCount('songs')
+            ->get();
+
         return ok($playlists);
     }
 
@@ -58,7 +80,7 @@ class PlaylistController extends Controller
             return err(404);
         }
 
-        if (!$playlist->public && $playlist->creator()->getKey() !== $request->user()?->getKey()) {
+        if (!$playlist->public && $playlist->user_id !== $request->user()?->getKey()) {
             return err(404);
         }
 
@@ -122,7 +144,7 @@ class PlaylistController extends Controller
 
         if (!$user) {
             return err(401);
-        } else if ($user->id !== $playlist->creator_id) {
+        } else if ($playlist->user->username !== $user->username) { // <- this is stupid but i think the userid type conversion is messing it up
             return err(403);
         }
 

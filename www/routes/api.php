@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/utils.php';
 
 Route::middleware(['web'])->group(fn () => [
-    // Route::get('/playlists', [PlaylistController::class, 'index']),
+    Route::get('/playlists', [PlaylistController::class, 'index']),
     Route::post('/playlists', [PlaylistController::class, 'store']),
     Route::get('/playlists/{uuid}', [PlaylistController::class, 'show']),
     Route::put('/playlists/{uuid}', [PlaylistController::class, 'update']),

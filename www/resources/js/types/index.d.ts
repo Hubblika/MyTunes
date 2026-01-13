@@ -1,22 +1,15 @@
+import type { User } from '@/lib/types';
+
 export interface Auth {
     self: Self
 }
 
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     app: string,
-    auth: Auth
+    self: Self
 };
 
-export interface User {
-    id: number,
-    username: string,
-    email: string,
-    description?: string,
-    created_at: string,
-    updated_at: string
-}
-
-export interface Self {
+export interface Self extends User {
     email_verified_at?: string,
 }
 

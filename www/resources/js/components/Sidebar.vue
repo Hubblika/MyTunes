@@ -1,43 +1,46 @@
 <script setup lang="ts">
-import { Searchbar, PlaylistCard, Button, Icon } from './common'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
+import { Searchbar, PlaylistCard, Button, Icon } from './common';
+import playlist from '@/actions/App/Http/Controllers/PlaylistController';
+import { usePage } from '@inertiajs/vue3';
+import { Playlist } from '@/lib/types';
 
-type Playlist = {
-  id: number
-  title: string
-  subtitle?: string
-  coverUrl: string
-  //TODO: add property to define the music in the playlist
+const page = usePage();
+
+const playlists = ref<Playlist[]>([]);
+
+async function getOwnPlaylists() {
+    const { data } = await axios.get(playlist.index.url() + `?username=${page.props.self.username}`, {
+        headers: { Accept: 'application/json' }
+    });
+
+    playlists.value = data.data;
 }
 
-const playlists = ref<Playlist[]>([
-  {
-    id: 1,
-    title: 'Playlist 1',
-    subtitle: '42',
-    coverUrl: '/uploads/thumbnails/playlist/defaultThumbnail.png'
-  }
-]);
+async function addPlaylist() {
+    const { data } = await axios.post(playlist.store.url(), {
+        name: 'New Playlist'
+    }, {
+        headers: { Accept: 'application/json' }
+    });
 
-function fetchplaylists() {
-    //TODO: fetch playlists from the database
+    console.log(data);
+    playlists.value.push(data.data);
 }
 
-function addPlaylist() {
-  playlists.value.push({
-    id: Date.now(),
-    title: 'New Playlist',
-    subtitle: '0 songs',
-    coverUrl: '/covers/default-playlist.png'
-  })
+async function deletePlaylist(playlistId: string) {
+    // TODO: add "are you sure?" prompt
+    const { data } = await axios.delete(playlist.destroy.url(playlistId), {
+        headers: { Accept: 'application/json' }
+    });
 
-  //TODO: save added playlist to database
+    playlists.value = playlists.value.filter(item => item.id !== playlistId);
 }
 
-function deletePlaylist(playlistID: number) {
-    playlists.value = playlists.value.filter(item => item.id !== playlistID);
-    //TODO: delete playlist from the database
-}
+onMounted(async () => {
+    await getOwnPlaylists();
+});
 </script>
 
 <template>
@@ -45,28 +48,32 @@ function deletePlaylist(playlistID: number) {
         <div class="flex items-center justify-between h-16 shrink-0">
             <h1 class="text-lg font-bold pl-2">{{ $t('sidebar.title')}}</h1>
             <Button @click="addPlaylist" class="group relative">
-                <Icon
-                    name="circle-plus"
-                    class="w-5 h-5 transition-all duration-200
-                        group-hover:text-black/60 dark:group-hover:text-white/80"/>
+                <Icon name="circle-plus" class="w-5 h-5 transition-all duration-200 group-hover:text-black/60 dark:group-hover:text-white/80"></Icon>
             </Button>
         </div>
+        <!-- TODO add instant playlist filtering -->
         <Searchbar class="w-full shrink-0" :placeholder="$t('sidebar.searchbar')"></Searchbar>
         <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto">
             <PlaylistCard
-                :id="0"
-                :title="$t('sidebar.likedSongs')"
-                :subtitle="128 + ' ' + $t('sidebar.playlistNumber')"
-                :cover-url="'/uploads/thumbnails/playlist/defaultThumbnail.png'"
-                @deletePlaylist="deletePlaylist"/>
+                :playlist="{
+                    id: '00000000-0000-0000-0000-000000000000',
+                    user_id: page.props.self.id,
+                    name: $t('sidebar.likedSongs'),
+                    description: '',
+                    public: false,
+                    is_album: false,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
 
+                    songs_count: 100
+                }"
+                @deletePlaylist="deletePlaylist"
+            />
             <PlaylistCard
-                 v-for="playlist in playlists"
-                :id="playlist.id"
-                :title="playlist.title"
-                :subtitle="playlist.subtitle + ' ' + $t('sidebar.playlistNumber')"
-                :cover-url="playlist.coverUrl"
-                @deletePlaylist="deletePlaylist"/>
+                v-for="playlist in playlists"
+                :playlist="playlist"
+                @delete-playlist="deletePlaylist"
+            />
         </div>
     </aside>
 </template>
