@@ -17,7 +17,6 @@ Route::middleware(['web'])->group(fn () => [
     Route::delete('/playlists/{uuid}', [PlaylistController::class, 'destroy']),
 
     Route::get('/songs', [SongController::class, 'index']),
-    Route::post('/songs', [SongController::class, 'store']),
     Route::get('/songs/{uuid}', [SongController::class, 'show']),
     Route::put('/songs/{uuid}', [SongController::class, 'update']),
     Route::delete('/songs/{uuid}', [SongController::class, 'destroy']),
@@ -28,6 +27,7 @@ Route::middleware(['web'])->group(fn () => [
     Route::put('/users/{id}', [UserController::class, 'update']),
     Route::delete('/users/{id}', [UserController::class, 'destroy'])
 ]);
+Route::post('/songs', [SongController::class, 'store'])->middleware(['web']);
 
 Route::get('/me', function (Request $request) {
     $user = $request->user();
