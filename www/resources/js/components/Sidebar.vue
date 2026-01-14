@@ -38,6 +38,14 @@ async function deletePlaylist(playlistId: string) {
     playlists.value = playlists.value.filter(item => item.id !== playlistId);
 }
 
+async function renamePlaylist(playlistId: string, name: string) {
+    const { data } = await axios.put(playlist.update.url(playlistId), { name }, {
+        headers: { Accept: 'application/json' }
+    });
+
+    playlists.value = playlists.value.map(playlist => playlist.id === playlistId ? data.data : playlist);
+}
+
 onMounted(async () => {
     await getOwnPlaylists();
 });
@@ -67,12 +75,12 @@ onMounted(async () => {
 
                     songs_count: 100
                 }"
-                @deletePlaylist="deletePlaylist"
             />
             <PlaylistCard
                 v-for="playlist in playlists"
                 :playlist="playlist"
                 @delete-playlist="deletePlaylist"
+                @rename-playlist="renamePlaylist"
             />
         </div>
     </aside>

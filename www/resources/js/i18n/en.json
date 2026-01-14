@@ -1,4 +1,7 @@
 {
+    "generic": {
+        "cancel": "Cancel"
+    },
     "login": {
         "title": "Log in to MyTunes",
         "emailLabel": "Email",
@@ -38,7 +41,8 @@
         "searchbar": "Search",
         "likedSongs": "Liked Songs",
         "playlistNumber": "songs",
-        "deletePlaylistButton": "Delete playlist"
+        "deletePlaylistButton": "Delete playlist",
+        "renamePlaylistButton": "Rename playlist"
     },
 
     "toolbar": {

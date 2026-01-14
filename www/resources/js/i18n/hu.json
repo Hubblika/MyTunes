@@ -1,4 +1,7 @@
 {
+    "generic": {
+        "cancel": "Mégsem"
+    },
     "login": {
         "title": "Bejelentkezés MyTunes-ba",
         "emailLabel": "E-mail",
@@ -38,7 +41,8 @@
         "searchbar": "Keresés",
         "likedSongs": "Kedvelt Zenéim",
         "playlistNumber": "zene",
-        "deletePlaylistButton": "Lejátszási lista törlése"
+        "deletePlaylistButton": "Lejátszási lista törlése",
+        "renamePlaylistButton": "Lejátszási lista átnevezése"
     },
 
      "toolbar": {

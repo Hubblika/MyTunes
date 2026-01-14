@@ -106,7 +106,7 @@ class PlaylistController extends Controller
 
         $user = $request->user();
 
-        if (!$user || $user->getKey() !== $playlist->creator_id) {
+        if (!$user || $user->getKey() !== $playlist->user->getKey()) {
             return err(403);
         }
 
