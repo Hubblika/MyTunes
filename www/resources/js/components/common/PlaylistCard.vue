@@ -58,7 +58,7 @@ onMounted(() => {
 <template>
     <div class="flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-500/10 dark:hover:bg-white/10 transition" @click="() => renaming ? {} : router.visit(`/playlist/${playlist.id}`)">
         <div class="size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0">
-            <img :src="`/storage/img/${playlist.id}.png`" class="w-full h-full object-cover" />
+            <img :src="'/uploads/thumbnails/defaultThumbnail.png'" class="w-full h-full object-cover" />
         </div>
         <div class="min-w-0 flex flex-col grow">
             <span v-if="!renaming" class="text-sm font-medium truncate">{{ playlist.name }}</span>

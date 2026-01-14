@@ -18,22 +18,27 @@ class SongsTableSeeder extends Seeder
             [
                 'title' => 'Fly Away',
                 'duration' => 215,
+                'release_date' => '2020-03-15',
             ],
             [
                 'title' => 'Mayday',
                 'duration' => 190,
+                'release_date' => '2019-07-22',
             ],
             [
                 'title' => 'Rise Up',
                 'duration' => 185,
+                'release_date' => '2021-01-10',
             ],
             [
                 'title' => 'Unity',
                 'duration' => 260,
+                'release_date' => '2018-11-05',
             ],
             [
                 'title' => 'Xenogenesis',
                 'duration' => 255,
+                'release_date' => '2022-06-30',
             ],
         ];
 
@@ -43,7 +48,8 @@ class SongsTableSeeder extends Seeder
                 'title' => $song['title'],
                 'artist' => 'TheFatRat',
                 'url' => '/audio/' . $song['title'] . '.mp3',
-                'cover_url' => 'uploads/thumbnails/defaultThumbnail.png',
+                'cover_url' => '/uploads/thumbnails/defaultThumbnail.png',
+                'date' => $song['release_date'],
                 'created_at' => now(),
                 'duration' => $song['duration'],
                 'genre' => 'Electronic',

@@ -1,74 +1,50 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function (Request $request) {
-    if ($request->user() !== null) {
+// Routes that require authentication
+Route::middleware('auth')->group(function () {
+
+    Route::get('/', function () {
         return Inertia::render('Home');
-    }
+    })->name('home');
 
-    return redirect('/login', 303);
-})
-    ->name('home');
-
-Route::get('/settings', function (Request $request) {
-    if ($request->user() !== null) {
+    Route::get('/settings', function () {
         return Inertia::render('Settings');
-    }
+    })->name('settings');
 
-    return redirect('/login', 303);
-})
-    ->name('settings');
-
-Route::get('/queue', function (Request $request) {
-    if ($request->user() !== null) {
+    Route::get('/queue', function () {
         return Inertia::render('Queue');
-    }
+    })->name('queue');
 
-    return redirect('/login', 303);
-})
-    ->name('Queue');
+    Route::get('/song/{uuid}', function ($uuid) {
+        return Inertia::render('Song', []);
+    })->whereUuid('uuid')
+      ->name('song.detail');
 
-Route::get('/song/{uuid}', function () {
-    return Inertia::render('Song', []);
-})
-    ->whereUuid('uuid')
-    ->name('song.detail');
+    Route::get('/playlist/{uuid}', function ($uuid) {
+        return Inertia::render('Playlist', []);
+    })->whereUuid('uuid')
+      ->name('playlist.detail');
 
-Route::get('/playlist/{uuid}', function () {
-    return Inertia::render('Playlist', []);
-})
-    ->whereUuid('uuid')
-    ->name('playlist.detail');
+    Route::get('/album/{uuid}', function ($uuid) {
+        return Inertia::render('Playlist', []);
+    })->whereUuid('uuid')
+      ->name('album.detail');
 
-Route::get('/album/{uuid}', function () {
-    return Inertia::render('Playlist', []);
-})
-    ->whereUuid('uuid')
-    ->name('album.detail');
+    Route::get('/search/{query}', function (string $query) {
+        return Inertia::render('Search', ['query' => $query]);
+    })->where('query', '.+')
+      ->name('search');
 
-Route::get('/search/{query}', function (Request $request, string $query) {
-    return Inertia::render('Search', ['query' => $query]);
-})
-    ->where('query', '.+')
-    ->name('search');
-
-
-
-Route::get('/admin', function (Request $request) {
-    if ($request->user()->is_admin) {
+    Route::get('/admin', function () {
         return Inertia::render('Admin');
-    }
+    })->middleware('can:admin')
+      ->name('admin');
 
-    return Inertia::render('Error', ['status' => 403, 'message' => 'Forbidden']);
-})
-    ->name('admin');
-
-
+});
 
 Route::fallback(function () {
     return Inertia::render('Error', ['status' => 404, 'message' => 'Not Found']);
-})
-    ->name('fallback');
+})->name('fallback');

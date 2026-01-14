@@ -35,6 +35,7 @@ export const usePlayerStore = defineStore("player", {
                 this.togglePlay();
             }
         },
+        
         togglePlay() {
             this.isPlaying = !this.isPlaying;
         },

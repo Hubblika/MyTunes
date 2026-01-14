@@ -20,7 +20,7 @@ const logout = () => {
 const selectMenu = (item: string) => {
     dropdownOpen.value = false;
     if (item === 'logout') logout();
-    else if (item === 'settings') router.get('settings');
+    else if (item === 'settings') router.get('/settings');
     else console.log(`Selected ${item}`);
 }
 

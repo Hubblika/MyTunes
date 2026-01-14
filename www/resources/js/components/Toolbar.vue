@@ -29,14 +29,7 @@ async function loadTrack() {
 }
 
 function togglePlay() {
-    player.togglePlay()
-    loadTrack()
-    if (!audio.value) return
-    if (player.isPlaying) {
-        audio.value.play()
-    } else {
-        audio.value.pause()
-    }
+    player.togglePlay();
 }
 
 function skipForward() {
@@ -87,16 +80,23 @@ watch(
 
 watch(
     () => player.isPlaying,
-    (isPlaying) => {
-        if (!isPlaying) {
-            if (!audio.value) return
-            audio.value.pause()
-            return
-        } else {
-            loadTrack()
+    async (isPlaying) => {
+        if (!audio.value) return
 
-            if (!audio.value) return
-            audio.value.play()
+        if (!isPlaying) {
+            audio.value.pause()
+        } else {
+            const newSrc = new URL(player.audioSrc, location.href).href
+            if (audio.value.src !== newSrc) {
+                audio.value.src = newSrc
+                audio.value.load()
+            }
+
+            try {
+                await audio.value.play()
+            } catch (e) {
+                console.warn('Autoplay blocked', e)
+            }
         }
     }
 )
@@ -131,8 +131,6 @@ onMounted(() => {
     audio.value.addEventListener('ended', () => {
         skipForward()
     })
-
-    loadTrack()
 })
 </script>
 
@@ -143,8 +141,8 @@ onMounted(() => {
 
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gray-700 rounded">
-                <img :src="player.currentTrack?.cover_url ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'"
-                    alt="Album Art" class="w-full h-full object-cover rounded" />
+                <img :src="player.currentTrack?.cover_url ?? '/uploads/thumbnails/defaultThumbnail.png'" alt="Album Art"
+                    class="w-full h-full object-cover rounded" />
             </div>
             <div>
                 <p

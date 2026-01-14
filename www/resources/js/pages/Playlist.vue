@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MainContent } from '@/components';
 import { MainLayout } from '@/layouts';
 import type { Playlist, Song } from '@/lib/types';
 
@@ -16,6 +17,8 @@ defineOptions({
 </script>
 
 <template>
-    <pre>playlist = {{ playlist }}</pre>
-    <pre>songs = {{ songs }}</pre>
+    <MainContent>
+        <pre>playlist = {{ playlist }}</pre>
+        <pre>songs = {{ songs }}</pre>
+    </MainContent>
 </template>
