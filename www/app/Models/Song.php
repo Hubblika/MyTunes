@@ -7,50 +7,42 @@ use Illuminate\Support\Str;
 
 class Song extends Model
 {
+    protected $table = 'songs';
+
+    protected $primaryKey = 'uuid';
     protected $keyType = 'string';
     public $incrementing = false;
+
     protected $fillable = [
+        'uuid',
         'title',
         'artist',
         'url',
         'cover_url',
         'date',
         'duration',
-        'is_explicit',
-        'genre'
+        'genre',
     ];
-    public $timestamps = true;
 
     protected static function boot(): void
     {
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->id) {
-                $model->id = (string) Str::uuid();
+            if (!$model->uuid) {
+                $model->uuid = (string) Str::uuid();
             }
         });
     }
 
-    // Relationships
     public function playlists()
     {
-        return $this->belongsToMany(Playlist::class, 'playlist_songs')
-                    ->withPivot('position')
-                    ->withTimestamps();
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'title' => 'string',
-            'artist' => 'string',
-            'url' => 'string',
-            'cover_url' => 'string',
-            'date' => 'date',
-            'duration' => 'integer',
-            'is_explicit' => 'boolean',
-            'genre' => 'string'
-        ];
+        return $this->belongsToMany(
+            Playlist::class,
+            'playlist_songs',
+            'song_id',
+            'playlist_id'
+        )->withPivot('position')
+         ->withTimestamps();
     }
 }

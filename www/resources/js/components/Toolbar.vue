@@ -51,7 +51,7 @@ function mute() {
 async function like() {
     liked.value = !liked.value;
     if(liked.value) {
-        await axios.post('/like/550e8400-e29b-41d4-a716-446655440000');
+        await axios.post('/api/like/2acd08ed-846d-40df-b049-8c61c4d53771');
     }
     else {
         //delete liked song

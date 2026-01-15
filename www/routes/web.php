@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\LikeController;
 
 Route::middleware('auth')->group(function () {
 
@@ -47,3 +48,4 @@ Route::middleware('auth')->group(function () {
 Route::fallback(function () {
     return Inertia::render('Error', ['status' => 404, 'message' => 'Not Found']);
 })->name('fallback');
+

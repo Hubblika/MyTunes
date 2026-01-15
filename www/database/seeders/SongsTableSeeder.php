@@ -44,7 +44,7 @@ class SongsTableSeeder extends Seeder
 
         foreach ($songs as $song) {
             DB::table('songs')->insert([
-                'id' => Str::uuid(),
+                'uuid' => Str::uuid(),
                 'title' => $song['title'],
                 'artist' => 'TheFatRat',
                 'url' => '/audio/' . $song['title'] . '.mp3',

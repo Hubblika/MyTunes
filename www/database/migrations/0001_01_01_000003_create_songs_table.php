@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('songs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuid()->primary();
             $table->string('title');
             $table->string('artist'); // ->foreignId('user_id')?
             $table->string('url');
@@ -25,14 +25,15 @@ return new class extends Migration
 
         Schema::create('_user_songs', function (Blueprint $table) {
             $table->id()->primary();
-            $table->foreignUuid('song_id')->constrained('songs', 'id')->cascadeOnDelete();
+            $table->foreignUuid('song_id')->constrained('songs', 'uuid')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
         });
 
         Schema::create('_user_likes', function (Blueprint $table) {
             $table->id()->primary();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('song_id')->constrained('songs', 'id')->cascadeOnDelete();
+            $table->foreignUuid('song_id')->constrained('songs', 'uuid')->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
