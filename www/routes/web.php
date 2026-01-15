@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Routes that require authentication
 Route::middleware('auth')->group(function () {
 
     Route::get('/', function () {

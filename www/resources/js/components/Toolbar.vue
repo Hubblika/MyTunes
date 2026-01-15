@@ -3,6 +3,7 @@ import { onMounted, watch, computed, ref, } from 'vue'
 import { Button, Icon, Slider } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const player = usePlayerStore()
 const audio = ref<HTMLAudioElement | null>(null)
@@ -47,9 +48,14 @@ function mute() {
     else player.volume = 0
 }
 
-function like() {
-    //TODO: implement like functionality
+async function like() {
     liked.value = !liked.value;
+    if(liked.value) {
+        await axios.post('/like/550e8400-e29b-41d4-a716-446655440000');
+    }
+    else {
+        //delete liked song
+    }
 }
 
 function openLyrics() {

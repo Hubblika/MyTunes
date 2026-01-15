@@ -18,6 +18,7 @@ export const usePlayerStore = defineStore("player", {
     getters: {
         currentTrack: (state) => state.queue[state.currentIndex],
         audioSrc: (state) => state.queue[state.currentIndex]?.url ?? "",
+        uuid: (state) => state.queue[state.currentIndex]?.uuid ?? ""
     },
 
     actions: {

@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\UserController;
-use App\Models\Song;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +25,10 @@ Route::middleware(['web'])->group(fn () => [
     // Route::get('/users/{id}', [UserController::class, 'store']),
     Route::get('/users/{id}', [UserController::class, 'show']),
     Route::put('/users/{id}', [UserController::class, 'update']),
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])
+    Route::delete('/users/{id}', [UserController::class, 'destroy']),
+
+    Route::post('/like/{uuid}', [LikeController::class], 'store')
+
 ]);
 Route::post('/songs', [SongController::class, 'store'])->middleware(['web']);
 

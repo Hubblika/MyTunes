@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import axios from 'axios';
+
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
 import playlist from '@/actions/App/Http/Controllers/PlaylistController';
 import { usePage } from '@inertiajs/vue3';
