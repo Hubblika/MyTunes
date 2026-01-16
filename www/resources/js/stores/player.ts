@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import type { _Song } from "@/types";
+import axios from "axios";
 
 export const usePlayerStore = defineStore("player", {
     state: () => ({
@@ -18,7 +19,8 @@ export const usePlayerStore = defineStore("player", {
     getters: {
         currentTrack: (state) => state.queue[state.currentIndex],
         audioSrc: (state) => state.queue[state.currentIndex]?.url ?? "",
-        uuid: (state) => state.queue[state.currentIndex]?.uuid ?? ""
+        uuid: (state) => state.queue[state.currentIndex]?.uuid,
+        _liked: (state) => state.liked,
     },
 
     actions: {
@@ -35,8 +37,10 @@ export const usePlayerStore = defineStore("player", {
                 this.currentIndex = 0;
                 this.togglePlay();
             }
+
+            await this.fetchLiked();
         },
-        
+
         togglePlay() {
             this.isPlaying = !this.isPlaying;
         },
@@ -87,6 +91,40 @@ export const usePlayerStore = defineStore("player", {
             this.currentIndex = this.queue.findIndex(
                 (song) => song === currentTrack,
             );
+        },
+
+        async toggleLike() {
+            if (!this.currentTrack) return;
+
+            this.liked = !this.liked;
+
+            try {
+                if (this.liked) {
+                    await axios.post(`/api/like/${this.currentTrack.uuid}`);
+                } else {
+                    await axios.delete(`/api/like/${this.currentTrack.uuid}`);
+                }
+            } catch (err) {
+                console.error("Failed to toggle like:", err);
+                this.liked = !this.liked;
+            }
+        },
+
+        async fetchLiked() {
+            if (!this.currentTrack) {
+                this.liked = false;
+                return;
+            }
+
+            try {
+                const res = await axios.get(
+                    `/api/like/${this.currentTrack.uuid}`,
+                );
+                this.liked = res.data.liked;
+            } catch (err) {
+                console.error("Failed to fetch liked status:", err);
+                this.liked = false;
+            }
         },
     },
 });

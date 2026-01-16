@@ -49,13 +49,7 @@ function mute() {
 }
 
 async function like() {
-    liked.value = !liked.value;
-    if(liked.value) {
-        await axios.post('/api/like/2acd08ed-846d-40df-b049-8c61c4d53771');
-    }
-    else {
-        //delete liked song
-    }
+    await player.toggleLike();
 }
 
 function openLyrics() {
@@ -162,8 +156,8 @@ onMounted(() => {
             </div>
             <Button @click="like" :disabled="!hasTrack"
                 :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
-                <Icon :name="liked ? 'heart-filled' : 'heart'"
-                    :class="['size-6 transition-colors duration-150', liked ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
+                <Icon :name="player._liked ? 'heart-filled' : 'heart'"
+                    :class="['size-6 transition-colors duration-150', player._liked ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
             </Button>
         </div>
 

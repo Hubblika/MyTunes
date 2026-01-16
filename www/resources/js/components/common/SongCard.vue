@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import song from '@/routes/song';
 import { Icon } from '.'
 import { usePlayerStore } from '@/stores/player'
 import { _Song } from '@/types';
