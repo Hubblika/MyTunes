@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
       ->name('song.detail');
 
     Route::get('/playlist/{uuid}', function ($uuid) {
-        return Inertia::render('Playlist', []);
+        return Inertia::render('Playlist', ['uuid' => $uuid]);
     })->whereUuid('uuid')
       ->name('playlist.detail');
 

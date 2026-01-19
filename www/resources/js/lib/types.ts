@@ -35,14 +35,11 @@ export interface Song {
 }
 
 export interface Playlist {
-    id: string,
+    uuid: string,
     user_id: string,
     name: string,
     description?: string,
     public: boolean,
-    is_album: boolean,
     created_at: string,
     updated_at: string,
-
-    songs_count: number
 }

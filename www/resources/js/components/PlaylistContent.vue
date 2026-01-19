@@ -4,6 +4,10 @@ import axios from "axios";
 import { PlaylistSong } from "./common";
 import { _Song } from "@/types";
 
+const props = defineProps<{
+    uuid: string
+}>();
+
 const likes = ref<string[]>([]);
 const likedSongs = ref<_Song[]>([]);
 
@@ -31,17 +35,21 @@ async function fetchLikedSongs() {
 }
 
 onMounted(async () => {
-    await fetchLikes();
-    await fetchLikedSongs();
-    console.log(likedSongs.value[0].title)
+    if (props.uuid === '00000000-0000-0000-0000-000000000000') {
+        await fetchLikes();
+        await fetchLikedSongs();
+        console.log(likedSongs.value[0]?.title);
+    }
+    console.log("Mounted PlaylistContent with uuid:", props.uuid);
 });
+
 </script>
 
 <template>
     <section class="flex flex-col h-full gap-4">
         <header class="px-4">
             <h1 class="text-2xl font-bold text-black dark:text-white">
-                    asd
+                asd
             </h1>
         </header>
 
@@ -58,7 +66,14 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col overflow-y-auto">
-            <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song"/>
+            <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
+                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song" />
+            </template>
+            <template v-else>
+                <div class="p-4 text-center text-neutral-500 dark:text-neutral-400">
+                    Placeholder content for this playlist.
+                </div>
+            </template>
         </div>
     </section>
 </template>

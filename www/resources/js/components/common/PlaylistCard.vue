@@ -21,7 +21,7 @@ const selectMenu = (item: string) => {
 
     switch (item) {
         case 'delete':
-            emit('deletePlaylist', playlist.id);
+            emit('deletePlaylist', playlist.uuid);
             break;
         case 'rename':
             if (inputRef.value) {
@@ -38,7 +38,7 @@ const selectMenu = (item: string) => {
 function finishRenaming() {
     renaming.value = false;
     if (inputRef.value?.value) {
-        emit('renamePlaylist', playlist.id, inputRef.value.value);
+        emit('renamePlaylist', playlist.uuid, inputRef.value.value);
     }
 }
 
@@ -56,7 +56,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-500/10 dark:hover:bg-white/10 transition" @click="() => renaming ? {} : router.visit(`/playlist/${playlist.id}`)">
+    <div class="flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-500/10 dark:hover:bg-white/10 transition" @click="() => renaming ? {} : router.visit(`/playlist/${playlist.uuid}`)">
         <div class="size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0">
             <img :src="'/uploads/thumbnails/defaultThumbnail.png'" class="w-full h-full object-cover" />
         </div>
@@ -64,10 +64,10 @@ onMounted(() => {
             <span v-if="!renaming" class="text-sm font-medium truncate">{{ playlist.name }}</span>
             <input v-else class="text-sm font-medium w-full" :placeholder="playlist.name" @keypress="e => e.key === 'Enter' ? finishRenaming() : {}" ref="inputRef" />
             <span class="text-xs opacity-60 truncate">
-                {{ playlist.songs_count }} {{ $t('sidebar.playlistNumber') }}
+                0 {{ $t('sidebar.playlistNumber') }}
             </span>
         </div>
-        <div v-if="playlist.id !== '00000000-0000-0000-0000-000000000000'" class="relative" ref="dropdownRef" @click="e => e.stopImmediatePropagation()">
+        <div v-if="playlist.uuid !== '00000000-0000-0000-0000-000000000000'" class="relative" ref="dropdownRef" @click="e => e.stopImmediatePropagation()">
             <Button @click="dropdownOpen = !dropdownOpen" class="group transition-all duration-150">
                 <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110"></Icon>
             </Button>

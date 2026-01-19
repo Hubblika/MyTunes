@@ -5,10 +5,14 @@ import { MainLayout } from '@/layouts';
 defineOptions({
     layout: MainLayout
 });
+
+const props = defineProps<{
+    uuid: string
+}>();
 </script>
 
 <template>
     <MainContent>
-        <PlaylistContent/>
+        <PlaylistContent :uuid="props.uuid" />
     </MainContent>
 </template>
