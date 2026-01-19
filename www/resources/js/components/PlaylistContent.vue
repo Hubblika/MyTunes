@@ -47,10 +47,20 @@ onMounted(async () => {
 
 <template>
     <section class="flex flex-col h-full gap-4">
-        <header class="px-4">
-            <h1 class="text-2xl font-bold text-black dark:text-white">
-                asd
-            </h1>
+        <header class="px-4 flex items-end gap-6">
+            <!-- Playlist Image -->
+            <img src="/uploads/thumbnails/defaultThumbnail.png" alt="Playlist Cover"
+                class="w-32 h-32 rounded-lg object-cover shadow-lg" />
+
+            <!-- Title + Subtitle -->
+            <div class="flex flex-col justify-end">
+                <h1 class="text-4xl font-bold text-black dark:text-white">
+                    {{ $t("playlist.likedTitle") }}
+                </h1>
+                <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                    {{ likedSongs.length }} {{ $t("playlist.likedNumber") }}
+                </p>
+            </div>
         </header>
 
         <div class="grid grid-cols-[32px_48px_1fr_1fr_120px_100px] gap-4 px-4 py-2

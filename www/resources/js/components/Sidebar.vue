@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import axios from 'axios';
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
 import playlist from '@/actions/App/Http/Controllers/PlaylistController';
@@ -10,9 +10,19 @@ const page = usePage();
 
 const playlists = ref<Playlist[]>([]);
 
-// For dynamic playlist creation
 const creatingPlaylist = ref(false);
 const newPlaylistName = ref('');
+const searchQuery = ref('');
+
+const filteredPlaylists = computed(() => {
+    if (!searchQuery.value) return playlists.value;
+
+    const query = searchQuery.value.toLowerCase();
+
+    return playlists.value.filter(p =>
+        p.name.toLowerCase().startsWith(query)
+    );
+});
 
 async function getOwnPlaylists() {
     const { data } = await axios.get(
@@ -34,7 +44,6 @@ async function confirmAddPlaylist() {
 
     playlists.value.push(data.data);
 
-    // Reset input
     newPlaylistName.value = '';
     creatingPlaylist.value = false;
 }
@@ -68,8 +77,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <aside class="bg-gray-500/6 dark:text-white w-96 flex flex-col min-h-full max-h-full px-4 rounded-lg">
-        <div class="flex items-center justify-between h-16 shrink-0">
+    <aside class="bg-gray-500/6 dark:text-white w-96 flex flex-col min-h-full max-h-full rounded-lg">
+        <div class="flex items-center justify-between h-16 shrink-0 px-4">
             <h1 class="text-lg font-bold pl-2">{{ $t('sidebar.title') }}</h1>
             <div class="flex items-center space-x-2">
                 <input v-if="creatingPlaylist" v-model="newPlaylistName" @keyup.enter="confirmAddPlaylist"
@@ -82,20 +91,24 @@ onMounted(() => {
             </div>
         </div>
 
-        <Searchbar class="w-full shrink-0" :placeholder="$t('sidebar.searchbar')" />
+        <div class="px-4">
+            <Searchbar class="w-full shrink-0" :placeholder="$t('sidebar.searchbar')" v-model="searchQuery" />
+        </div>
 
-        <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto">
-            <PlaylistCard :playlist="{
-                uuid: '00000000-0000-0000-0000-000000000000',
-                user_id: page.props.self.id,
-                name: $t('sidebar.likedSongs'),
-                description: '',
-                public: false,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            }" />
+        <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto custom-scrollbar px-4">
+            <PlaylistCard
+                v-if="!searchQuery || $t('sidebar.likedSongs').toLowerCase().startsWith(searchQuery.toLowerCase())"
+                :playlist="{
+                    uuid: '00000000-0000-0000-0000-000000000000',
+                    user_id: page.props.self.id,
+                    name: $t('sidebar.likedSongs'),
+                    description: '',
+                    public: false,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                }" />
 
-            <PlaylistCard v-for="playlist in playlists" :key="playlist.uuid" :playlist="playlist"
+            <PlaylistCard v-for="playlist in filteredPlaylists" :key="playlist.uuid" :playlist="playlist"
                 @delete-playlist="deletePlaylist" @rename-playlist="renamePlaylist" />
         </div>
     </aside>

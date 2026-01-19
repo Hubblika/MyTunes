@@ -3,9 +3,11 @@ import { ref, onMounted } from 'vue'
 import { Icon, Button } from '.';
 import { router } from '@inertiajs/vue3';
 import { Playlist } from '@/lib/types';
+import axios from "axios";
 
 const dropdownOpen = ref(false);
 const renaming = ref(false);
+const likes = ref<string[]>([]);
 
 const { playlist } = defineProps<{
     playlist: Playlist
@@ -50,8 +52,14 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 }
 
+async function fetchLikes() {
+    const response = await axios.get("/api/like");
+    likes.value = response.data.likes;
+}
+
 onMounted(() => {
     document.addEventListener('click', handleClickOutside);
+    fetchLikes();
 });
 </script>
 

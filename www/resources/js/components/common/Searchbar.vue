@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 import { Icon } from '.';
 
-defineProps<{
+const props = defineProps<{
   placeholder: string
-}>()
+  modelValue?: string
+}>();
 
-const query = ref('');
+const emit = defineEmits(['update:modelValue']);
 
-function search() {
-    router.push({ url: `/search/${encodeURIComponent(query.value)}` });
-}
+const query = ref(props.modelValue || '');
+
+watch(query, (val) => {
+  emit('update:modelValue', val);
+});
 </script>
 
 <template>
@@ -24,17 +26,16 @@ function search() {
         </div>
 
         <input id="search" type="text" class="font-semibold text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300
-             h-full outline-none grow placeholder:font-semibold
-             transition-colors duration-200 focus:text-black/90 dark:focus:text-white/90" :placeholder="placeholder"
-            @submit="search" v-model.trim="query" />
+                 h-full outline-none grow placeholder:font-semibold
+                 transition-colors duration-200 focus:text-black/90 dark:focus:text-white/90"
+            :placeholder="placeholder" v-model="query" />
 
         <button :class="[
             'h-full aspect-square flex justify-center items-center cursor-pointer transition-transform duration-200',
-            { 'collapse': query.length < 1 }
-        ]" @click="search" :style="{ transform: query.length > 0 ? 'scale(1)' : 'scale(0)' }">
+            { 'collapse': !query.length }
+        ]" @click="query = ''" :style="{ transform: query.length ? 'scale(1)' : 'scale(0)' }">
             <Icon name="send"
-                class="size-5 -translate-x-0.5 hover:rotate-12 hover:text-blue-600 dark:hover:text-blue-400 transition-transform duration-200">
-            </Icon>
+                class="size-5 -translate-x-0.5 hover:rotate-12 hover:text-blue-600 dark:hover:text-blue-400 transition-transform duration-200" />
         </button>
     </label>
 </template>

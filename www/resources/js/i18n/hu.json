@@ -64,6 +64,8 @@
         "headerDuration": "Időtartam"
     },
     "playlist": {
+        "likedTitle": "Kedvelt Dalok",
+        "likedNumber": "dal",
         "headerTitle": "Cím",
         "headerAlbum": "Album",
         "headerAddedAt": "Felvétel dátuma",

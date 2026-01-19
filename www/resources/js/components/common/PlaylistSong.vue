@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { Icon } from '.'
 import { _Song } from '@/types';
+import { usePlayerStore } from '@/stores/player'
 
-defineProps<{
+const props = defineProps<{
     index: number;
     song: _Song;
 }>();
+
+const player = usePlayerStore()
+
+async function play() {
+    player.playSong(props.song);
+}
 </script>
 
 <template>
@@ -17,7 +24,7 @@ defineProps<{
         </div>
 
         <div class="hidden group-hover:flex justify-end">
-            <Icon name="player-play-filled" class="size-6 text-black dark:text-white" />
+            <Icon @click="play" name="player-play-filled" class="size-6 text-black dark:text-white" />
         </div>
 
         <img :src="song.cover_url" alt="cover" class="w-10 h-10 rounded object-cover" />

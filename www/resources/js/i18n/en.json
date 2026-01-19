@@ -64,6 +64,8 @@
         "headerDuration": "Duration"
     },
     "playlist": {
+        "likedTitle": "Liked Songs",
+        "likedNumber": "songs",
         "headerTitle": "Title",
         "headerAlbum": "Album",
         "headerAddedAt": "Added at",
