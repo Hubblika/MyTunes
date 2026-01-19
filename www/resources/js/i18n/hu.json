@@ -62,5 +62,11 @@
         "title": "Műsor",
         "headerTitle": "Cím",
         "headerDuration": "Időtartam"
+    },
+    "playlist": {
+        "headerTitle": "Cím",
+        "headerAlbum": "Album",
+        "headerAddedAt": "Felvétel dátuma",
+        "headerDuration": "Időtartam"
     }
 }

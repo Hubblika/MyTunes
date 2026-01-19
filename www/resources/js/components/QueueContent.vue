@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { usePlayerStore } from "@/stores/player";
-import PlaylistSong from "./common/QueueSong.vue";
+import QueueSong from "./common/QueueSong.vue";
 
 const player = usePlayerStore();
 const { queue } = storeToRefs(player);
@@ -32,7 +32,7 @@ function formatDuration(seconds: number) {
         </div>
 
         <div class="flex flex-col overflow-y-auto">
-            <PlaylistSong v-for="(song, index) in queue" :key="song.uuid" :index="index + 1" :cover="song.cover_url"
+            <QueueSong v-for="(song, index) in queue" :key="song.uuid" :index="index + 1" :cover="song.cover_url"
                 :title="song.title" :artist="song.artist" :duration="formatDuration(song.duration)" />
         </div>
     </section>

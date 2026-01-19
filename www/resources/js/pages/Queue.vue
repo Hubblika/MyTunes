@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LyricsContent, MainContent,  } from '@/components';
+import { QueueContent, MainContent,  } from '@/components';
 import { MainLayout } from '@/layouts';
 
 defineOptions({
@@ -9,6 +9,6 @@ defineOptions({
 
 <template>
     <MainContent>
-        <LyricsContent/>
+        <QueueContent/>
     </MainContent>
 </template>

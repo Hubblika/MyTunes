@@ -16,15 +16,16 @@ export interface Self extends User {
 
 
 export interface _Song {
-    uuid: string;
-    title: string;
-    artist: string;
-    url: string;
-    cover_url: string;
-    duration: number;
-    is_explicit: boolean;
-    genre?: string;
-    covereurl?: string;
+    uuid: string,
+    title: string,
+    artist: string,
+    url: string,
+    cover_url: string,
+    date: string,
+    duration: number,
+    genre?: string,
+    created_at?: string,
+    updated_at?: string
 }
 
 export interface Song extends _Song {

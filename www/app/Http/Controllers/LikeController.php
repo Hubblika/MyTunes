@@ -8,6 +8,16 @@ use App\Models\Song;
 
 class LikeController extends Controller
 {
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        $likes = UserLike::where('user_id', $user->id)
+            ->pluck('song_id');
+
+        return response()->json(['likes' => $likes]);
+    }
+
     public function store(Request $request, string $uuid)
     {
         $user = $request->user();

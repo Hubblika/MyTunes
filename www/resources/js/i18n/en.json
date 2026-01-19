@@ -62,5 +62,11 @@
         "title": "Queue",
         "headerTitle": "Title",
         "headerDuration": "Duration"
+    },
+    "playlist": {
+        "headerTitle": "Title",
+        "headerAlbum": "Album",
+        "headerAddedAt": "Added at",
+        "headerDuration": "Duration"
     }
 }

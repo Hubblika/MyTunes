@@ -20,7 +20,7 @@ function play() {
            transition-colors duration-200
            hover:bg-gray-500/10 dark:hover:bg-white/10">
         <div class="relative mb-3 aspect-square overflow-hidden rounded-md">
-            <img :src="props.song.covereurl ?? '/uploads/thumbnails/defaultThumbnail.png'" alt="" class="h-full w-full object-cover
+            <img :src="props.song.cover_url ?? '/uploads/thumbnails/defaultThumbnail.png'" alt="" class="h-full w-full object-cover
                transition-transform duration-300
                group-hover:scale-105" />
 

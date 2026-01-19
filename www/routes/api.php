@@ -21,7 +21,7 @@ Route::middleware(['web'])->group(fn () => [
     Route::put('/songs/{uuid}', [SongController::class, 'update']),
     Route::delete('/songs/{uuid}', [SongController::class, 'destroy']),
 
-
+    Route::get('/like', [LikeController::class, 'index']),
     Route::post('/like/{uuid}', [LikeController::class, 'store']),
     Route::get('/like/{uuid}', [LikeController::class, 'show']),
     Route::delete('/like/{uuid}', [LikeController::class, 'destroy']),
