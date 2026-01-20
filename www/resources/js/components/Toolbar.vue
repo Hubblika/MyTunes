@@ -3,7 +3,6 @@ import { onMounted, watch, computed, ref, } from 'vue'
 import { Button, Icon, Slider } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
 import { router } from '@inertiajs/vue3';
-import axios from 'axios';
 
 const player = usePlayerStore()
 const audio = ref<HTMLAudioElement | null>(null)
@@ -62,9 +61,47 @@ function openQueue() {
 
 
 watch(
-    () => player.volume,
-    (v) => {
-        if (audio.value) audio.value.volume = v / 100
+    () => player.currentTrack,
+    async (newTrack, oldTrack) => {
+        if (!audio.value) return
+        if (!newTrack) {
+            audio.value.pause()
+            audio.value.src = ''
+            return
+        }
+
+        const newSrc = new URL(player.audioSrc, location.href).href
+
+        if (audio.value.src !== newSrc) {
+            audio.value.src = newSrc
+            audio.value.load()
+        }
+
+        if (player.isPlaying) {
+            try {
+                await audio.value.play()
+            } catch (e) {
+                console.warn('Autoplay blocked', e)
+            }
+        }
+    }
+)
+
+watch(
+    () => player.isPlaying,
+    async (isPlaying) => {
+        if (!audio.value) return
+        if (!player.currentTrack) return
+
+        if (isPlaying) {
+            try {
+                await audio.value.play()
+            } catch (e) {
+                console.warn('Autoplay blocked', e)
+            }
+        } else {
+            audio.value.pause()
+        }
     }
 )
 
@@ -79,35 +116,11 @@ watch(
 )
 
 watch(
-    () => player.isPlaying,
-    async (isPlaying) => {
-        if (!audio.value) return
-
-        if (!isPlaying) {
-            audio.value.pause()
-        } else {
-            const newSrc = new URL(player.audioSrc, location.href).href
-            if (audio.value.src !== newSrc) {
-                audio.value.src = newSrc
-                audio.value.load()
-            }
-
-            try {
-                await audio.value.play()
-            } catch (e) {
-                console.warn('Autoplay blocked', e)
-            }
-        }
+    () => player.volume,
+    (v) => {
+        if (audio.value) audio.value.volume = v / 100
     }
 )
-
-watch(() => player.shuffle, (shuffle) => {
-    if (shuffle) {
-        player.shuffleQueue()
-    } else {
-        player.sortQueue()
-    }
-})
 
 const formattedTime = (time: number) => computed(() => {
     const totalSeconds = time;
@@ -129,9 +142,10 @@ onMounted(() => {
     })
 
     audio.value.addEventListener('ended', () => {
-        skipForward()
+        player.next()
     })
 })
+
 </script>
 
 <template>

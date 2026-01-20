@@ -48,11 +48,9 @@ onMounted(async () => {
 <template>
     <section class="flex flex-col h-full gap-4">
         <header class="px-4 flex items-end gap-6">
-            <!-- Playlist Image -->
             <img src="/uploads/thumbnails/defaultThumbnail.png" alt="Playlist Cover"
                 class="w-32 h-32 rounded-lg object-cover shadow-lg" />
 
-            <!-- Title + Subtitle -->
             <div class="flex flex-col justify-end">
                 <h1 class="text-4xl font-bold text-black dark:text-white">
                     {{ $t("playlist.likedTitle") }}
@@ -77,7 +75,7 @@ onMounted(async () => {
 
         <div class="flex flex-col overflow-y-auto">
             <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
-                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song" />
+                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song" :playlistUuid="uuid" />
             </template>
             <template v-else>
                 <div class="p-4 text-center text-neutral-500 dark:text-neutral-400">

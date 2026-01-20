@@ -14,6 +14,7 @@ export const usePlayerStore = defineStore("player", {
         duration: 0,
         volume: 10,
         originalQueue: [] as _Song[],
+        currentPlaylist: null as string | null,
     }),
 
     getters: {
@@ -21,32 +22,34 @@ export const usePlayerStore = defineStore("player", {
         audioSrc: (state) => state.queue[state.currentIndex]?.url ?? "",
         uuid: (state) => state.queue[state.currentIndex]?.uuid,
         _liked: (state) => state.liked,
+        currentplaylist: (state) => state.currentPlaylist,
     },
 
     actions: {
         async playSong(song: _Song) {
-            if (this.isPlaying) {
-                this.togglePlay();
-                await new Promise((resolve) => setTimeout(resolve, 50));
-                this.emptyQueue();
-                this.queue = [song];
-                this.currentIndex = 0;
-                this.togglePlay();
-            } else {
-                this.queue = [song];
-                this.currentIndex = 0;
-                this.togglePlay();
-            }
+            const current = this.currentTrack;
 
+            if (!current || current.uuid !== song.uuid) {
+                if (this.queue.length === 0) {
+                    this.queue = [song];
+                } else {
+                    this.queue.splice(this.currentIndex, 1);
+                    this.queue.unshift(song);
+                }
+                this.currentIndex = 0;
+                this.isPlaying = true;
+                await this.fetchLiked();
+            }
+        },
+
+        async togglePlay() {
+            this.isPlaying = !this.isPlaying;
             await this.fetchLiked();
         },
 
-        togglePlay() {
-            this.isPlaying = !this.isPlaying;
-        },
-
-        addToQueue(song: _Song) {
+        addToQueue(song: _Song, playlist: string) {
             this.queue.push(song);
+            this.currentPlaylist = playlist;
         },
 
         next() {
