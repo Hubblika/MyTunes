@@ -6,7 +6,6 @@ import { router } from '@inertiajs/vue3';
 
 const player = usePlayerStore()
 const audio = ref<HTMLAudioElement | null>(null)
-const liked = ref(false);
 const hasTrack = computed(() => !!player.currentTrack);
 
 const volumeIcon = computed(() => {
@@ -151,7 +150,9 @@ onMounted(() => {
 <template>
     <audio ref="audio"></audio>
     <div
-        class="flex-none left-0 w-full bg-white dark:bg-black backdrop-blur-md text-black dark:text-white p-3 flex items-center justify-between">
+        class="grid grid-cols-[1fr_auto_1fr] items-center
+         left-0 w-full bg-white dark:bg-black backdrop-blur-md
+         text-black dark:text-white p-3">
 
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gray-700 rounded">
@@ -217,7 +218,7 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 justify-self-end">
             <Button @click="openLyrics" :disabled="!hasTrack"
                 :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                 <Icon name="microphone-2" class="size-5 transition-colors duration-150" />
@@ -238,5 +239,4 @@ onMounted(() => {
             </div>
         </div>
     </div>
-
 </template>

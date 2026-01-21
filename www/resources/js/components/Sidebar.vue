@@ -92,7 +92,7 @@ onMounted(() => {
         </div>
 
         <div class="px-4">
-            <Searchbar class="w-full shrink-0" :placeholder="$t('sidebar.searchbar')" v-model="searchQuery" />
+            <Searchbar class="w-full shrink-0 mb-4" :placeholder="$t('sidebar.searchbar')" v-model="searchQuery" />
         </div>
 
         <div class="space-y-1 pt-3 max-h-full flex-1 overflow-y-auto custom-scrollbar px-4">
