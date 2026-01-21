@@ -17,26 +17,55 @@ class SongsTableSeeder extends Seeder
         $songs = [
             [
                 'title' => 'Fly Away',
+                'artist' => 'TheFatRat',
                 'duration' => 215,
                 'release_date' => '2020-03-15',
             ],
             [
                 'title' => 'Mayday',
+                'artist' => 'TheFatRat',
                 'duration' => 190,
                 'release_date' => '2019-07-22',
             ],
             [
                 'title' => 'Rise Up',
+                'artist' => 'TheFatRat',
                 'duration' => 185,
                 'release_date' => '2021-01-10',
             ],
             [
                 'title' => 'Unity',
+                'artist' => 'TheFatRat',
                 'duration' => 260,
                 'release_date' => '2018-11-05',
             ],
             [
                 'title' => 'Xenogenesis',
+                'artist' => 'TheFatRat',
+                'duration' => 255,
+                'release_date' => '2022-06-30',
+            ],
+            [
+                'title' => 'Hellcat',
+                'artist' => 'NCS',
+                'duration' => 255,
+                'release_date' => '2022-06-30',
+            ],
+            [
+                'title' => 'Heroes Tonight',
+                'artist' => 'NCS',
+                'duration' => 255,
+                'release_date' => '2022-06-30',
+            ],
+            [
+                'title' => 'Mortals',
+                'artist' => 'NCS',
+                'duration' => 255,
+                'release_date' => '2022-06-30',
+            ],
+            [
+                'title' => 'On & On',
+                'artist' => 'NCS',
                 'duration' => 255,
                 'release_date' => '2022-06-30',
             ],
@@ -46,7 +75,7 @@ class SongsTableSeeder extends Seeder
             DB::table('songs')->insert([
                 'uuid' => Str::uuid(),
                 'title' => $song['title'],
-                'artist' => 'TheFatRat',
+                'artist' => $song['artist'],
                 'url' => '/audio/' . $song['title'] . '.mp3',
                 'cover_url' => '/uploads/thumbnails/defaultThumbnail.png',
                 'date' => $song['release_date'],
