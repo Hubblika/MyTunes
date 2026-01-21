@@ -1,45 +1,113 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Button, Icon, Searchbar } from '.';
+import { Icon, Searchbar, Button } from './common';
+import { router } from '@inertiajs/vue3';
 
 const svg = ref('');
+const dropdownOpen = ref(false);
+const dark = ref(false);
+const logoSrc = ref('');
 
-async function resetSvg() {
-    svg.value = document.querySelector('#layout')?.classList.contains('light')
-        ? await import('@/lib/logo_dark.svg?raw').then(r => r.default)
-        : await import('@/lib/logo_light.svg?raw').then(r => r.default)
+function updateLogo() {
+  const isDark = document.documentElement.classList.contains('dark');
+  logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg';
 }
 
-onMounted(resetSvg)
+const logout = () => {
+  router.post('/logout');
+};
+
+const selectMenu = (item: string) => {
+    dropdownOpen.value = false;
+    if (item === 'logout') logout();
+    else if (item === 'settings') router.get('/settings');
+    else console.log(`Selected ${item}`);
+}
+
+const dropdownRef = ref<HTMLElement | null>(null);
+const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+        dropdownOpen.value = false;
+    }
+}
+
+function loadHomeContent() {
+    router.get('/');
+}
+
+function download() {
+    console.log('Starting download');
+    //TODO: download the desktop app
+}
+
+onMounted(() => {
+    updateLogo();
+    document.addEventListener('click', handleClickOutside);
+
+    const observer = new MutationObserver(updateLogo);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+});
+
 </script>
 
 <template>
-    <header class="bg-gray-500/5 dark:bg-white/3 backdrop-blur-md w-full h-14 grid grid-rows-1 grid-cols-3 fixed top-0 left-0 *:h-full *:px-4 *:flex *:items-center *:gap-4">
-        <div>
-            <a href="/" class="size-14 flex justify-center items-center -translate-x-4" v-html="svg"></a>
-        </div>
-        <div class="justify-center flex items-center gap-4">
-            <a href="/" class="w-10 h-10 rounded-full border border-gray-800 text-black flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 12l9-9 9 9h-3v9h-12v-9h-3z"/>
-            </svg>
-            </a>
+    <header class="flex items-center justify-between
+    bg-white dark:bg-black backdrop-blur-md
+    w-full h-14 sticky top-0 left-0
+    text-black dark:text-white pr-4 shrink-0 z-50">
 
-            <Searchbar></Searchbar>
+        <div class="flex items-center gap-3 flex-none">
+            <Button @click="loadHomeContent" class="size-20 p-0 flex justify-center items-center">
+                <img :src="logoSrc" alt="Logo" class="size-25" />
+            </Button>
         </div>
-        <div class="justify-end flex items-center gap-4">
-            <div class="flex items-center justify-center px-3 py-1 border border-black text-black rounded-md cursor-pointer hover:bg-gray-100 transition">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 14a1 1 0 001 1h12a1 1 0 001-1v-2h-2v1H5v-1H3v2zM9 7h2v6h3l-4 4-4-4h3V7z"/>
-                </svg>
-                <span>Download the desktop app</span>
+
+        <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-4">
+            <div class="flex items-center gap-4">
+                <Button @click="loadHomeContent"
+                    class="size-10 rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
+                    <Icon name="home"
+                        class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
+                </Button>
+                <Searchbar class="w-96" :placeholder="$t('header.searchbar')" />
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 flex-none">
+
+            <Button @click="download"
+                class="w-full rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
+                <Icon name="download"
+                    class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
+                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">{{ $t('header.downloadButton') }}</span>
+            </Button>
+
+            <div class="relative" ref="dropdownRef">
+                <button @click="dropdownOpen = !dropdownOpen" class="size-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center
+                       cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+                    <Icon name="user" />
+                </button>
+
+                <ul v-if="dropdownOpen"
+                    class="absolute right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50">
+                    <li @click="selectMenu('profile')"
+                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+                        <span>{{ $t('header.profileButton') }}</span>
+                        <Icon name="user"></Icon>
+                    </li>
+                    <li @click="selectMenu('settings')"
+                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+                        <span>{{ $t('header.settingButton') }}</span>
+                        <Icon name="settings"></Icon>
+                    </li>
+                    <li @click="selectMenu('logout')"
+                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+                        <span>{{ $t('header.logoutButton') }}</span>
+                        <Icon name="logout"></Icon>
+                    </li>
+                </ul>
             </div>
 
-            <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-600 transition">
-                <svg class="w-4 h-4 text-gray-700 dark:text-gray-200" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-            </div>
         </div>
     </header>
 </template>

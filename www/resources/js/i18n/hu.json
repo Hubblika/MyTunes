@@ -1,0 +1,74 @@
+{
+    "generic": {
+        "cancel": "Mégsem"
+    },
+    "login": {
+        "title": "Bejelentkezés MyTunes-ba",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "Adja meg az e-mail címét",
+        "passwordLabel": "Jelszó",
+        "passwordPlaceholder": "Adja meg a jelszavát",
+        "mainButton": "Bejelentkezés",
+        "statusMessage": "Kérem, várjon...",
+        "signUpText": "Nincs még fiókja?",
+        "signUpButton": "Regisztráció"
+    },
+
+    "register": {
+        "title": "Regisztráció MyTunes-ba",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "Adja meg az e-mail címét",
+        "passwordLabel": "Jelszó",
+        "passwordPlaceholder": "Adja meg a jelszavát",
+        "confirmPasswordLabel": "Jelszó megerősítése",
+        "confirmPasswordPlaceholder": "Adja meg a jelszót újra",
+        "mainButton": "Regisztráció",
+        "statusMessage": "Kérem, várjon...",
+        "loginText": "Már van fiókja?",
+        "loginButton": "Bejelentkezés"
+    },
+
+    "header": {
+        "searchbar": "Keresés",
+        "downloadButton": "Alkalmazás letöltése",
+        "profileButton": "Profil",
+        "settingButton": "Beállítások",
+        "logoutButton": "Kijelentkezés"
+    },
+
+    "sidebar": {
+        "title": "Zenéim",
+        "searchbar": "Keresés",
+        "likedSongs": "Kedvelt Zenéim",
+        "playlistNumber": "zene",
+        "deletePlaylistButton": "Lejátszási lista törlése",
+        "renamePlaylistButton": "Lejátszási lista átnevezése"
+    },
+
+     "toolbar": {
+        "songTitle": "Zene címe",
+        "artistName": "Előadó neve"
+    },
+
+    "settings": {
+        "title": "Általános Beállítások",
+        "themeTitle": "Téma - váltás világos és sötét téma között",
+        "darkTheme": "Sötét",
+        "lightTheme": "Világos",
+        "languageTitle": "Nyelv - az applikáció nyelvének váltása (Magyar/Angol)",
+        "languageLabel": "Magyar"
+    },
+    "queue": {
+        "title": "Műsor",
+        "headerTitle": "Cím",
+        "headerDuration": "Időtartam"
+    },
+    "playlist": {
+        "likedTitle": "Kedvelt Dalok",
+        "likedNumber": "dal",
+        "headerTitle": "Cím",
+        "headerAlbum": "Album",
+        "headerAddedAt": "Felvétel dátuma",
+        "headerDuration": "Időtartam"
+    }
+}

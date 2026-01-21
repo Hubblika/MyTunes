@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Icon } from '.';
-import type { Playlist, Song } from '@/types';
+import { Icon } from './common';
+import type { Playlist, Song } from '@/lib/types';
 
 const {
     self

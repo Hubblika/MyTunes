@@ -1,45 +1,58 @@
+import type { User } from '@/lib/types';
+
+export interface Auth {
+    self: Self
+}
+
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-    name: string,
-    quote: { message: string; author: string }
+    app: string,
+    self: Self
 };
 
-export interface User {
-    id: number,
-    email: string,
-    role: Role,
-    name?: string,
-    description?: string,
-    created_at: string,
-    updated_at: string
-}
-
-export enum Role {
-    Admin = 'Admin',
-    Artist = 'Artist',
-    User = 'User'
+export interface Self extends User {
+    email_verified_at?: string,
 }
 
 
 
-export interface Song {
+export interface _Song {
     uuid: string,
     title: string,
-    created_at: string
+    artist: string,
+    url: string,
+    cover_url: string,
+    date: string,
     duration: number,
-    is_explicit: boolean,
+    genre?: string,
+    created_at?: string,
+    updated_at?: string
 }
 
-export interface OrderedSong extends Song {
-    index: number
+export interface Song extends _Song {
+    authors: User[]
 }
 
-export interface Playlist {
+export interface _Playlist {
     uuid: string,
-    creator_id: number,
+    creator_id: string,
     name: string,
     description?: string,
+    public: boolean,
     is_album: boolean,
-    created_at: string,
-    updated_at: string
+    created_at?: string,
+    updated_at?: string
 }
 
+export interface Playlist extends _Playlist {
+    creator: User,
+    songs: Song[]
+}
+
+
+
+export interface ButtonProps {
+    type?: 'button' | 'submit' | 'menu' | 'reset',
+    href?: string,
+    class?: ClassValue,
+    disabled?: boolean
+}

@@ -13,20 +13,30 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id()->primary();
+            $table->string('username', 20)->unique();
             $table->string('email')->unique();
-            $table->string('password_hash');
-            $table->enum('role', ['Admin', 'Artist', 'User'])->default('User');
-            $table->string('name')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password', 60);
+            $table->boolean('is_admin')->default(false);
+            $table->boolean('is_searchable')->default(false);
             $table->text('description')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
 
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
         Schema::create('sessions', function (Blueprint $table) {
-            $table->string('token_hash')->primary();
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->timestamps();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
         });
     }
 
@@ -36,6 +46,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };

@@ -1,0 +1,87 @@
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { PlaylistSong } from "./common";
+import { _Song } from "@/types";
+
+const props = defineProps<{
+    uuid: string
+}>();
+
+const likes = ref<string[]>([]);
+const likedSongs = ref<_Song[]>([]);
+
+
+async function fetchLikes() {
+    const response = await axios.get("/api/like");
+    likes.value = response.data.likes;
+}
+
+async function fetchLikedSongs() {
+    if (!likes.value?.length) return;
+
+    try {
+        const requests = likes.value.map(uuid => axios.get(`/api/songs/${uuid}`));
+        const responses = await Promise.all(requests);
+
+        likedSongs.value = responses
+            .map(r => r.data.data)
+            .filter(Boolean);
+
+    } catch (err) {
+        console.error("Error fetching liked songs:", err);
+        likedSongs.value = [];
+    }
+}
+
+onMounted(async () => {
+    if (props.uuid === '00000000-0000-0000-0000-000000000000') {
+        await fetchLikes();
+        await fetchLikedSongs();
+        console.log(likedSongs.value[0]?.title);
+    }
+    console.log("Mounted PlaylistContent with uuid:", props.uuid);
+});
+
+</script>
+
+<template>
+    <section class="flex flex-col h-full gap-4">
+        <header class="px-4 flex items-end gap-6">
+            <img src="/uploads/thumbnails/defaultThumbnail.png" alt="Playlist Cover"
+                class="w-32 h-32 rounded-lg object-cover shadow-lg" />
+
+            <div class="flex flex-col justify-end">
+                <h1 class="text-4xl font-bold text-black dark:text-white">
+                    {{ $t("playlist.likedTitle") }}
+                </h1>
+                <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                    {{ likedSongs.length }} {{ $t("playlist.likedNumber") }}
+                </p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-[32px_48px_1fr_1fr_120px_100px] gap-4 px-4 py-2
+             text-xs uppercase tracking-widest
+             text-black border-black dark:text-neutral-400
+             border-b dark:border-neutral-800">
+            <div class="text-right">#</div>
+            <div></div>
+            <div>{{ $t("playlist.headerTitle") }}</div>
+            <div>{{ $t("playlist.headerAlbum") }}</div>
+            <div>{{ $t("playlist.headerAddedAt") }}</div>
+            <div class="justify-self-end">{{ $t("playlist.headerDuration") }}</div>
+        </div>
+
+        <div class="flex flex-col overflow-y-auto">
+            <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
+                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song" :playlistUuid="uuid" />
+            </template>
+            <template v-else>
+                <div class="p-4 text-center text-neutral-500 dark:text-neutral-400">
+                    Placeholder content for this playlist.
+                </div>
+            </template>
+        </div>
+    </section>
+</template>

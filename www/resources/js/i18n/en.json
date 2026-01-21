@@ -1,0 +1,74 @@
+{
+    "generic": {
+        "cancel": "Cancel"
+    },
+    "login": {
+        "title": "Log in to MyTunes",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "mainButton": "Log In",
+        "statusMessage": "Please wait...",
+        "signUpText": "Don't have an account?",
+        "signUpButton": "Sign Up"
+    },
+
+    "register": {
+        "title": "Sign up for MyTunes",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPasswordLabel": "Confirm Password",
+        "confirmPasswordPlaceholder": "Re-enter your password",
+        "mainButton": "Sign Up",
+        "statusMessage": "Please wait...",
+        "loginText": "Already have an account?",
+        "loginButton": "Log In"
+    },
+
+    "header": {
+        "searchbar": "Search",
+        "downloadButton": "Download the desktop app",
+        "profileButton": "Profile",
+        "settingButton": "Settings",
+        "logoutButton": "Logout"
+    }, 
+
+    "sidebar": {
+        "title": "My music",
+        "searchbar": "Search",
+        "likedSongs": "Liked Songs",
+        "playlistNumber": "songs",
+        "deletePlaylistButton": "Delete playlist",
+        "renamePlaylistButton": "Rename playlist"
+    },
+
+    "toolbar": {
+        "songTitle": "Song Title",
+        "artistName": "Artist Name"
+    },
+
+    "settings": {
+        "title": "General Settings",
+        "themeTitle": "Theme - switch between light and dark mode",
+        "darkTheme": "Dark",
+        "lightTheme": "Light",
+        "languageTitle": "Language - switch app language (Hungarian/English)",
+        "languageLabel": "English"
+    },
+    "queue": {
+        "title": "Queue",
+        "headerTitle": "Title",
+        "headerDuration": "Duration"
+    },
+    "playlist": {
+        "likedTitle": "Liked Songs",
+        "likedNumber": "songs",
+        "headerTitle": "Title",
+        "headerAlbum": "Album",
+        "headerAddedAt": "Added at",
+        "headerDuration": "Duration"
+    }
+}

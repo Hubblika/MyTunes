@@ -7,70 +7,42 @@ use Illuminate\Support\Str;
 
 class Song extends Model
 {
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
     protected $table = 'songs';
 
-    /**
-     * The primary key associated with the table.
-     * 
-     * @var string
-     */
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';
     public $incrementing = false;
 
-    /**
-     * The attributes that are mass assignable.
-     * 
-     * @var list<string>
-     */
     protected $fillable = [
+        'uuid',
         'title',
-        'created_at',
+        'artist',
+        'url',
+        'cover_url',
+        'date',
         'duration',
-        'is_explicit'
+        'genre',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * 
-     * @var list<string>
-     */
-    protected $hidden = [];
-
-    /**
-     * Indicates if the model should be timestamped.
-     * 
-     * @var bool
-     */
-    public $timestamps = false;
-
-    public static function boot() {
+    protected static function boot(): void
+    {
         parent::boot();
 
-        static::creating(function (Model $model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
+        static::creating(function ($model) {
+            if (!$model->uuid) {
+                $model->uuid = (string) Str::uuid();
             }
         });
     }
 
-    /**
-     * Get the attributes that should be cast.
-     * 
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    public function playlists()
     {
-        return [
-            'title' => 'string',
-            'created_at' => 'date',
-            'duration' => 'integer',
-            'is_explicit' => 'boolean'
-        ];
+        return $this->belongsToMany(
+            Playlist::class,
+            'playlist_songs',
+            'song_id',
+            'playlist_id'
+        )->withPivot('position')
+         ->withTimestamps();
     }
 }

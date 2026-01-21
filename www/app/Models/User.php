@@ -2,87 +2,46 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    /**
-     * The table associated with the model.
-     * 
-     * @var string
-     */
-    protected $table = 'users';
+    use Notifiable;
 
-    /**
-     * The primary key associated with the table.
-     * 
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * The attributes that are mass assignable.
-     * 
-     * @var list<string>
-     */
+    protected $keyType = 'string';       // UUID
+    public $incrementing = false;        // Not auto-incrementing
     protected $fillable = [
-        'email',
-        'password_hash',
-        'role',
-        'name',
-        'description'
+        'username', 'email', 'password', 'is_admin', 'is_searchable', 'description'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * 
-     * @var list<string>
-     */
     protected $hidden = [
-        'password_hash'
+        'is_admin',
+        'is_searchable',
+        'password',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'remember_token'
     ];
 
-    /**
-     * Indicates if the model should be timestamped.
-     * 
-     * @var bool
-     */
     public $timestamps = true;
 
-    /**
-     * Get all sessions for the user
-     * 
-     * @return HasMany<Session, User>
-     */
-    public function sessions(): HasMany
-    {
-        return $this->hasMany(Session::class);
-    }
-
-    /**
-     * Get all playlists the user has created
-     * 
-     * @return HasMany<Playlist, User>
-     */
-    public function playlists(): HasMany
+    // Relationships
+    public function playlists()
     {
         return $this->hasMany(Playlist::class);
     }
 
-    /**
-     * Get the attributes that should be cast.
-     * 
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
+            'username' => 'string',
             'email' => 'string',
-            // 'password_hash' => 'string',
-            'role' => 'string',
-            'name' => 'string',
-            'description' => 'string'
+            'email_verified_at' => 'datetime',
+            'is_admin' => 'boolean',
+            'is_searchable' => 'boolean',
+            'password' => 'hashed',
+            'two_factor_confirmed_at' => 'datetime'
         ];
     }
 }

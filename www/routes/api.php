@@ -1,251 +1,44 @@
 <?php
 
-use App\Http\Middleware\RequiresJson;
-use App\Http\Middleware\RequiresLogin;
-use App\Models\Session;
-use App\Models\Song;
-use App\Models\User;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\SongController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Response as Status;
 use Illuminate\Support\Facades\Route;
 
-/**
- * Enum containing common http errors to be handled by the Vue frontend
- */
-enum ApiError {
-    case UNKNOWN;
+require __DIR__.'/utils.php';
 
-    // 400 Bad Request
-    case INVALID_CONTENT_TYPE;
-    case INVALID_EMAIL;
-    case INVALID_PASSWORD;
+Route::middleware(['web'])->group(fn () => [
+    Route::get('/playlists', [PlaylistController::class, 'index']),
+    Route::post('/playlists', [PlaylistController::class, 'store']),
+    Route::get('/playlists/{uuid}', [PlaylistController::class, 'show']),
+    Route::put('/playlists/{uuid}', [PlaylistController::class, 'update']),
+    Route::delete('/playlists/{uuid}', [PlaylistController::class, 'destroy']),
 
-    // 401 Unauthorized
-    case UNAUTHORIZED;
-    case INCORRECT_PASSWORD;
+    Route::get('/songs', [SongController::class, 'index']),
+    Route::get('/songs/{uuid}', [SongController::class, 'show']),
+    Route::put('/songs/{uuid}', [SongController::class, 'update']),
+    Route::delete('/songs/{uuid}', [SongController::class, 'destroy']),
 
-    // 404 Not Found
-    case USER_NOT_FOUND;
-    case SONG_NOT_FOUND;
-    case PLAYLIST_NOT_FOUND;
-}
-
-/**
- * Name of the cookie storing the session token
- * @var string
- */
-const AUTH_TOKEN = 'mytunes_auth_token';
-
-/**
- * Shorthand for hashing data using SHA256 and returning the binary result
- * @param string $data
- * @return string
- */
-function sha256(string $data) {
-    return hash('sha256', $data);
-}
-
-/**
- * Gets the current session being used to make the request, or `null` if `AUTH_TOKEN` isn't in the `cookie` header
- * @param Request $request
- * @return ?Session
- */
-function current_session(Request $request): ?Session {
-    $token = $request->cookie(AUTH_TOKEN);
-
-    if ($token === null) {
-        return null;
-    }
-
-    $decoded = base64_decode($token, true);
-
-    if (!$decoded) {
-        return null;
-    }
-
-    return Session::find(sha256($decoded));
-}
-
-
-
-/**
- * Shorthand for returning json data to the client
- * @param int $status Status code
- * @param mixed $data Deserializable data
- * @return JsonResponse The json response
- */
-function ok(mixed $data, int $status = 200): JsonResponse {
-    return response()->json(['data' => $data], $status);
-}
-
-/**
- * Shorthand for returning a json error response to the client
- * @param int $status Status code of the error
- * @param ApiError $error The HTTP error kind which will determine what data is displayed
- * @return JsonResponse The json response
- */
-function err(int $status, ApiError $error = ApiError::UNKNOWN, ?string $message = null): JsonResponse {
-    return response()->json(
-        [
-            'error' => [
-                'status' => $status,
-                'name' => $error->name,
-                'message' => $message
-            ]
-        ],
-        $status
-    );
-}
-
-
-
-/**
- * Inserts a new `Session` into the database and returns the auth cookie value
- * @param User $user
- * @param ?Request $request
- * @return Symfony\Component\HttpFoundation\Cookie The base64 encoded cookie
- */
-function new_session(User $user, ?Request $request) {
-    $bytes = random_bytes(64);
-    Session::create([
-        'token_hash' => sha256($bytes),
-        'ip_address' => $request?->ip(),
-        'user_agent' => $request?->userAgent(),
-        'user_id' => $user->getKey()
-    ]);
-
-    return cookie(
-        name: AUTH_TOKEN,
-        value: base64_encode($bytes),
-        minutes: 60 * 24 * 93,
-        path: '/',
-        secure: true,
-        httpOnly: true
-    );
-}
-
-
-
-/// Creates and returns a new `User`, creating a `Session`
-Route::post('/account/register', function (Request $request) {
-    $email = $request->json('email');
-    $password = $request->json('password');
-
-    if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_EMAIL);
-    }
-
-    if ($password === null || strlen($password) < 8) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_PASSWORD);
-    }
-
-    $user_id = User::create([
-        'email' => $email,
-        'password_hash' => sha256($password)
-    ])->getKey();
-    $user = User::find($user_id);
-
-    $cookie = new_session($user, $request);
-
-    return ok($user, Status::HTTP_CREATED)->withCookie($cookie);
-})->middleware([RequiresJson::class]);
-
-/// Logs into an existing `User`, creating a `Session`
-Route::post('/account/login', function (Request $request) {
-    $email = $request->json('email');
-    $password = $request->json('password');
-
-    if ($email === null || !preg_match('/^[a-z-.]+@([a-z-]+.)+[a-z-]{2,6}$/i', $email)) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_EMAIL);
-    }
-
-    if ($password === null || strlen($password) < 8) {
-        return err(Status::HTTP_BAD_REQUEST, ApiError::INVALID_PASSWORD);
-    }
-
-    $user = User::where('email', $email)->first();
-
-    if ($user === null) {
-        return err(Status::HTTP_NOT_FOUND, ApiError::USER_NOT_FOUND);
-    }
-
-    if (sha256($password) === $user->password_hash) {
-        return err(Status::HTTP_UNAUTHORIZED, ApiError::INCORRECT_PASSWORD);
-    }
-
-    $cookie = new_session($user, $request);
-
-    return ok($user)->withCookie($cookie);
-})->middleware([RequiresJson::class]);
-
-
-
-/// Creates a new `Song` if the user is authorized
-Route::put('/song', function (Request $request) {
-    $user = current_session($request)->user;
-
-    if ($user->role === 'User') {
-        return err(Status::HTTP_FORBIDDEN, ApiError::UNAUTHORIZED);
-    }
-
-    $title = $request->input('title');
-    $created_at = $request->input('created_at');
-    $duration = $request->input('duration');
-    $explicit = $request->input('is_explicit');
+    Route::get('/like', [LikeController::class, 'index']),
+    Route::post('/like/{uuid}', [LikeController::class, 'store']),
+    Route::get('/like/{uuid}', [LikeController::class, 'show']),
+    Route::delete('/like/{uuid}', [LikeController::class, 'destroy']),
     
-    $audio = $request->file('audio.mp3');
-    $thumbnail = $request->file('thumbnail.png');
 
-    if (!$title || !$duration || !$audio || !$thumbnail) {
-        // TODO: handle individually
-        return err(Status::HTTP_BAD_REQUEST);
-    }
+    Route::get('/users/{id}', [UserController::class, 'show']),
+    Route::put('/users/{id}', [UserController::class, 'update']),
+    Route::delete('/users/{id}', [UserController::class, 'destroy']),
+]);
+Route::post('/songs', [SongController::class, 'store'])->middleware(['web']);
 
-    $song_uuid = Song::create([
-        'title' => '',
-        'created_at' => $created_at || Date::now(),
-        'duration' => $duration,
-        'is_explicit' => $explicit || false
-    ])->getKey();
+Route::get('/me', function (Request $request) {
+    $user = $request->user();
 
-    Storage::disk('public')->put('uploads/audio/{$song_uuid}.mp3', $audio);
-    Storage::disk('public')->put('uploads/thumbnails/song/{$song_uuid}.png', $thumbnail);
-
-    $song = Song::find($song_uuid);
-    return ok($song);
-})->middleware([RequiresLogin::class]);
-
-Route::delete('/song/{uuid}', function (Request $request, string $uuid) {
-    $user = current_session($request)->user;
-    $song = Song::find($uuid);
-
-    if (!$song) {
-        return err(Status::HTTP_NOT_FOUND, ApiError::SONG_NOT_FOUND);
-    }
-
-    if ($user->role !== 'Admin') {
-        return err(Status::HTTP_FORBIDDEN, ApiError::UNAUTHORIZED);
-    }
-
-    // TODO: create `ApiSuccess` enum?
-    return ok(1);
-})->middleware([RequiresLogin::class])->whereUuid('uuid');
-
-
-
-/// Returns the currently logged-in user
-Route::get('/user/@me', function (Request $request) {
-    $user = current_session($request)?->user;
-    return ok($user);
-});
-
-Route::get('/user/{id}', function (Request $request, string $id) {
-    $user = User::find((int) $id);
-
-    if ($user === null) {
-        return err(Status::HTTP_NOT_FOUND, ApiError::USER_NOT_FOUND);
+    if (!$user) {
+        return err(401);
     }
 
     return ok($user);
-})->middleware([RequiresLogin::class])->whereNumber('id');
+})->middleware('auth:sanctum');
