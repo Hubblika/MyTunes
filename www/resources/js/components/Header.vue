@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { Icon, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
 
@@ -47,6 +47,10 @@ onMounted(() => {
     const observer = new MutationObserver(updateLogo);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 });
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 </script>
 

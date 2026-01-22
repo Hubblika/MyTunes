@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
-import { PlaylistSong } from "./common";
+import { PlaylistSong, Icon } from "./common";
 import { _Song } from "@/types";
+import { usePlayerStore } from "@/stores/player";
 
-const props = defineProps<{
-    uuid: string
-}>();
+const props = defineProps<{ uuid: string }>();
 
+const player = usePlayerStore();
 const likes = ref<string[]>([]);
 const likedSongs = ref<_Song[]>([]);
 
+const dropdownRef = ref<HTMLElement | null>(null)
+const dropdownOpen = ref(false)
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    dropdownOpen.value = false
+  }
+}
 
 async function fetchLikes() {
     const response = await axios.get("/api/like");
@@ -24,9 +32,7 @@ async function fetchLikedSongs() {
         const requests = likes.value.map(uuid => axios.get(`/api/songs/${uuid}`));
         const responses = await Promise.all(requests);
 
-        likedSongs.value = responses
-            .map(r => r.data.data)
-            .filter(Boolean);
+        likedSongs.value = responses.map(r => r.data.data).filter(Boolean);
 
     } catch (err) {
         console.error("Error fetching liked songs:", err);
@@ -34,24 +40,54 @@ async function fetchLikedSongs() {
     }
 }
 
-onMounted(async () => {
+// Example function for menu item selection
+function selectMenu(action: string) {
+    console.log("Selected menu action:", action);
+    dropdownOpen.value = false;
+}
+
+async function play() {
     if (props.uuid === '00000000-0000-0000-0000-000000000000') {
         await fetchLikes();
         await fetchLikedSongs();
-        console.log(likedSongs.value[0]?.title);
+
+        if (!likedSongs.value.length) return;
+
+        const isCurrentPlaylist = player.currentPlaylist === props.uuid;
+
+        if (isCurrentPlaylist) {
+            player.togglePlay();
+        } else {
+            player.emptyQueue();
+            likedSongs.value.forEach(song => player.addToQueue(song, props.uuid));
+            player.currentIndex = 0;
+            player.isPlaying = true;
+            player.currentPlaylist = props.uuid;
+            await player.fetchLiked();
+        }
     }
-    console.log("Mounted PlaylistContent with uuid:", props.uuid);
+}
+
+onMounted(async () => {
+    document.addEventListener('click', handleClickOutside);
+    if (props.uuid === '00000000-0000-0000-0000-000000000000') {
+        await fetchLikes();
+        await fetchLikedSongs();
+    }
 });
 
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
     <section class="flex flex-col h-full gap-4">
-        <header class="px-4 flex items-end gap-6">
+        <header class="px-4 flex flex-col md:flex-row items-start md:items-end gap-4 md:gap-6">
             <img src="/uploads/thumbnails/defaultThumbnail.png" alt="Playlist Cover"
                 class="w-32 h-32 rounded-lg object-cover shadow-lg" />
 
-            <div class="flex flex-col justify-end">
+            <div class="flex flex-col justify-end flex-1">
                 <h1 class="text-4xl font-bold text-black dark:text-white">
                     {{ $t("playlist.likedTitle") }}
                 </h1>
@@ -60,6 +96,36 @@ onMounted(async () => {
                 </p>
             </div>
         </header>
+
+        <div class="px-4 flex items-center justify-between">
+            <button @click="play" class="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg
+               hover:scale-105 active:scale-95 transition-transform duration-150">
+                <Icon :name="player.currentPlaylist === props.uuid && player.isPlaying
+                    ? 'player-pause-filled'
+                    : 'player-play-filled'" class="size-8 text-white" />
+            </button>
+
+            <div v-if="props.uuid !== '00000000-0000-0000-0000-000000000000'" class="relative" ref="dropdownRef">
+                <button @click="dropdownOpen = !dropdownOpen"
+                    class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
+                </button>
+
+                <ul v-if="dropdownOpen"
+                    class="absolute mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
+                    <li @click="() => selectMenu('rename')"
+                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                        <Icon name="pencil" class="size-5 text-black dark:text-white" />
+                        <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
+                    </li>
+                    <li @click="() => selectMenu('delete')"
+                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                        <Icon name="trash" class="size-5 text-red-500" />
+                        <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <div class="grid grid-cols-[32px_48px_1fr_1fr_120px_100px] gap-4 px-4 py-2
              text-xs uppercase tracking-widest
@@ -75,7 +141,8 @@ onMounted(async () => {
 
         <div class="flex flex-col overflow-y-auto">
             <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
-                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song" :playlistUuid="uuid" />
+                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song"
+                    :playlistUuid="props.uuid" />
             </template>
             <template v-else>
                 <div class="p-4 text-center text-neutral-500 dark:text-neutral-400">

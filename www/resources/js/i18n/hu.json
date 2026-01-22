@@ -1,6 +1,7 @@
 {
     "generic": {
-        "cancel": "Mégsem"
+        "cancel": "Mégsem",
+        "save": "Mentés"
     },
     "login": {
         "title": "Bejelentkezés MyTunes-ba",

@@ -1,6 +1,7 @@
 {
     "generic": {
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "save": "Save"
     },
     "login": {
         "title": "Log in to MyTunes",

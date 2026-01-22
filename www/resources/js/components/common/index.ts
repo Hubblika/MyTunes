@@ -12,3 +12,4 @@ export { default as SongCard } from './SongCard.vue';
 export { default as HomeRow } from './HomeRow.vue';
 export { default as QueueSong } from './QueueSong.vue';
 export { default as PlaylistSong } from './PlaylistSong.vue';
+export { default as RenameModal } from './RenameModal.vue';
