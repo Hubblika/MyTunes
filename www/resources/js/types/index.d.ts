@@ -19,6 +19,7 @@ export interface _Song {
     uuid: string,
     title: string,
     artist: string,
+    album: string,
     url: string,
     cover_url: string,
     date: string,

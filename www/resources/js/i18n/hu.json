@@ -70,5 +70,10 @@
         "headerAlbum": "Album",
         "headerAddedAt": "Felvétel dátuma",
         "headerDuration": "Időtartam"
+    },
+    "songCard": {
+        "today": "ma",
+        "yesterday": "tegnap",
+        "days_ago": "napja"
     }
 }

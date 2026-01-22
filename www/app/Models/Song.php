@@ -17,6 +17,7 @@ class Song extends Model
         'uuid',
         'title',
         'artist',
+        'album',
         'url',
         'cover_url',
         'date',

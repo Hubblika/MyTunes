@@ -2,6 +2,7 @@
 import { Icon } from '.'
 import { _Song } from '@/types';
 import { usePlayerStore } from '@/stores/player'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
     index: number;
@@ -9,6 +10,7 @@ const props = defineProps<{
     playlistUuid: string;
 }>();
 
+const { t } = useI18n()
 const player = usePlayerStore()
 
 async function play() {
@@ -20,6 +22,33 @@ async function play() {
     } else {
         await player.togglePlay();
     }
+}
+
+function formatDuration(seconds: number) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+function formatAddedDate(dateString: string) {
+    const date = new Date(dateString)
+    const now = new Date()
+
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+
+    const diffMs = startOfToday.getTime() - startOfDate.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 0) return t('songCard.today')
+    if (diffDays === 1) return t('songCard.yesterday')
+    if (diffDays < 7) return t('songCard.days_ago', { count: diffDays })
+
+    return date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    })
 }
 </script>
 
@@ -51,15 +80,15 @@ async function play() {
         </div>
 
         <div class="min-w-0 truncate">
-            xp formula
+            {{ song.album }}
         </div>
 
         <div class="justify-self-start text-right tabular-nums">
-            now
+            {{ formatAddedDate(song.created_at!) }}
         </div>
 
         <div class="justify-self-end text-right tabular-nums">
-            {{ song.duration }}
+            {{ formatDuration(song.duration) }}
         </div>
     </div>
 </template>

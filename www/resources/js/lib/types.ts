@@ -29,7 +29,6 @@ export interface Song {
     date: string,
     duration: number,
     genre: string,
-    // is_explicit: boolean,
     created_at: string,
     updated_at: string
 }

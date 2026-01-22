@@ -70,5 +70,10 @@
         "headerAlbum": "Album",
         "headerAddedAt": "Added at",
         "headerDuration": "Duration"
+    },
+    "songCard": {
+        "today": "today",
+        "yesterday": "yesterday",
+        "days_ago": "days ago"
     }
 }
