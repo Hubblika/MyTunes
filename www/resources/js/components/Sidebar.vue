@@ -4,12 +4,15 @@ import axios from 'axios';
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
 import playlist from '@/actions/App/Http/Controllers/PlaylistController';
 import { usePage } from '@inertiajs/vue3';
-import { Playlist } from '@/lib/types';
+import { usePlayerStore } from '@/stores/player'
+import { _Playlist } from '@/types';
 
 const page = usePage();
 
-const playlists = ref<Playlist[]>([]);
+const playlists = ref<_Playlist[]>([]);
 const searchQuery = ref('');
+
+const player = usePlayerStore()
 
 const filteredPlaylists = computed(() => {
     if (!searchQuery.value) return playlists.value;
@@ -27,6 +30,8 @@ async function getOwnPlaylists() {
     );
 
     playlists.value = data.data;
+
+    data.data.forEach((pl: _Playlist) => player.setPlaylist(pl))
 }
 
 async function addPlaylist() {
@@ -57,6 +62,9 @@ async function renamePlaylist(playlistId: string, name: string) {
     playlists.value = playlists.value.map(p =>
         p.uuid === playlistId ? data.data : p
     );
+
+
+    player.renamePlaylist(playlistId, data.data.name)
 }
 
 onMounted(getOwnPlaylists);
@@ -92,7 +100,7 @@ onMounted(getOwnPlaylists);
                     updated_at: new Date().toISOString(),
                 }" />
 
-            <PlaylistCard v-for="playlist in filteredPlaylists" :key="playlist.uuid" :playlist="playlist"
+            <PlaylistCard v-for="pl in filteredPlaylists" :key="pl.uuid" :playlist="player.playlists.get(pl.uuid)!"
                 @delete-playlist="deletePlaylist" @rename-playlist="renamePlaylist" />
         </div>
     </aside>

@@ -2,10 +2,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Icon, Button, RenameModal } from '.';
 import { router } from '@inertiajs/vue3';
-import { Playlist } from '@/lib/types';
 import { usePlayerStore } from '@/stores/player'
 import axios from "axios";
-import { _Song } from '@/types';
+import { _Song, _Playlist } from '@/types';
 
 
 const dropdownRef = ref<HTMLElement | null>(null)
@@ -25,7 +24,7 @@ const renamingModal = ref(false)
 const renameInput = ref('')
 
 const { playlist } = defineProps<{
-    playlist: Playlist
+    playlist: _Playlist
 }>()
 
 const emit = defineEmits<{
@@ -47,8 +46,16 @@ const selectMenu = (item: string) => {
 }
 
 
-function confirmRename() {
-    emit('renamePlaylist', playlist.uuid, renameInput.value)
+async function confirmRename() {
+    const name = renameInput.value.trim()
+    if (!name) return
+
+    try {
+        await axios.put(`/api/playlists/${playlist.uuid}`, { name })
+        player.renamePlaylist(playlist.uuid, name)
+    } catch (err) {
+        console.error('Failed to rename playlist', err)
+    }
 }
 
 async function play() {

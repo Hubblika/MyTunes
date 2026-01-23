@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
-import { PlaylistSong, Icon } from "./common";
-import { _Song } from "@/types";
+import { PlaylistSong, Icon, RenameModal } from "./common";
+import { _Song, _Playlist } from "@/types";
 import { usePlayerStore } from "@/stores/player";
 
 const props = defineProps<{ uuid: string }>();
@@ -10,14 +10,19 @@ const props = defineProps<{ uuid: string }>();
 const player = usePlayerStore();
 const likes = ref<string[]>([]);
 const likedSongs = ref<_Song[]>([]);
+const playlist = ref<_Playlist | null>(null)
+
 
 const dropdownRef = ref<HTMLElement | null>(null)
 const dropdownOpen = ref(false)
 
+const renamingModal = ref(false)
+const renameInput = ref('')
+
 const handleClickOutside = (event: MouseEvent) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    dropdownOpen.value = false
-  }
+    if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+        dropdownOpen.value = false
+    }
 }
 
 async function fetchLikes() {
@@ -40,11 +45,18 @@ async function fetchLikedSongs() {
     }
 }
 
-// Example function for menu item selection
-function selectMenu(action: string) {
-    console.log("Selected menu action:", action);
-    dropdownOpen.value = false;
+async function fetchPlaylist(uuid: string) {
+    try {
+        const response = await axios.get(`/api/playlists/${uuid}`)
+        const pl = response.data.data ?? response.data
+
+        playlist.value = pl
+        player.setPlaylist(pl)
+    } catch (err) {
+        console.error('Failed to get playlist', err)
+    }
 }
+
 
 async function play() {
     if (props.uuid === '00000000-0000-0000-0000-000000000000') {
@@ -68,16 +80,35 @@ async function play() {
     }
 }
 
+async function confirmRename() {
+    const name = renameInput.value.trim()
+    if (!name || !playlist.value) return
+
+    try {
+        await axios.put(`/api/playlists/${props.uuid}`, { name })
+
+        playlist.value.name = name
+        player.renamePlaylist(props.uuid, name)
+    } catch (err) {
+        console.error('Failed to rename playlist', err)
+    }
+}
+
+
+
 onMounted(async () => {
     document.addEventListener('click', handleClickOutside);
     if (props.uuid === '00000000-0000-0000-0000-000000000000') {
         await fetchLikes();
         await fetchLikedSongs();
     }
+    else {
+        await fetchPlaylist(props.uuid);
+    }
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
+    document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -89,7 +120,7 @@ onBeforeUnmount(() => {
 
             <div class="flex flex-col justify-end flex-1">
                 <h1 class="text-4xl font-bold text-black dark:text-white">
-                    {{ $t("playlist.likedTitle") }}
+                    {{ playlist === null ? $t('playlist.likedTitle') : playlist.name}}
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                     {{ likedSongs.length }} {{ $t("playlist.likedNumber") }}
@@ -113,12 +144,16 @@ onBeforeUnmount(() => {
 
                 <ul v-if="dropdownOpen"
                     class="absolute mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
-                    <li @click="() => selectMenu('rename')"
+                    <li @click="
+                        renameInput = playlist?.name ?? '';
+                    renamingModal = true;
+                    dropdownOpen = false;
+                    "
                         class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
                         <Icon name="pencil" class="size-5 text-black dark:text-white" />
                         <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
                     </li>
-                    <li @click="() => selectMenu('delete')"
+                    <li
                         class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
                         <Icon name="trash" class="size-5 text-red-500" />
                         <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
@@ -151,4 +186,7 @@ onBeforeUnmount(() => {
             </template>
         </div>
     </section>
+
+    <RenameModal v-model="renamingModal" v-model:inputValue="renameInput" :title="$t('sidebar.renamePlaylistButton')"
+        @save="confirmRename" />
 </template>

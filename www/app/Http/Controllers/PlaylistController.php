@@ -80,13 +80,14 @@ class PlaylistController extends Controller
             return err(404);
         }
 
-        if (!$playlist->public && $playlist->user_id !== $request->user()?->getKey()) {
+        if (
+            !$playlist->public &&
+            $playlist->user_id !== $request->user()?->getKey()
+        ) {
             return err(404);
         }
 
-        $songs = $playlist->songs->song;
-
-        return ok(['playlist' => $playlist, 'songs' => $songs]);
+        return ok($playlist);
     }
 
     /**
@@ -94,11 +95,7 @@ class PlaylistController extends Controller
      */
     public function update(Request $request, string $uuid)
     {
-        $name = $request->json('name');
-        $description = $request->json('description');
-        $public = $request->json('public');
-
-        $playlist = Playlist::find($uuid);
+        $playlist = Playlist::where('uuid', $uuid)->first();
 
         if (!$playlist) {
             return err(404);
@@ -106,22 +103,21 @@ class PlaylistController extends Controller
 
         $user = $request->user();
 
-        if (!$user || $user->getKey() !== $playlist->user->getKey()) {
+        if (!$user || $user->id !== $playlist->user_id) {
             return err(403);
         }
 
-        if ($name !== null && strlen($name) > 0) {
-            $playlist->name = $name;
+        if ($request->filled('name')) {
+            $playlist->name = $request->input('name');
         }
 
-        if ($description && strlen($description) === 0) {
-            $playlist->description = null;
-        } else if ($description) {
-            $playlist->description = $description;
+        if ($request->has('description')) {
+            $description = $request->input('description');
+            $playlist->description = $description === '' ? null : $description;
         }
 
-        if ($public !== null) {
-            $playlist->public = $public;
+        if ($request->has('public')) {
+            $playlist->public = (bool) $request->input('public');
         }
 
         $playlist->save();

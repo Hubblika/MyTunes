@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type { _Song } from "@/types";
 import axios from "axios";
+import type { _Playlist } from '@/types'
 
 export const usePlayerStore = defineStore("player", {
     state: () => ({
@@ -15,6 +16,7 @@ export const usePlayerStore = defineStore("player", {
         volume: 10,
         originalQueue: [] as _Song[],
         currentPlaylist: null as string | null,
+        playlists: new Map<string, _Playlist>(),
     }),
 
     getters: {
@@ -128,6 +130,15 @@ export const usePlayerStore = defineStore("player", {
                 console.error("Failed to fetch liked status:", err);
                 this.liked = false;
             }
+        },
+
+        setPlaylist(playlist: _Playlist) {
+            this.playlists.set(playlist.uuid, playlist)
+        },
+
+        renamePlaylist(uuid: string, name: string) {
+            const pl = this.playlists.get(uuid)
+            if (pl) pl.name = name
         },
     },
 });
