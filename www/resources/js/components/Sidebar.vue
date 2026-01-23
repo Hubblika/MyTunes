@@ -3,7 +3,7 @@ import { onMounted, ref, computed } from 'vue';
 import axios from 'axios';
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
 import playlist from '@/actions/App/Http/Controllers/PlaylistController';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 import { usePlayerStore } from '@/stores/player'
 import { _Playlist } from '@/types';
 
@@ -35,21 +35,43 @@ async function getOwnPlaylists() {
 }
 
 async function addPlaylist() {
-    const { data } = await axios.post(
-        playlist.store.url(),
-        { name: 'New Playlist' },
-        { headers: { Accept: 'application/json' } }
-    );
+    try {
+        const { data } = await axios.post(
+            playlist.store.url(),
+            { name: 'New Playlist' },
+            { headers: { Accept: 'application/json' } }
+        );
 
-    playlists.value.push(data.data);
+        const newPlaylist = data.data as _Playlist;
+
+        playlists.value.push(newPlaylist);
+
+        player.setPlaylist(newPlaylist);
+
+        console.log(`Playlist "${newPlaylist.name}" added successfully`);
+    } catch (err) {
+        console.error('Failed to add playlist', err);
+    }
 }
 
 async function deletePlaylist(playlistId: string) {
-    await axios.delete(playlist.destroy.url(playlistId), {
-        headers: { Accept: 'application/json' }
-    });
+    try {
+        await axios.delete(playlist.destroy.url(playlistId), {
+            headers: { Accept: 'application/json' }
+        });
 
-    playlists.value = playlists.value.filter(p => p.uuid !== playlistId);
+        playlists.value = playlists.value.filter(p => p.uuid !== playlistId);
+
+        player.deletePlaylist(playlistId);
+
+        if (page.props.uuid === playlistId) {
+            router.visit('/');
+        }
+
+        console.log('Playlist deleted successfully');
+    } catch (err) {
+        console.error('Failed to delete playlist', err);
+    }
 }
 
 async function renamePlaylist(playlistId: string, name: string) {

@@ -11,9 +11,9 @@ const dropdownRef = ref<HTMLElement | null>(null)
 const dropdownOpen = ref(false)
 
 const handleClickOutside = (event: MouseEvent) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    dropdownOpen.value = false
-  }
+    if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+        dropdownOpen.value = false
+    }
 }
 
 const player = usePlayerStore()
@@ -103,41 +103,38 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
+    document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
 <template>
     <div :class="player.currentPlaylist === playlist.uuid && player.isPlaying
         ? 'bg-gray-500/10 dark:bg-white/10'
-        : ''"
-        class="flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-500/10 dark:hover:bg-white/10 transition"
-        @click="() => router.visit(`/playlist/${playlist.uuid}`)">
-
-        <div class="relative size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0 group">
+        : ''" class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-500/10 dark:hover:bg-white/10 transition">
+        <div class="relative size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0 group cursor-pointer"
+            @click="() => router.visit(`/playlist/${playlist.uuid}`)">
             <img :src="'/uploads/thumbnails/defaultThumbnail.png'"
                 class="w-full h-full object-cover transition-opacity duration-150 group-hover:opacity-50" />
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-150"
                 @click.stop="play">
                 <Icon :name="player.currentPlaylist === playlist.uuid && player.isPlaying
                     ? 'player-pause-filled'
-                    : 'player-play-filled'"
-                    class="size-6 text-white hover:scale-110 transition-transform cursor-pointer" />
+                    : 'player-play-filled'" class="size-6 text-white hover:scale-110 transition-transform cursor-pointer" />
             </div>
         </div>
 
-        <div class="min-w-0 flex flex-col grow">
-            <span class="text-sm font-medium truncate">
-                {{ playlist.name }}
-            </span>
+        <div class="min-w-0 flex flex-col grow cursor-pointer"
+            @click="() => router.visit(`/playlist/${playlist.uuid}`)">
+            <span class="text-sm font-medium truncate">{{ playlist.name }}</span>
             <span class="text-xs opacity-60 truncate">
-                {{ playlist.uuid === '00000000-0000-0000-0000-000000000000' ? likedSongs.length : '0' }} {{
-                    $t('sidebar.playlistNumber') }}
+                {{ playlist.uuid === '00000000-0000-0000-0000-000000000000' ? likedSongs.length : '0' }}
+                {{ $t('sidebar.playlistNumber') }}
             </span>
         </div>
 
         <div v-if="playlist.uuid !== '00000000-0000-0000-0000-000000000000'" class="relative" ref="dropdownRef">
-            <Button @click="dropdownOpen = !dropdownOpen" class="group transition-all duration-150">
+            <Button @click="dropdownOpen = !dropdownOpen"
+                class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
                 <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
             </Button>
 

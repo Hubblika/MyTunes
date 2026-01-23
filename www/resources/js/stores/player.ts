@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type { _Song } from "@/types";
 import axios from "axios";
-import type { _Playlist } from '@/types'
+import type { _Playlist } from "@/types";
 
 export const usePlayerStore = defineStore("player", {
     state: () => ({
@@ -133,12 +133,23 @@ export const usePlayerStore = defineStore("player", {
         },
 
         setPlaylist(playlist: _Playlist) {
-            this.playlists.set(playlist.uuid, playlist)
+            this.playlists.set(playlist.uuid, playlist);
         },
 
         renamePlaylist(uuid: string, name: string) {
-            const pl = this.playlists.get(uuid)
-            if (pl) pl.name = name
+            const pl = this.playlists.get(uuid);
+            if (pl) pl.name = name;
+        },
+
+        deletePlaylist(uuid: string) {
+            this.playlists.delete(uuid);
+
+            if (this.currentPlaylist === uuid) {
+                this.emptyQueue();
+                this.currentPlaylist = null;
+                this.currentIndex = 0;
+                this.isPlaying = false;
+            }
         },
     },
 });

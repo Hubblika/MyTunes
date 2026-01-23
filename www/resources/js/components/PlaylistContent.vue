@@ -4,6 +4,7 @@ import axios from "axios";
 import { PlaylistSong, Icon, RenameModal } from "./common";
 import { _Song, _Playlist } from "@/types";
 import { usePlayerStore } from "@/stores/player";
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{ uuid: string }>();
 
@@ -94,7 +95,19 @@ async function confirmRename() {
     }
 }
 
+async function deletePlaylist() {
+    if (!playlist.value) return;
 
+    try {
+        await axios.delete(`/api/playlists/${playlist.value.uuid}`);
+        
+        player.deletePlaylist(playlist.value.uuid);
+
+        router.visit('/');
+    } catch (err) {
+        console.error('Failed to delete playlist', err);
+    }
+}
 
 onMounted(async () => {
     document.addEventListener('click', handleClickOutside);
@@ -120,7 +133,7 @@ onBeforeUnmount(() => {
 
             <div class="flex flex-col justify-end flex-1">
                 <h1 class="text-4xl font-bold text-black dark:text-white">
-                    {{ playlist === null ? $t('playlist.likedTitle') : playlist.name}}
+                    {{ playlist === null ? $t('playlist.likedTitle') : playlist.name }}
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                     {{ likedSongs.length }} {{ $t("playlist.likedNumber") }}
@@ -153,8 +166,8 @@ onBeforeUnmount(() => {
                         <Icon name="pencil" class="size-5 text-black dark:text-white" />
                         <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
                     </li>
-                    <li
-                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                    <li class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap"
+                        @click="deletePlaylist">
                         <Icon name="trash" class="size-5 text-red-500" />
                         <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
                     </li>
