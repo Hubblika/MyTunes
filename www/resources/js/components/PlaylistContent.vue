@@ -9,8 +9,6 @@ import { router } from '@inertiajs/vue3';
 const props = defineProps<{ uuid: string }>();
 
 const player = usePlayerStore();
-const likes = ref<string[]>([]);
-const likedSongs = ref<_Song[]>([]);
 const playlist = ref<_Playlist | null>(null)
 
 
@@ -23,26 +21,6 @@ const renameInput = ref('')
 const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
         dropdownOpen.value = false
-    }
-}
-
-async function fetchLikes() {
-    const response = await axios.get("/api/like");
-    likes.value = response.data.likes;
-}
-
-async function fetchLikedSongs() {
-    if (!likes.value?.length) return;
-
-    try {
-        const requests = likes.value.map(uuid => axios.get(`/api/songs/${uuid}`));
-        const responses = await Promise.all(requests);
-
-        likedSongs.value = responses.map(r => r.data.data).filter(Boolean);
-
-    } catch (err) {
-        console.error("Error fetching liked songs:", err);
-        likedSongs.value = [];
     }
 }
 
@@ -61,10 +39,7 @@ async function fetchPlaylist(uuid: string) {
 
 async function play() {
     if (props.uuid === '00000000-0000-0000-0000-000000000000') {
-        await fetchLikes();
-        await fetchLikedSongs();
-
-        if (!likedSongs.value.length) return;
+        if (!player.likedSongList.length) return;
 
         const isCurrentPlaylist = player.currentPlaylist === props.uuid;
 
@@ -72,11 +47,10 @@ async function play() {
             player.togglePlay();
         } else {
             player.emptyQueue();
-            likedSongs.value.forEach(song => player.addToQueue(song, props.uuid));
+            player.likedSongList.forEach(song => player.addToQueue(song, props.uuid));
             player.currentIndex = 0;
             player.isPlaying = true;
             player.currentPlaylist = props.uuid;
-            await player.fetchLiked();
         }
     }
 }
@@ -112,8 +86,7 @@ async function deletePlaylist() {
 onMounted(async () => {
     document.addEventListener('click', handleClickOutside);
     if (props.uuid === '00000000-0000-0000-0000-000000000000') {
-        await fetchLikes();
-        await fetchLikedSongs();
+        player.fetchLikedSongs();
     }
     else {
         await fetchPlaylist(props.uuid);
@@ -136,7 +109,7 @@ onBeforeUnmount(() => {
                     {{ playlist === null ? $t('playlist.likedTitle') : playlist.name }}
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                    {{ likedSongs.length }} {{ $t("playlist.likedNumber") }}
+                    {{ playlist === null ? player.likedCount : '0' }} {{ $t('playlist.likedNumber') }}
                 </p>
             </div>
         </header>
@@ -189,7 +162,7 @@ onBeforeUnmount(() => {
 
         <div class="flex flex-col overflow-y-auto">
             <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
-                <PlaylistSong v-for="(song, index) in likedSongs" :key="song.uuid" :index="index + 1" :song="song"
+                <PlaylistSong v-for="(song, index) in player.likedSongList" :key="song.uuid" :index="index + 1" :song="song"
                     :playlistUuid="props.uuid" />
             </template>
             <template v-else>

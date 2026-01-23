@@ -17,8 +17,6 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 const player = usePlayerStore()
-const likes = ref<string[]>([])
-const likedSongs = ref<_Song[]>([])
 
 const renamingModal = ref(false)
 const renameInput = ref('')
@@ -60,10 +58,8 @@ async function confirmRename() {
 
 async function play() {
     if (playlist.uuid === '00000000-0000-0000-0000-000000000000') {
-        await fetchLikes()
-        await fetchLikedSongs()
 
-        if (!likedSongs.value.length) return
+        if (!player.likedSongList.length) return
 
         const isCurrentPlaylist = player.currentPlaylist === playlist.uuid
 
@@ -71,35 +67,17 @@ async function play() {
             player.togglePlay()
         } else {
             player.emptyQueue()
-            likedSongs.value.forEach(song => player.addToQueue(song, playlist.uuid))
+            player.likedSongList.forEach(song => player.addToQueue(song, playlist.uuid))
             player.currentIndex = 0
             player.isPlaying = true
             player.currentPlaylist = playlist.uuid
-            await player.fetchLiked()
         }
     }
 }
 
-async function fetchLikes() {
-    const response = await axios.get("/api/like")
-    likes.value = response.data.likes
-}
-
-async function fetchLikedSongs() {
-    if (!likes.value?.length) return
-    try {
-        const requests = likes.value.map(uuid => axios.get(`/api/songs/${uuid}`))
-        const responses = await Promise.all(requests)
-        likedSongs.value = responses.map(r => r.data.data).filter(Boolean)
-    } catch {
-        likedSongs.value = []
-    }
-}
-
-onMounted(() => {
+onMounted(async () => {
     document.addEventListener('click', handleClickOutside);
-    fetchLikes()
-    fetchLikedSongs()
+    await player.fetchLikedSongs()
 })
 
 onBeforeUnmount(() => {
@@ -127,7 +105,7 @@ onBeforeUnmount(() => {
             @click="() => router.visit(`/playlist/${playlist.uuid}`)">
             <span class="text-sm font-medium truncate">{{ playlist.name }}</span>
             <span class="text-xs opacity-60 truncate">
-                {{ playlist.uuid === '00000000-0000-0000-0000-000000000000' ? likedSongs.length : '0' }}
+                {{ playlist.uuid === '00000000-0000-0000-0000-000000000000' ? player.likedCount : '0' }}
                 {{ $t('sidebar.playlistNumber') }}
             </span>
         </div>

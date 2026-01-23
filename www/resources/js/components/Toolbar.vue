@@ -169,10 +169,10 @@ onMounted(() => {
                     {{ player.currentTrack?.artist ?? $t('toolbar.artistName') }}
                 </p>
             </div>
-            <Button @click="like" :disabled="!hasTrack"
+            <Button @click="player.toggleLike()" :disabled="!hasTrack"
                 :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
-                <Icon :name="player._liked ? 'heart-filled' : 'heart'"
-                    :class="['size-6 transition-colors duration-150', player._liked ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
+                <Icon :name="player.isLiked(player.currentTrack) ? 'heart-filled' : 'heart'"
+                    :class="['size-6 transition-colors duration-150', player.isLiked(player.currentTrack) ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
             </Button>
         </div>
 

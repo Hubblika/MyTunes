@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type { _Song } from "@/types";
-import axios from "axios";
 import type { _Playlist } from "@/types";
+import axios from "axios";
 
 export const usePlayerStore = defineStore("player", {
     state: () => ({
@@ -10,7 +10,7 @@ export const usePlayerStore = defineStore("player", {
         isPlaying: false,
         shuffle: false,
         loop: false,
-        liked: false,
+        likedSongs: [] as _Song[],
         time: 0,
         duration: 0,
         volume: 10,
@@ -23,14 +23,16 @@ export const usePlayerStore = defineStore("player", {
         currentTrack: (state) => state.queue[state.currentIndex],
         audioSrc: (state) => state.queue[state.currentIndex]?.url ?? "",
         uuid: (state) => state.queue[state.currentIndex]?.uuid,
-        _liked: (state) => state.liked,
+        isLiked: (state) => (song?: _Song) =>
+            song ? state.likedSongs.some(s => s.uuid === song.uuid) : false,
+        likedCount: (state) => state.likedSongs.length,
+        likedSongList: (state) => state.likedSongs,
         currentplaylist: (state) => state.currentPlaylist,
     },
 
     actions: {
         async playSong(song: _Song) {
             const current = this.currentTrack;
-
             if (!current || current.uuid !== song.uuid) {
                 if (this.queue.length === 0) {
                     this.queue = [song];
@@ -40,13 +42,11 @@ export const usePlayerStore = defineStore("player", {
                 }
                 this.currentIndex = 0;
                 this.isPlaying = true;
-                await this.fetchLiked();
             }
         },
 
         async togglePlay() {
             this.isPlaying = !this.isPlaying;
-            await this.fetchLiked();
         },
 
         addToQueue(song: _Song, playlist: string) {
@@ -57,21 +57,22 @@ export const usePlayerStore = defineStore("player", {
         next() {
             if (this.currentIndex < this.queue.length - 1) {
                 this.currentIndex++;
-                return;
             } else if (!this.loop) {
                 this.isPlaying = false;
             }
-            this.currentIndex = 0;
+            if (this.loop && this.currentIndex >= this.queue.length - 1) {
+                this.currentIndex = 0;
+            }
         },
 
         previous() {
-            if (this.currentIndex > 0) {
-                this.currentIndex--;
-            }
+            if (this.currentIndex > 0) this.currentIndex--;
         },
 
         emptyQueue() {
             this.queue = [];
+            this.currentIndex = 0;
+            this.isPlaying = false;
         },
 
         shuffleQueue() {
@@ -83,52 +84,54 @@ export const usePlayerStore = defineStore("player", {
                 [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
             }
 
-            this.currentIndex = this.queue.findIndex(
-                (song) => song === currentTrack,
-            );
+            this.currentIndex = this.queue.findIndex((song) => song === currentTrack);
         },
 
         sortQueue() {
             const currentTrack = this.queue[this.currentIndex];
-
             this.queue = [...this.originalQueue];
-
-            this.currentIndex = this.queue.findIndex(
-                (song) => song === currentTrack,
-            );
+            this.currentIndex = this.queue.findIndex((song) => song === currentTrack);
         },
 
-        async toggleLike() {
-            if (!this.currentTrack) return;
+        async toggleLike(song?: _Song) {
+            const track = song ?? this.currentTrack;
+            if (!track) return;
 
-            this.liked = !this.liked;
+            const likedIndex = this.likedSongs.findIndex(s => s.uuid === track.uuid);
 
             try {
-                if (this.liked) {
-                    await axios.post(`/api/like/${this.currentTrack.uuid}`);
+                if (likedIndex === -1) {
+                    await axios.post(`/api/like/${track.uuid}`);
+                    this.likedSongs.push(track);
                 } else {
-                    await axios.delete(`/api/like/${this.currentTrack.uuid}`);
+                    await axios.delete(`/api/like/${track.uuid}`);
+                    this.likedSongs.splice(likedIndex, 1);
                 }
             } catch (err) {
                 console.error("Failed to toggle like:", err);
-                this.liked = !this.liked;
             }
         },
 
-        async fetchLiked() {
-            if (!this.currentTrack) {
-                this.liked = false;
-                return;
-            }
-
+        async fetchLikedSongs() {
             try {
-                const res = await axios.get(
-                    `/api/like/${this.currentTrack.uuid}`,
-                );
-                this.liked = res.data.liked;
+                const res = await axios.get("/api/like");
+                const likedUUIDs: string[] = res.data.likes;
+
+                if (!likedUUIDs.length) {
+                    this.likedSongs = [];
+                    return [];
+                }
+
+                // Fetch full _Song objects for all liked UUIDs
+                const requests = likedUUIDs.map(uuid => axios.get(`/api/songs/${uuid}`));
+                const responses = await Promise.all(requests);
+                this.likedSongs = responses.map(r => r.data.data).filter(Boolean);
+
+                return this.likedSongs;
             } catch (err) {
-                console.error("Failed to fetch liked status:", err);
-                this.liked = false;
+                console.error("Failed to fetch liked songs:", err);
+                this.likedSongs = [];
+                return [];
             }
         },
 
@@ -147,8 +150,6 @@ export const usePlayerStore = defineStore("player", {
             if (this.currentPlaylist === uuid) {
                 this.emptyQueue();
                 this.currentPlaylist = null;
-                this.currentIndex = 0;
-                this.isPlaying = false;
             }
         },
     },
