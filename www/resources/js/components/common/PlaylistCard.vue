@@ -57,21 +57,26 @@ async function confirmRename() {
 }
 
 async function play() {
-    if (playlist.uuid === '00000000-0000-0000-0000-000000000000') {
+    const isLikedPlaylist = playlist.uuid === '00000000-0000-0000-0000-000000000000';
 
-        if (!player.likedSongList.length) return
+    if (isLikedPlaylist) {
+        if (!player.likedSongList.length) return;
 
-        const isCurrentPlaylist = player.currentPlaylist === playlist.uuid
+        const isCurrentPlaylist = player.currentPlaylist === playlist.uuid;
 
         if (isCurrentPlaylist) {
-            player.togglePlay()
+            player.togglePlay();
         } else {
-            player.emptyQueue()
-            player.likedSongList.forEach(song => player.addToQueue(song, playlist.uuid))
-            player.currentIndex = 0
-            player.isPlaying = true
-            player.currentPlaylist = playlist.uuid
+            const likedPlaylist: _Playlist = {
+                ...playlist,
+                songs: [...player.likedSongList]
+            };
+
+            player.addPlaylistToQueue(likedPlaylist);
         }
+    } else {
+        // For normal playlists
+        player.addPlaylistToQueue(playlist);
     }
 }
 
@@ -97,7 +102,8 @@ onBeforeUnmount(() => {
                 @click.stop="play">
                 <Icon :name="player.currentPlaylist === playlist.uuid && player.isPlaying
                     ? 'player-pause-filled'
-                    : 'player-play-filled'" class="size-6 text-white hover:scale-110 transition-transform cursor-pointer" />
+                    : 'player-play-filled'"
+                    class="size-6 text-white hover:scale-110 transition-transform cursor-pointer" />
             </div>
         </div>
 

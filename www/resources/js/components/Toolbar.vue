@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, watch, computed, ref, } from 'vue'
+import { onMounted, watch, computed, ref } from 'vue'
 import { Button, Icon, Slider } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
-import { router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3'
 
 const player = usePlayerStore()
 const audio = ref<HTMLAudioElement | null>(null)
-const hasTrack = computed(() => !!player.currentTrack);
+const hasTrack = computed(() => !!player.currentTrack)
 
 const volumeIcon = computed(() => {
     if (player.volume === 0) return 'volume-3'
@@ -19,114 +19,69 @@ async function loadTrack() {
     audio.value.src = player.audioSrc
     audio.value.load()
     if (player.isPlaying) {
-        try {
-            await audio.value.play()
-        } catch (e) {
-            console.warn('Autoplay blocked', e)
-        }
+        try { await audio.value.play() }
+        catch (e) { console.warn('Autoplay blocked', e) }
     }
 }
 
-function togglePlay() {
-    player.togglePlay();
-}
-
-function skipForward() {
-    player.next()
-    loadTrack()
-}
-
-function skipBack() {
-    player.previous()
-    loadTrack()
-}
+function togglePlay() { player.togglePlay() }
+function skipForward() { player.next(); loadTrack() }
+function skipBack() { player.previous(); loadTrack() }
 
 function mute() {
-    if (player.volume === 0) player.volume = 10
-    else player.volume = 0
-}
-
-async function like() {
-    await player.toggleLike();
-}
-
-function openLyrics() {
-    //open lyrics panel
-}
-
-function openQueue() {
-    router.get('/queue');
+    player.volume = player.volume === 0 ? 10 : 0
 }
 
 
-watch(
-    () => player.currentTrack,
-    async (newTrack, oldTrack) => {
-        if (!audio.value) return
-        if (!newTrack) {
-            audio.value.pause()
-            audio.value.src = ''
-            return
-        }
-
-        const newSrc = new URL(player.audioSrc, location.href).href
-
-        if (audio.value.src !== newSrc) {
-            audio.value.src = newSrc
-            audio.value.load()
-        }
-
-        if (player.isPlaying) {
-            try {
-                await audio.value.play()
-            } catch (e) {
-                console.warn('Autoplay blocked', e)
-            }
-        }
-    }
-)
-
-watch(
-    () => player.isPlaying,
-    async (isPlaying) => {
-        if (!audio.value) return
-        if (!player.currentTrack) return
-
-        if (isPlaying) {
-            try {
-                await audio.value.play()
-            } catch (e) {
-                console.warn('Autoplay blocked', e)
-            }
-        } else {
-            audio.value.pause()
-        }
-    }
-)
-
-watch(
-    () => player.time,
-    (newTime) => {
-        if (!audio.value) return
-        if (Math.abs(audio.value.currentTime - newTime) > 0.5) {
-            audio.value.currentTime = newTime
-        }
-    }
-)
-
-watch(
-    () => player.volume,
-    (v) => {
-        if (audio.value) audio.value.volume = v / 100
-    }
-)
+function openLyrics() { /* implement lyrics panel */ }
+function openQueue() { router.get('/queue') }
 
 const formattedTime = (time: number) => computed(() => {
-    const totalSeconds = time;
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-});
+    const minutes = Math.floor(time / 60)
+    const seconds = time % 60
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`
+})
+
+watch(() => player.currentTrack, async (newTrack) => {
+    if (!audio.value) return
+    if (!newTrack) {
+        audio.value.pause()
+        audio.value.src = ''
+        return
+    }
+
+    const newSrc = new URL(player.audioSrc, location.href).href
+    if (audio.value.src !== newSrc) {
+        audio.value.src = newSrc
+        audio.value.load()
+    }
+
+    if (player.isPlaying) {
+        try { await audio.value.play() }
+        catch (e) { console.warn('Autoplay blocked', e) }
+    }
+})
+
+watch(() => player.isPlaying, async (isPlaying) => {
+    if (!audio.value || !player.currentTrack) return
+    if (isPlaying) {
+        try { await audio.value.play() }
+        catch (e) { console.warn('Autoplay blocked', e) }
+    } else {
+        audio.value.pause()
+    }
+})
+
+watch(() => player.time, (newTime) => {
+    if (!audio.value) return
+    if (Math.abs(audio.value.currentTime - newTime) > 0.5) {
+        audio.value.currentTime = newTime
+    }
+})
+
+watch(() => player.volume, (v) => {
+    if (audio.value) audio.value.volume = v / 100
+})
 
 onMounted(() => {
     if (!audio.value) return
@@ -140,17 +95,21 @@ onMounted(() => {
         player.duration = Math.floor(audio.value!.duration)
     })
 
-    audio.value.addEventListener('ended', () => {
-        player.next()
+    audio.value.addEventListener('ended', async () => {
+        if (player.loopTrack) {
+            audio.value!.currentTime = 0
+            await audio.value!.play()
+        } else {
+            player.next()
+            loadTrack()
+        }
     })
 })
-
 </script>
 
 <template>
     <audio ref="audio"></audio>
-    <div
-        class="grid grid-cols-[1fr_auto_1fr] items-center
+    <div class="grid grid-cols-[1fr_auto_1fr] items-center
          left-0 w-full bg-white dark:bg-black backdrop-blur-md
          text-black dark:text-white p-3">
 
@@ -179,7 +138,7 @@ onMounted(() => {
         <div class="flex flex-col items-center w-2xl space-y-1">
 
             <div class="flex items-center gap-4">
-                <Button @click="player.shuffle = !player.shuffle" :disabled="!hasTrack"
+                <Button @click="player.shuffle ? player.sortQueue() : player.shuffleQueue()" :disabled="!hasTrack"
                     :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '', player.shuffle ? 'text-cyan-500 group-hover:text-cyan-300' : '']">
                     <Icon name="arrows-shuffle" class="size-5 transition-colors duration-150" />
                 </Button>

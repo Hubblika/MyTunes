@@ -75,6 +75,10 @@
     "songCard": {
         "today": "ma",
         "yesterday": "tegnap",
-        "days_ago": "napja"
+        "days_ago": "napja",
+        "like": "Hozzáadás a kedvencekhez",
+        "unlike": "Eltávolítás a kedvencek közül",
+        "addToPlaylist": "Hozzáadás lejátszási listához",
+        "addToQueue": "Műsorra tűzés"
     }
 }

@@ -13,8 +13,6 @@ export interface Self extends User {
     email_verified_at?: string,
 }
 
-
-
 export interface _Song {
     uuid: string,
     title: string,
@@ -29,10 +27,6 @@ export interface _Song {
     updated_at?: string
 }
 
-export interface Song extends _Song {
-    authors: User[]
-}
-
 export interface _Playlist {
     uuid: string,
     user_id: string,
@@ -41,15 +35,8 @@ export interface _Playlist {
     public: boolean,
     created_at: string,
     updated_at: string,
+    songs?: _Song[];
 }
-
-export interface Playlist extends _Playlist {
-    creator: User,
-    songs: Song[]
-}
-
-
-
 export interface ButtonProps {
     type?: 'button' | 'submit' | 'menu' | 'reset',
     href?: string,

@@ -75,6 +75,10 @@
     "songCard": {
         "today": "today",
         "yesterday": "yesterday",
-        "days_ago": "days ago"
+        "days_ago": "days ago",
+        "like": "Like",
+        "unlike": "Unlike",
+        "addToPlaylist": "Add to playlist",
+        "addToQueue": "Add to queue"
     }
 }

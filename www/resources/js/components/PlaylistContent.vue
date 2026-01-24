@@ -7,38 +7,41 @@ import { usePlayerStore } from "@/stores/player";
 import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{ uuid: string }>();
-
 const player = usePlayerStore();
-const playlist = ref<_Playlist | null>(null)
 
+const playlist = ref<_Playlist | null>(null);
 
-const dropdownRef = ref<HTMLElement | null>(null)
-const dropdownOpen = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownOpen = ref(false);
 
-const renamingModal = ref(false)
-const renameInput = ref('')
+const renamingModal = ref(false);
+const renameInput = ref('');
 
 const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-        dropdownOpen.value = false
+        dropdownOpen.value = false;
     }
-}
+};
 
 async function fetchPlaylist(uuid: string) {
     try {
-        const response = await axios.get(`/api/playlists/${uuid}`)
-        const pl = response.data.data ?? response.data
+        const response = await axios.get(`/api/playlists/${uuid}`);
+        const pl: _Playlist = response.data.data ?? response.data;
 
-        playlist.value = pl
-        player.setPlaylist(pl)
+        // Ensure the playlist has a songs array
+        if (!pl.songs) pl.songs = [];
+
+        playlist.value = pl;
+        player.setPlaylist(pl);
     } catch (err) {
-        console.error('Failed to get playlist', err)
+        console.error('Failed to get playlist', err);
     }
 }
 
-
 async function play() {
-    if (props.uuid === '00000000-0000-0000-0000-000000000000') {
+    const isLikedPlaylist = props.uuid === '00000000-0000-0000-0000-000000000000';
+
+    if (isLikedPlaylist) {
         if (!player.likedSongList.length) return;
 
         const isCurrentPlaylist = player.currentPlaylist === props.uuid;
@@ -46,26 +49,35 @@ async function play() {
         if (isCurrentPlaylist) {
             player.togglePlay();
         } else {
-            player.emptyQueue();
-            player.likedSongList.forEach(song => player.addToQueue(song, props.uuid));
-            player.currentIndex = 0;
-            player.isPlaying = true;
-            player.currentPlaylist = props.uuid;
+            // Create a pseudo-playlist object for liked songs
+            const likedPlaylist: _Playlist = {
+                uuid: props.uuid,
+                user_id: 'system',
+                name: 'Liked Songs',
+                public: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                songs: [...player.likedSongList],
+            };
+
+            player.addPlaylistToQueue(likedPlaylist);
         }
+    } else if (playlist.value) {
+        // Normal playlist
+        player.addPlaylistToQueue(playlist.value);
     }
 }
 
 async function confirmRename() {
-    const name = renameInput.value.trim()
-    if (!name || !playlist.value) return
+    const name = renameInput.value.trim();
+    if (!name || !playlist.value) return;
 
     try {
-        await axios.put(`/api/playlists/${props.uuid}`, { name })
-
-        playlist.value.name = name
-        player.renamePlaylist(props.uuid, name)
+        await axios.put(`/api/playlists/${props.uuid}`, { name });
+        playlist.value.name = name;
+        player.renamePlaylist(props.uuid, name);
     } catch (err) {
-        console.error('Failed to rename playlist', err)
+        console.error('Failed to rename playlist', err);
     }
 }
 
@@ -74,9 +86,7 @@ async function deletePlaylist() {
 
     try {
         await axios.delete(`/api/playlists/${playlist.value.uuid}`);
-        
         player.deletePlaylist(playlist.value.uuid);
-
         router.visit('/');
     } catch (err) {
         console.error('Failed to delete playlist', err);
@@ -86,16 +96,15 @@ async function deletePlaylist() {
 onMounted(async () => {
     document.addEventListener('click', handleClickOutside);
     if (props.uuid === '00000000-0000-0000-0000-000000000000') {
-        player.fetchLikedSongs();
-    }
-    else {
+        await player.fetchLikedSongs();
+    } else {
         await fetchPlaylist(props.uuid);
     }
 });
 
 onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside)
-})
+    document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
@@ -106,10 +115,10 @@ onBeforeUnmount(() => {
 
             <div class="flex flex-col justify-end flex-1">
                 <h1 class="text-4xl font-bold text-black dark:text-white">
-                    {{ playlist === null ? $t('playlist.likedTitle') : playlist.name }}
+                    {{ playlist?.name ?? $t('playlist.likedTitle') }}
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                    {{ playlist === null ? player.likedCount : '0' }} {{ $t('playlist.likedNumber') }}
+                    {{ playlist?.songs?.length ?? player.likedCount }} {{ $t('playlist.likedNumber') }}
                 </p>
             </div>
         </header>
@@ -149,9 +158,9 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="grid grid-cols-[32px_48px_1fr_1fr_120px_100px] gap-4 px-4 py-2
-             text-xs uppercase tracking-widest
-             text-black border-black dark:text-neutral-400
-             border-b dark:border-neutral-800">
+         text-xs uppercase tracking-widest
+         text-black border-black dark:text-neutral-400
+         border-b dark:border-neutral-800">
             <div class="text-right">#</div>
             <div></div>
             <div>{{ $t("playlist.headerTitle") }}</div>
@@ -162,13 +171,12 @@ onBeforeUnmount(() => {
 
         <div class="flex flex-col overflow-y-auto">
             <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
-                <PlaylistSong v-for="(song, index) in player.likedSongList" :key="song.uuid" :index="index + 1" :song="song"
-                    :playlistUuid="props.uuid" />
+                <PlaylistSong v-for="(song, index) in player.likedSongList" :key="song.uuid" :index="index + 1"
+                    :song="song" :playlistUuid="props.uuid" />
             </template>
             <template v-else>
-                <div class="p-4 text-center text-neutral-500 dark:text-neutral-400">
-                    Placeholder content for this playlist.
-                </div>
+                <PlaylistSong v-for="(song, index) in playlist?.songs ?? []" :key="song.uuid" :index="index + 1"
+                    :song="song" :playlistUuid="props.uuid" />
             </template>
         </div>
     </section>
