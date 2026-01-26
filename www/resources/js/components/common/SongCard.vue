@@ -77,12 +77,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="relative group w-44 cursor-pointer rounded-lg
-               bg-transparent p-3
-               transition-colors duration-200
-               hover:bg-gray-500/10 dark:hover:bg-white/10" :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying
-                ? 'bg-gray-500/10 dark:bg-white/10'
-                : ''" @contextmenu.prevent="openDropdown">
+        <div class="relative group w-44 cursor-pointer rounded-lg
+                p-3
+                transition-colors duration-200
+                hover:bg-gray-500/10 dark:hover:bg-white/10" :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying
+                    ? 'bg-gray-500/10 dark:bg-white/10'
+                    : ''" @contextmenu.prevent="openDropdown">
         <div class="relative mb-3 aspect-square overflow-hidden rounded-md">
             <img :src="props.song.cover_url ?? '/uploads/thumbnails/defaultThumbnail.png'" alt="" class="h-full w-full object-cover
                        transition-transform duration-300
