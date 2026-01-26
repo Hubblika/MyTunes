@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import axios from "axios";
 import { PlaylistSong, Icon, RenameModal } from "./common";
-import { _Song, _Playlist } from "@/types";
+import { _Playlist } from "@/types";
 import { usePlayerStore } from "@/stores/player";
-import { router } from '@inertiajs/vue3';
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps<{ uuid: string }>();
 const player = usePlayerStore();
@@ -15,7 +14,7 @@ const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownOpen = ref(false);
 
 const renamingModal = ref(false);
-const renameInput = ref('');
+const renameInput = ref("");
 
 const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
@@ -23,87 +22,59 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 };
 
-async function fetchPlaylist(uuid: string) {
-    try {
-        const response = await axios.get(`/playlists/${uuid}`);
-        const pl: _Playlist = response.data.data ?? response.data;
-
-        // Ensure the playlist has a songs array
-        if (!pl.songs) pl.songs = [];
-
-        playlist.value = pl;
-        player.setPlaylist(pl);
-    } catch (err) {
-        console.error('Failed to get playlist', err);
+async function loadPlaylist() {
+    if (props.uuid === "00000000-0000-0000-0000-000000000000") {
+        await player.fetchLikedSongs();
+    } else {
+        const pl = await player.fetchPlaylist(props.uuid);
+        if (pl) playlist.value = pl;
     }
 }
 
 async function play() {
-    const isLikedPlaylist = props.uuid === '00000000-0000-0000-0000-000000000000';
+    const isLikedPlaylist = props.uuid === "00000000-0000-0000-0000-000000000000";
 
     if (isLikedPlaylist) {
         if (!player.likedSongList.length) return;
 
-        const isCurrentPlaylist = player.currentPlaylist === props.uuid;
-
-        if (isCurrentPlaylist) {
+        if (player.currentPlaylist === props.uuid) {
             player.togglePlay();
         } else {
-            // Create a pseudo-playlist object for liked songs
             const likedPlaylist: _Playlist = {
                 uuid: props.uuid,
-                user_id: 'system',
-                name: 'Liked Songs',
+                user_id: "system",
+                name: "Liked Songs",
                 public: false,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
                 songs: [...player.likedSongList],
             };
-
             player.addPlaylistToQueue(likedPlaylist);
         }
     } else if (playlist.value) {
-        // Normal playlist
         player.addPlaylistToQueue(playlist.value);
     }
 }
 
 async function confirmRename() {
-    const name = renameInput.value.trim();
-    if (!name || !playlist.value) return;
-
-    try {
-        await axios.put(`/playlists/${props.uuid}`, { name });
-        playlist.value.name = name;
-        player.renamePlaylist(props.uuid, name);
-    } catch (err) {
-        console.error('Failed to rename playlist', err);
-    }
+    if (!renameInput.value.trim() || !playlist.value) return;
+    const updated = await player.renamePlaylistAPI(props.uuid, renameInput.value.trim());
+    if (updated) playlist.value.name = updated.name;
 }
 
-async function deletePlaylist() {
+async function deleteCurrentPlaylist() {
     if (!playlist.value) return;
-
-    try {
-        await axios.delete(`/playlists/${playlist.value.uuid}`);
-        player.deletePlaylist(playlist.value.uuid);
-        router.visit('/');
-    } catch (err) {
-        console.error('Failed to delete playlist', err);
-    }
+    const success = await player.deletePlaylistAPI(playlist.value.uuid);
+    if (success) router.visit("/");
 }
 
-onMounted(async () => {
-    document.addEventListener('click', handleClickOutside);
-    if (props.uuid === '00000000-0000-0000-0000-000000000000') {
-        await player.fetchLikedSongs();
-    } else {
-        await fetchPlaylist(props.uuid);
-    }
+onMounted(() => {
+    document.addEventListener("click", handleClickOutside);
+    loadPlaylist();
 });
 
 onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
@@ -149,7 +120,7 @@ onBeforeUnmount(() => {
                         <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
                     </li>
                     <li class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap"
-                        @click="deletePlaylist">
+                        @click="deleteCurrentPlaylist">
                         <Icon name="trash" class="size-5 text-red-500" />
                         <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
                     </li>

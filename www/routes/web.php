@@ -4,6 +4,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PlaylistSongController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,6 +41,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/playlists/{uuid}', [PlaylistController::class, 'show']);
     Route::put('/playlists/{uuid}', [PlaylistController::class, 'update']);
     Route::delete('/playlists/{uuid}', [PlaylistController::class, 'destroy']);
+
+    Route::get('/playlists/{playlist}/songs', [PlaylistSongController::class, 'index'])
+        ->whereUuid('playlist')
+        ->name('playlist.songs.index');
+
+    Route::post('/playlists/{playlist}/songs', [PlaylistSongController::class, 'store'])
+        ->whereUuid('playlist')
+        ->name('playlist.songs.store');
+
+    Route::delete('/playlists/{playlist}/songs/{song}', [PlaylistSongController::class, 'destroy'])
+        ->whereUuid('playlist')
+        ->whereUuid('song')
+        ->name('playlist.songs.destroy');
 
     Route::get('/songs', [SongController::class, 'index']);
     Route::post('/songs', [SongController::class, 'store']);

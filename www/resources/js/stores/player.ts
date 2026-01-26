@@ -3,7 +3,6 @@ import type { _Song } from "@/types";
 import type { _Playlist } from "@/types";
 import axios from "axios";
 
-
 export const usePlayerStore = defineStore("player", {
     state: () => ({
         queue: [] as _Song[],
@@ -239,6 +238,97 @@ export const usePlayerStore = defineStore("player", {
             if (this.currentPlaylist === uuid) {
                 this.emptyQueue();
                 this.currentPlaylist = null;
+            }
+        },
+
+        async fetchPlaylist(uuid: string) {
+            try {
+                const { data } = await axios.get(`/playlists/${uuid}`);
+                const pl: _Playlist = data.data ?? data;
+                if (!pl.songs) pl.songs = [];
+                this.setPlaylist(pl);
+                return pl;
+            } catch (err) {
+                console.error("Failed to fetch playlist", err);
+                return null;
+            }
+        },
+
+        async renamePlaylistAPI(uuid: string, name: string) {
+            try {
+                const { data } = await axios.put(`/playlists/${uuid}`, {
+                    name,
+                });
+                this.renamePlaylist(uuid, data.data.name);
+                return data.data;
+            } catch (err) {
+                console.error("Failed to rename playlist", err);
+                return null;
+            }
+        },
+
+        async deletePlaylistAPI(uuid: string) {
+            try {
+                await axios.delete(`/playlists/${uuid}`);
+                this.deletePlaylist(uuid);
+                return true;
+            } catch (err) {
+                console.error("Failed to delete playlist", err);
+                return false;
+            }
+        },
+
+        async fetchPlaylists(username: string) {
+            try {
+                const { data } = await axios.get(
+                    `/playlists?username=${username}`,
+                    {
+                        headers: { Accept: "application/json" },
+                    },
+                );
+                const fetchedPlaylists: _Playlist[] = data.data;
+                fetchedPlaylists.forEach((pl) => this.setPlaylist(pl));
+                return fetchedPlaylists;
+            } catch (err) {
+                console.error("Failed to fetch playlists", err);
+                return [];
+            }
+        },
+
+        async addPlaylist(name: string = "New Playlist") {
+            try {
+                const { data } = await axios.post("/playlists", { name });
+                const newPlaylist = data.data as _Playlist;
+                this.setPlaylist(newPlaylist);
+                return newPlaylist;
+            } catch (err) {
+                console.error("Failed to add playlist", err);
+                return null;
+            }
+        },
+
+        async addSongToPlaylist(playlistUuid: string, songUuid: string) {
+            try {
+                await axios.post(`/playlists/${playlistUuid}/songs`, {
+                    song_id: songUuid,
+                });
+
+                const pl = this.playlists.get(playlistUuid);
+                if (pl && pl.songs) {
+                    const song =
+                        this.queue.find((s) => s.uuid === songUuid) ||
+                        this.likedSongs.find((s) => s.uuid === songUuid);
+
+                    if (song) pl.songs.push(song);
+                }
+
+                return true;
+            } catch (err) {
+                console.error(
+                    `Failed to add song ${songUuid} to playlist ${playlistUuid}`,
+                    err,
+                );
+                return false;
             }
         },
     },
