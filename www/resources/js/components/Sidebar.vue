@@ -2,17 +2,15 @@
 import { onMounted, ref, computed } from 'vue';
 import axios from 'axios';
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
-import playlist from '@/actions/App/Http/Controllers/PlaylistController';
 import { usePage, router } from '@inertiajs/vue3';
-import { usePlayerStore } from '@/stores/player'
+import { usePlayerStore } from '@/stores/player';
 import { _Playlist } from '@/types';
 
 const page = usePage();
-
 const playlists = ref<_Playlist[]>([]);
 const searchQuery = ref('');
 
-const player = usePlayerStore()
+const player = usePlayerStore();
 
 const filteredPlaylists = computed(() => {
     if (!searchQuery.value) return playlists.value;
@@ -23,31 +21,31 @@ const filteredPlaylists = computed(() => {
     );
 });
 
+
 async function getOwnPlaylists() {
-    const { data } = await axios.get(
-        playlist.index.url() + `?username=${page.props.self.username}`,
-        { headers: { Accept: 'application/json' } }
-    );
+    try {
+        const { data } = await axios.get(`/playlists?username=${page.props.self.username}`, {
+            headers: { Accept: 'application/json' },
+        });
 
-    playlists.value = data.data;
-
-    data.data.forEach((pl: _Playlist) => player.setPlaylist(pl))
+        playlists.value = data.data;
+        data.data.forEach((pl: _Playlist) => player.setPlaylist(pl));
+    } catch (err) {
+        console.error('Failed to fetch playlists', err);
+    }
 }
 
 async function addPlaylist() {
     try {
         const { data } = await axios.post(
-            playlist.store.url(),
+            '/playlists',
             { name: 'New Playlist' },
             { headers: { Accept: 'application/json' } }
         );
 
         const newPlaylist = data.data as _Playlist;
-
         playlists.value.push(newPlaylist);
-
         player.setPlaylist(newPlaylist);
-
         console.log(`Playlist "${newPlaylist.name}" added successfully`);
     } catch (err) {
         console.error('Failed to add playlist', err);
@@ -56,12 +54,11 @@ async function addPlaylist() {
 
 async function deletePlaylist(playlistId: string) {
     try {
-        await axios.delete(playlist.destroy.url(playlistId), {
-            headers: { Accept: 'application/json' }
+        await axios.delete(`/playlists/${playlistId}`, {
+            headers: { Accept: 'application/json' },
         });
 
         playlists.value = playlists.value.filter(p => p.uuid !== playlistId);
-
         player.deletePlaylist(playlistId);
 
         if (page.props.uuid === playlistId) {
@@ -75,18 +72,21 @@ async function deletePlaylist(playlistId: string) {
 }
 
 async function renamePlaylist(playlistId: string, name: string) {
-    const { data } = await axios.put(
-        playlist.update.url(playlistId),
-        { name },
-        { headers: { Accept: 'application/json' } }
-    );
+    try {
+        const { data } = await axios.put(
+            `/playlists/${playlistId}`,
+            { name },
+            { headers: { Accept: 'application/json' } }
+        );
 
-    playlists.value = playlists.value.map(p =>
-        p.uuid === playlistId ? data.data : p
-    );
+        playlists.value = playlists.value.map(p =>
+            p.uuid === playlistId ? data.data : p
+        );
 
-
-    player.renamePlaylist(playlistId, data.data.name)
+        player.renamePlaylist(playlistId, data.data.name);
+    } catch (err) {
+        console.error('Failed to rename playlist', err);
+    }
 }
 
 onMounted(getOwnPlaylists);

@@ -3,6 +3,7 @@ import type { _Song } from "@/types";
 import type { _Playlist } from "@/types";
 import axios from "axios";
 
+
 export const usePlayerStore = defineStore("player", {
     state: () => ({
         queue: [] as _Song[],
@@ -187,10 +188,10 @@ export const usePlayerStore = defineStore("player", {
 
             try {
                 if (likedIndex === -1) {
-                    await axios.post(`/api/like/${track.uuid}`);
+                    await axios.post(`/likes/${track.uuid}`);
                     this.likedSongs.push(track);
                 } else {
-                    await axios.delete(`/api/like/${track.uuid}`);
+                    await axios.delete(`/likes/${track.uuid}`);
                     this.likedSongs.splice(likedIndex, 1);
                 }
             } catch (err) {
@@ -200,7 +201,7 @@ export const usePlayerStore = defineStore("player", {
 
         async fetchLikedSongs() {
             try {
-                const res = await axios.get("/api/like");
+                const res = await axios.get("/likes");
                 const likedUUIDs: string[] = res.data.likes || [];
                 if (!likedUUIDs.length) {
                     this.likedSongs = [];
@@ -208,7 +209,7 @@ export const usePlayerStore = defineStore("player", {
                 }
 
                 const requests = likedUUIDs.map((uuid) =>
-                    axios.get(`/api/songs/${uuid}`),
+                    axios.get(`/songs/${uuid}`),
                 );
                 const responses = await Promise.all(requests);
                 this.likedSongs = responses

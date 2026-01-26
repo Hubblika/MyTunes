@@ -15,23 +15,22 @@ class PlaylistController extends Controller
     {
         $username = $request->query('username');
 
+        // Admins can get all playlists
         if (!$username) {
-            // Only admins can get all playlists from all users
-            if ($request->user()?->is_admin) {
-                $playlists = Playlist::all();
+            $user = $request->user();
+            if ($user && $user->is_admin) {
+                $playlists = Playlist::withCount('songs')->get();
                 return ok($playlists);
             }
-
             return err(404, ['field' => 'username']);
         }
 
         $target = User::whereUsername($username)->first();
-
         if (!$target) {
             return err(404, ['field' => 'username']);
         }
 
-        $playlists = Playlist::whereUserId($target->getKey())
+        $playlists = Playlist::whereUserId($target->id)
             ->withCount('songs')
             ->get();
 
@@ -39,34 +38,28 @@ class PlaylistController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource.
      */
     public function store(Request $request)
     {
         $user = $request->user();
 
-        if (!$user) {
-            return err(401);
-        }
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $public = $request->input('public', true);
 
-        $name = $request->json('name');
-        $description = $request->json('description');
-        $public = $request->json('public', true);
-
-        if (!$name || \strlen($name) < 1) {
+        if (!$name || strlen($name) < 1) {
             return err(400, ['field' => 'name']);
         }
 
-        $playlist_id = Playlist::create([
+        $playlist = Playlist::create([
             'user_id' => $user->id,
             'name' => $name,
             'description' => $description,
-            'public' => $public
-        ])->getKey();
+            'public' => (bool) $public,
+        ]);
 
-        $playlist = Playlist::find($playlist_id);
-
-        return ok($playlist);
+        return ok($playlist, 201);
     }
 
     /**
@@ -74,16 +67,11 @@ class PlaylistController extends Controller
      */
     public function show(Request $request, string $uuid)
     {
-        $playlist = Playlist::find($uuid);
+        $playlist = Playlist::where('uuid', $uuid)->first();
+        if (!$playlist) return err(404);
 
-        if (!$playlist) {
-            return err(404);
-        }
-
-        if (
-            !$playlist->public &&
-            $playlist->user_id !== $request->user()?->getKey()
-        ) {
+        $user = $request->user();
+        if (!$playlist->public && $playlist->user_id !== $user->id) {
             return err(404);
         }
 
@@ -91,19 +79,15 @@ class PlaylistController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource.
      */
     public function update(Request $request, string $uuid)
     {
         $playlist = Playlist::where('uuid', $uuid)->first();
-
-        if (!$playlist) {
-            return err(404);
-        }
+        if (!$playlist) return err(404);
 
         $user = $request->user();
-
-        if (!$user || $user->id !== $playlist->user_id) {
+        if ($playlist->user_id !== $user->id) {
             return err(403);
         }
 
@@ -112,8 +96,8 @@ class PlaylistController extends Controller
         }
 
         if ($request->has('description')) {
-            $description = $request->input('description');
-            $playlist->description = $description === '' ? null : $description;
+            $desc = $request->input('description');
+            $playlist->description = $desc === '' ? null : $desc;
         }
 
         if ($request->has('public')) {
@@ -126,21 +110,15 @@ class PlaylistController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource.
      */
     public function destroy(Request $request, string $uuid)
     {
-        $playlist = Playlist::find($uuid);
-
-        if (!$playlist) {
-            return err(404);
-        }
+        $playlist = Playlist::where('uuid', $uuid)->first();
+        if (!$playlist) return err(404);
 
         $user = $request->user();
-
-        if (!$user) {
-            return err(401);
-        } else if ($playlist->user->username !== $user->username) { // <- this is stupid but i think the userid type conversion is messing it up
+        if ($playlist->user_id !== $user->id) {
             return err(403);
         }
 

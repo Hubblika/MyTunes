@@ -49,7 +49,7 @@ async function confirmRename() {
     if (!name) return
 
     try {
-        await axios.put(`/api/playlists/${playlist.uuid}`, { name })
+        await axios.put(`/playlists/${playlist.uuid}`, { name })
         player.renamePlaylist(playlist.uuid, name)
     } catch (err) {
         console.error('Failed to rename playlist', err)

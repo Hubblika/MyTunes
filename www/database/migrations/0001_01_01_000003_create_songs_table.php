@@ -24,12 +24,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('_user_songs', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignUuid('song_id')->constrained('songs', 'uuid')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-        });
-
         Schema::create('user_likes', function (Blueprint $table) {
             $table->id()->primary();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();

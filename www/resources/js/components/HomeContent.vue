@@ -9,7 +9,7 @@ const songs = ref<_Song[]>([]);
 
 const getSongs = async () => {
     try {
-        const response = await axios.get('/api/songs');
+        const response = await axios.get('/songs');
         songs.value = response.data.data;
     } catch (error) {
         console.error(error);

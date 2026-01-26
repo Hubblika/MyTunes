@@ -9,7 +9,7 @@ const { query } = defineProps<{ query: string }>();
 let songs = ref([]);
 
 async function search(q: string) {
-    songs = await fetch(`/api/songs?q=${q}`, {
+    songs = await fetch(`/songs?q=${q}`, {
         headers: {
             accept: 'application/json; charset=utf-8'
         }

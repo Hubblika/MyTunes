@@ -25,7 +25,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 async function fetchPlaylist(uuid: string) {
     try {
-        const response = await axios.get(`/api/playlists/${uuid}`);
+        const response = await axios.get(`/playlists/${uuid}`);
         const pl: _Playlist = response.data.data ?? response.data;
 
         // Ensure the playlist has a songs array
@@ -73,7 +73,7 @@ async function confirmRename() {
     if (!name || !playlist.value) return;
 
     try {
-        await axios.put(`/api/playlists/${props.uuid}`, { name });
+        await axios.put(`/playlists/${props.uuid}`, { name });
         playlist.value.name = name;
         player.renamePlaylist(props.uuid, name);
     } catch (err) {
@@ -85,7 +85,7 @@ async function deletePlaylist() {
     if (!playlist.value) return;
 
     try {
-        await axios.delete(`/api/playlists/${playlist.value.uuid}`);
+        await axios.delete(`/playlists/${playlist.value.uuid}`);
         player.deletePlaylist(playlist.value.uuid);
         router.visit('/');
     } catch (err) {
