@@ -79,6 +79,7 @@
         "like": "Like",
         "unlike": "Unlike",
         "addToPlaylist": "Add to playlist",
-        "addToQueue": "Add to queue"
+        "addToQueue": "Add to queue",
+        "noPlaylistsAvailable": "No playlist avaliable"
     }
 }

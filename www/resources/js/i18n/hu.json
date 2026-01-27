@@ -79,6 +79,7 @@
         "like": "Hozzáadás a kedvencekhez",
         "unlike": "Eltávolítás a kedvencek közül",
         "addToPlaylist": "Hozzáadás lejátszási listához",
-        "addToQueue": "Műsorra tűzés"
+        "addToQueue": "Műsorra tűzés",
+        "noPlaylistsAvailable": "Nincs elérhető lejátszási lista"
     }
 }

@@ -126,10 +126,17 @@ onBeforeUnmount(() => {
             </div>
 
             <ul v-if="showPlaylists"
-                class="absolute left-full top-0 ml-1 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
+                class="absolute left-full top-0 ml-1 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
+
                 <li v-for="playlist in playlists" :key="playlist.uuid" @click.stop="addSongToPlaylist(playlist.uuid)"
                     class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                     {{ playlist.name }}
+                </li>
+
+                <li v-if="playlists.length === 0"
+                    class="flex items-center gap-2 px-4 py-2 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none">
+                    <Icon name="cancel" class="size-4 text-red-500" />
+                    <span class="truncate">{{ $t('songCard.noPlaylistsAvailable') }}</span>
                 </li>
             </ul>
         </li>
