@@ -314,12 +314,18 @@ export const usePlayerStore = defineStore("player", {
                 });
 
                 const pl = this.playlists.get(playlistUuid);
-                if (pl && pl.songs) {
+                if (!pl) return true;
+
+                if (pl.songs) {
                     const song =
                         this.queue.find((s) => s.uuid === songUuid) ||
                         this.likedSongs.find((s) => s.uuid === songUuid);
 
                     if (song) pl.songs.push(song);
+                }
+
+                if (typeof pl.songs_count === "number") {
+                    pl.songs_count++;
                 }
 
                 return true;

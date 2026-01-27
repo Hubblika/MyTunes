@@ -59,7 +59,7 @@ class PlaylistController extends Controller
             'public' => (bool) $public,
         ]);
 
-        return ok($playlist, 201);
+        return ok($playlist->loadCount('songs'), 201);
     }
 
     /**
@@ -67,7 +67,10 @@ class PlaylistController extends Controller
      */
     public function show(Request $request, string $uuid)
     {
-        $playlist = Playlist::where('uuid', $uuid)->first();
+        $playlist = Playlist::where('uuid', $uuid)
+            ->withCount('songs')
+            ->first();
+
         if (!$playlist) return err(404);
 
         $user = $request->user();
@@ -106,7 +109,7 @@ class PlaylistController extends Controller
 
         $playlist->save();
 
-        return ok($playlist);
+        return ok($playlist->loadCount('songs'));
     }
 
     /**

@@ -28,14 +28,15 @@ export interface _Song {
 }
 
 export interface _Playlist {
-    uuid: string,
-    user_id: string,
-    name: string,
-    description?: string,
-    public: boolean,
-    created_at: string,
-    updated_at: string,
+    uuid: string;
+    user_id: string;
+    name: string;
+    description?: string;
+    public: boolean;
+    created_at: string;
+    updated_at: string;
     songs?: _Song[];
+    songs_count?: number;
 }
 export interface ButtonProps {
     type?: 'button' | 'submit' | 'menu' | 'reset',

@@ -54,7 +54,6 @@ async function addSongToPlaylist(playlistUuid: string) {
         await player.addSongToPlaylist(playlistUuid, props.song.uuid)
         dropdownOpen.value = false
         showPlaylists.value = false
-        alert("Song added to playlist!")
     } catch (err) {
         console.error("Failed to add song to playlist", err)
     }
@@ -88,7 +87,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="relative w-44 cursor-pointer rounded-lg p-3 transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
+    <div class="group relative w-44 cursor-pointer rounded-lg p-3 transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
         :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying ? 'bg-gray-500/10 dark:bg-white/10' : ''"
         @contextmenu.prevent="openDropdown">
 
