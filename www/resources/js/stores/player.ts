@@ -337,5 +337,29 @@ export const usePlayerStore = defineStore("player", {
                 return false;
             }
         },
+
+        async fetchPlaylistSongs(uuid: string) {
+            try {
+                const res = await axios.get(`/playlists/${uuid}/songs`);
+                const songIds: string[] = res.data.map((s: any) => s.song_id);
+
+                const songRequests = songIds.map((id) =>
+                    axios.get(`/songs/${id}`),
+                );
+                const songResponses = await Promise.all(songRequests);
+
+                const songs = songResponses
+                    .map((r) => r.data?.data)
+                    .filter(Boolean) as _Song[];
+
+                const pl = this.playlists.get(uuid);
+                if (!pl) return;
+
+                pl.songs = songs;
+                pl.songs_count = songs.length;
+            } catch (err) {
+                console.error("Failed to fetch playlist songs", err);
+            }
+        },
     },
 });

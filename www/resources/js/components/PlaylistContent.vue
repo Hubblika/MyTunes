@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { PlaylistSong, Icon, RenameModal } from "./common";
 import { _Playlist } from "@/types";
 import { usePlayerStore } from "@/stores/player";
@@ -8,7 +8,9 @@ import { router } from "@inertiajs/vue3";
 const props = defineProps<{ uuid: string }>();
 const player = usePlayerStore();
 
-const playlist = ref<_Playlist | null>(null);
+const playlist = computed(() => {
+    return player.playlists.get(props.uuid) ?? null;
+});
 
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownOpen = ref(false);
@@ -21,15 +23,6 @@ const handleClickOutside = (event: MouseEvent) => {
         dropdownOpen.value = false;
     }
 };
-
-async function loadPlaylist() {
-    if (props.uuid === "00000000-0000-0000-0000-000000000000") {
-        await player.fetchLikedSongs();
-    } else {
-        const pl = await player.fetchPlaylist(props.uuid);
-        if (pl) playlist.value = pl;
-    }
-}
 
 async function play() {
     const isLikedPlaylist = props.uuid === "00000000-0000-0000-0000-000000000000";
@@ -52,7 +45,11 @@ async function play() {
             player.addPlaylistToQueue(likedPlaylist);
         }
     } else if (playlist.value) {
-        player.addPlaylistToQueue(playlist.value);
+        if (player.currentPlaylist === props.uuid) {
+            player.togglePlay();
+        } else {
+            player.addPlaylistToQueue(playlist.value);
+        }
     }
 }
 
@@ -68,9 +65,17 @@ async function deleteCurrentPlaylist() {
     if (success) router.visit("/");
 }
 
-onMounted(() => {
+onMounted(async () => {
     document.addEventListener("click", handleClickOutside);
-    loadPlaylist();
+
+    if (props.uuid === "00000000-0000-0000-0000-000000000000") {
+        await player.fetchLikedSongs();
+    } else {
+        // Fetch the playlist from API
+        await player.fetchPlaylist(props.uuid);
+        // Then fetch its songs (player.store will update reactively)
+        await player.fetchPlaylistSongs(props.uuid);
+    }
 });
 
 onBeforeUnmount(() => {
