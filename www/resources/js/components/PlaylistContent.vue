@@ -71,9 +71,7 @@ onMounted(async () => {
     if (props.uuid === "00000000-0000-0000-0000-000000000000") {
         await player.fetchLikedSongs();
     } else {
-        // Fetch the playlist from API
         await player.fetchPlaylist(props.uuid);
-        // Then fetch its songs (player.store will update reactively)
         await player.fetchPlaylistSongs(props.uuid);
     }
 });

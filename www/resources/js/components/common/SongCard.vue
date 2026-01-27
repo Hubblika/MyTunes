@@ -75,6 +75,8 @@ function handleClickOutside() {
     showPlaylists.value = false
 }
 
+
+
 onMounted(() => {
     window.addEventListener('song-context-open', handleOtherDropdown)
     window.addEventListener('click', handleClickOutside)

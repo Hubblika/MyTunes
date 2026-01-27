@@ -74,9 +74,12 @@ async function play() {
 
             player.addPlaylistToQueue(likedPlaylist);
         }
-    } else {
-        // For normal playlists
-        player.addPlaylistToQueue(playlist);
+    } else if (playlist) {
+        if (player.currentPlaylist === playlist.uuid) {
+            player.togglePlay();
+        } else {
+            player.addPlaylistToQueue(playlist);
+        }
     }
 }
 
@@ -111,7 +114,8 @@ onBeforeUnmount(() => {
             @click="() => router.visit(`/playlist/${playlist.uuid}`)">
             <span class="text-sm font-medium truncate">{{ playlist.name }}</span>
             <span class="text-xs opacity-60 truncate">
-                {{ playlist.uuid === '00000000-0000-0000-0000-000000000000' ? player.likedCount : playlist.songs_count ?? 0 }}
+                {{ playlist.uuid === '00000000-0000-0000-0000-000000000000' ? player.likedCount : playlist.songs_count
+                ?? 0 }}
                 {{ $t('sidebar.playlistNumber') }}
             </span>
         </div>
