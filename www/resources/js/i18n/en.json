@@ -75,11 +75,12 @@
     "songCard": {
         "today": "today",
         "yesterday": "yesterday",
-        "days_ago": "days ago",
+        "days_ago": "{count} days ago",
         "like": "Like",
         "unlike": "Unlike",
         "addToPlaylist": "Add to playlist",
         "addToQueue": "Add to queue",
-        "noPlaylistsAvailable": "No playlist avaliable"
+        "noPlaylistsAvailable": "No playlist avaliable",
+        "removeSong": "Remove song from playlist"
     }
 }

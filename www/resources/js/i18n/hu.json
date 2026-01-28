@@ -75,11 +75,12 @@
     "songCard": {
         "today": "ma",
         "yesterday": "tegnap",
-        "days_ago": "napja",
+        "days_ago": "{count} napja",
         "like": "Hozzáadás a kedvencekhez",
         "unlike": "Eltávolítás a kedvencek közül",
         "addToPlaylist": "Hozzáadás lejátszási listához",
         "addToQueue": "Műsorra tűzés",
-        "noPlaylistsAvailable": "Nincs elérhető lejátszási lista"
+        "noPlaylistsAvailable": "Nincs elérhető lejátszási lista",
+        "removeSong": "Zene eltávolítása a lejátszási listából"
     }
 }

@@ -46,11 +46,9 @@ async function addToPlaylist() {
     if (!showPlaylists.value) {
         const allPlaylists = await player.fetchPlaylists(page.props.self.username);
 
-        // check for each playlist if it already contains the song
         const checks = await Promise.all(
             allPlaylists.map(async (playlist) => {
                 const hasSong = await player.containsSong(playlist, props.song);
-                // temporarily add hasSong to the playlist object
                 (playlist as any).hasSong = hasSong;
                 return playlist;
             })
@@ -140,7 +138,7 @@ onBeforeUnmount(() => {
             </div>
 
             <ul v-if="showPlaylists"
-                class="absolute left-full top-0 ml-1 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
+                class="absolute left-full top-0 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
 
                 <li v-for="playlist in playlists" :key="playlist.uuid"
                     @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
