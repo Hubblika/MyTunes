@@ -377,6 +377,17 @@ export const usePlayerStore = defineStore("player", {
                 console.error("Failed to fetch playlist songs", err);
                 return false;
             }
+        }, 
+
+        async deleteSong(playlist: _Playlist, song: _Song) {
+            try {
+                await axios.delete(`/playlists/${playlist.uuid}/songs/${song.uuid}`);
+                return true;
+            }
+            catch(err) {
+                console.error("Failed to delete song from playlist", err);
+                return false;
+            }
         }
     },
 });

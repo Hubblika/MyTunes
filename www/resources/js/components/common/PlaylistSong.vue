@@ -76,6 +76,22 @@ function addToQueue() {
     dropdownOpen.value = false
 }
 
+async function removeSongFromPlaylist() {
+    if (!props.song || !props.playlistUuid) return;
+
+    const playlist = player.playlists.get(props.playlistUuid);
+    if (!playlist) return;
+
+    const success = await player.deleteSong(playlist, props.song);
+    if (success) {
+        playlist.songs = playlist.songs!.filter(s => s.uuid !== props.song.uuid);
+        playlist.songs_count = playlist.songs.length;
+
+        // Close the dropdown
+        dropdownOpen.value = false;
+    }
+}
+
 function formatDuration(seconds: number) {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -186,7 +202,7 @@ onBeforeUnmount(() => {
                     <Icon name="playlist-add" class="size-5 text-black dark:text-white" />
                     <span>{{ $t('songCard.addToQueue') }}</span>
                 </li>
-                <li @click="dropdownOpen = false"
+                <li v-if="props.playlistUuid !== '00000000-0000-0000-0000-000000000000'" @click="removeSongFromPlaylist"
                     class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
                     <Icon name="trash" class="size-5 text-red-500" />
                     <span>{{ $t('songCard.removeSong') }}</span>

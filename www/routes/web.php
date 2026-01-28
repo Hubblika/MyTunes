@@ -42,18 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/playlists/{uuid}', [PlaylistController::class, 'update']);
     Route::delete('/playlists/{uuid}', [PlaylistController::class, 'destroy']);
 
-    Route::get('/playlists/{playlist}/songs', [PlaylistSongController::class, 'index'])
-        ->whereUuid('playlist')
-        ->name('playlist.songs.index');
-
-    Route::post('/playlists/{playlist}/songs', [PlaylistSongController::class, 'store'])
-        ->whereUuid('playlist')
-        ->name('playlist.songs.store');
-
-    Route::delete('/playlists/{playlist}/songs/{song}', [PlaylistSongController::class, 'destroy'])
-        ->whereUuid('playlist')
-        ->whereUuid('song')
-        ->name('playlist.songs.destroy');
+    Route::get('/playlists/{playlist}/songs', [PlaylistSongController::class, 'index']);
+    Route::post('/playlists/{playlist}/songs', [PlaylistSongController::class, 'store']);
+    Route::delete('/playlists/{playlist}/songs/{song}', [PlaylistSongController::class, 'destroy']);
 
     Route::get('/songs', [SongController::class, 'index']);
     Route::post('/songs', [SongController::class, 'store']);
