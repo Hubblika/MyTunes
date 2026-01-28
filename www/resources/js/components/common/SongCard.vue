@@ -44,8 +44,20 @@ function like() {
 
 async function addToPlaylist() {
     if (!showPlaylists.value) {
-        playlists.value = await player.fetchPlaylists(page.props.self.username)
-        showPlaylists.value = true
+        const allPlaylists = await player.fetchPlaylists(page.props.self.username);
+
+        // check for each playlist if it already contains the song
+        const checks = await Promise.all(
+            allPlaylists.map(async (playlist) => {
+                const hasSong = await player.containsSong(playlist, props.song);
+                // temporarily add hasSong to the playlist object
+                (playlist as any).hasSong = hasSong;
+                return playlist;
+            })
+        );
+
+        playlists.value = checks;
+        showPlaylists.value = true;
     }
 }
 
@@ -130,9 +142,13 @@ onBeforeUnmount(() => {
             <ul v-if="showPlaylists"
                 class="absolute left-full top-0 ml-1 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
 
-                <li v-for="playlist in playlists" :key="playlist.uuid" @click.stop="addSongToPlaylist(playlist.uuid)"
-                    class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                <li v-for="playlist in playlists" :key="playlist.uuid"
+                    @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
+                        'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                        (playlist as any).hasSong ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent' : ''
+                    ]">
                     {{ playlist.name }}
+                    <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
                 </li>
 
                 <li v-if="playlists.length === 0"

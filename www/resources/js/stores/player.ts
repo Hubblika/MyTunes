@@ -361,5 +361,22 @@ export const usePlayerStore = defineStore("player", {
                 console.error("Failed to fetch playlist songs", err);
             }
         },
+
+        async containsSong(playlist: _Playlist, song: _Song) {
+            try {
+                const res = await axios.get(`/playlists/${playlist.uuid}/songs`);
+                const songIds: string[] = res.data.map((s: any) => s.song_id);
+
+                if(songIds.includes(song.uuid)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            } catch (err) {
+                console.error("Failed to fetch playlist songs", err);
+                return false;
+            }
+        }
     },
 });
