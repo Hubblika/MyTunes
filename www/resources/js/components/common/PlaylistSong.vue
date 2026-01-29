@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { Icon } from '.'
 import { _Song, _Playlist } from '@/types';
 import { usePlayerStore } from '@/stores/player'
@@ -21,6 +21,14 @@ const dropdownOpen = ref(false)
 
 const showPlaylists = ref(false)
 const playlists = ref<_Playlist[]>([])
+
+watch(dropdownOpen, (open) => {
+    if (!open) {
+        showPlaylists.value = false;
+        playlists.value = [];
+    }
+});
+
 
 const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
@@ -45,20 +53,29 @@ function like() {
 }
 
 async function addToPlaylist() {
-    if (!showPlaylists.value) {
-        const allPlaylists = await player.fetchPlaylists(page.props.self.username);
+    if (showPlaylists.value) return;
 
-        const checks = await Promise.all(
-            allPlaylists.map(async (playlist) => {
-                const hasSong = await player.containsSong(playlist, props.song);
-                (playlist as any).hasSong = hasSong;
-                return playlist;
-            })
-        );
+    const username = page.props.self.username;
 
-        playlists.value = checks;
-        showPlaylists.value = true;
+    if (player.playlists.size === 0) {
+        await player.fetchPlaylists(username);
     }
+
+    const allPlaylists = Array.from(player.playlists.values());
+
+    const checks = await Promise.all(
+        allPlaylists.map(async (playlist) => {
+            const hasSong =
+                playlist.songs?.some(s => s.uuid === props.song.uuid)
+                ?? await player.containsSong(playlist, props.song);
+
+            (playlist as any).hasSong = hasSong;
+            return playlist;
+        })
+    );
+
+    playlists.value = checks;
+    showPlaylists.value = true;
 }
 
 async function addSongToPlaylist(playlistUuid: string) {
@@ -87,7 +104,6 @@ async function removeSongFromPlaylist() {
         playlist.songs = playlist.songs!.filter(s => s.uuid !== props.song.uuid);
         playlist.songs_count = playlist.songs.length;
 
-        // Close the dropdown
         dropdownOpen.value = false;
     }
 }
