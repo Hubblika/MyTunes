@@ -22,12 +22,17 @@ const dropdownOpen = ref(false)
 const showPlaylists = ref(false)
 const playlists = ref<_Playlist[]>([])
 
+const dropdownStyle = ref({ top: '0px', left: '0px' })
+
 watch(dropdownOpen, (open) => {
-    if (!open) {
-        showPlaylists.value = false;
-        playlists.value = [];
+    if (!open || !dropdownRef.value) return
+
+    const rect = dropdownRef.value.getBoundingClientRect()
+    dropdownStyle.value = {
+        top: `${rect.bottom + window.scrollY}px`,
+        left: `${rect.right - 350 + window.scrollX}px`,
     }
-});
+})
 
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -178,52 +183,56 @@ onBeforeUnmount(() => {
                 <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
             </button>
 
-            <ul v-if="dropdownOpen"
-                class="absolute mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0 min-w-[150px]">
-                <li @click="like"
-                    class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-                    <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
-                        :class="player.isLiked(props.song) ? 'text-black dark:text-white' : 'text-pink-500 dark:text-pink-500'"
-                        class="size-5" />
-                    <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
-                </li>
-                <li
-                    class="relative flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-                    <div @mouseenter="addToPlaylist" class="flex items-center gap-3">
-                        <Icon name="square-rounded-plus" class="size-5 text-black dark:text-white" />
-                        <span>{{ $t('songCard.addToPlaylist') }}</span>
-                    </div>
+            <Teleport to="body">
+                <ul v-if="dropdownOpen" :style="dropdownStyle" class="fixed text-black dark:text-white bg-white dark:bg-black border border-gray-200
+         dark:border-gray-500/6 rounded-md shadow-lg py-1
+         z-50 min-w-[150px]">
+                    <li @click="like"
+                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                        <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
+                            :class="player.isLiked(props.song) ? 'text-black dark:text-white' : 'text-pink-500 dark:text-pink-500'"
+                            class="size-5" />
+                        <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
+                    </li>
+                    <li
+                        class="relative flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                        <div @mouseenter="addToPlaylist" class="flex items-center gap-3">
+                            <Icon name="square-rounded-plus" class="size-5 text-black dark:text-white" />
+                            <span>{{ $t('songCard.addToPlaylist') }}</span>
+                        </div>
 
-                    <ul v-if="showPlaylists"
-                        class="absolute right-full top-0 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
+                        <ul v-if="showPlaylists"
+                            class="absolute right-full top-0 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
 
-                        <li v-for="playlist in playlists" :key="playlist.uuid"
-                            @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
-                                'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
-                                (playlist as any).hasSong ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent' : ''
-                            ]">
-                            {{ playlist.name }}
-                            <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
-                        </li>
+                            <li v-for="playlist in playlists" :key="playlist.uuid"
+                                @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
+                                    'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
+                                    (playlist as any).hasSong ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent' : ''
+                                ]">
+                                {{ playlist.name }}
+                                <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
+                            </li>
 
-                        <li v-if="playlists.length === 0"
-                            class="flex items-center gap-2 px-4 py-2 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none">
-                            <Icon name="cancel" class="size-4 text-red-500" />
-                            <span class="truncate">{{ $t('songCard.noPlaylistsAvailable') }}</span>
-                        </li>
-                    </ul>
-                </li>
-                <li @click="addToQueue"
-                    class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-                    <Icon name="playlist-add" class="size-5 text-black dark:text-white" />
-                    <span>{{ $t('songCard.addToQueue') }}</span>
-                </li>
-                <li v-if="props.playlistUuid !== '00000000-0000-0000-0000-000000000000'" @click="removeSongFromPlaylist"
-                    class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-                    <Icon name="trash" class="size-5 text-red-500" />
-                    <span>{{ $t('songCard.removeSong') }}</span>
-                </li>
-            </ul>
+                            <li v-if="playlists.length === 0"
+                                class="flex items-center gap-2 px-4 py-2 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none">
+                                <Icon name="cancel" class="size-4 text-red-500" />
+                                <span class="truncate">{{ $t('songCard.noPlaylistsAvailable') }}</span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li @click="addToQueue"
+                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                        <Icon name="playlist-add" class="size-5 text-black dark:text-white" />
+                        <span>{{ $t('songCard.addToQueue') }}</span>
+                    </li>
+                    <li v-if="props.playlistUuid !== '00000000-0000-0000-0000-000000000000'"
+                        @click="removeSongFromPlaylist"
+                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                        <Icon name="trash" class="size-5 text-red-500" />
+                        <span>{{ $t('songCard.removeSong') }}</span>
+                    </li>
+                </ul>
+            </Teleport>
         </div>
     </div>
 </template>

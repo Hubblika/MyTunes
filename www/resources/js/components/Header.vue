@@ -3,9 +3,7 @@ import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { Icon, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
 
-const svg = ref('');
 const dropdownOpen = ref(false);
-const dark = ref(false);
 const logoSrc = ref('');
 
 function updateLogo() {
