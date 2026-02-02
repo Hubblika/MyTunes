@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
             {{ formatDuration(song.duration) }}
         </div>
 
-        <button @click.stop="openDropdown" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+        <button @click.stop="openDropdown($event)" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
             <Icon name="dots-vertical" class="size-5" />
         </button>
     </div>

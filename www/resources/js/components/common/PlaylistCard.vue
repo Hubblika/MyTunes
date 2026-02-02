@@ -140,14 +140,14 @@ onBeforeUnmount(() => {
             </span>
         </div>
 
-        <Button v-if="playlist.uuid !== DISABLED_UUID" @click.stop="(e) => openDropdown(e)"
+        <Button @click.stop="openDropdown($event)" v-if="playlist.uuid !== DISABLED_UUID"
             class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
             <Icon name="dots-vertical" class="size-5" />
         </Button>
     </div>
 
     <Teleport to="body">
-        <ul v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed bg-white dark:bg-black
+        <ul v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed bg-white dark:bg-black text-black dark:text-white
                 border border-gray-200 dark:border-gray-500/6
                 rounded-md shadow-lg py-1 z-50 min-w-160px" @click.stop>
             <li @click="selectMenu('rename')"
