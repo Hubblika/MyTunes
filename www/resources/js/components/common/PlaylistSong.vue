@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Icon } from '.'
 import { _Song, _Playlist } from '@/types'
 import { usePlayerStore } from '@/stores/player'
@@ -16,9 +16,11 @@ const { t } = useI18n()
 const player = usePlayerStore()
 const page = usePage()
 
+const dropdownRef = ref<HTMLElement | null>(null)
 const dropdownOpen = ref(false)
 const menuX = ref(0)
 const menuY = ref(0)
+const OFFSET = 6
 
 const showPlaylists = ref(false)
 const playlists = ref<_Playlist[]>([])
@@ -26,15 +28,34 @@ const playlists = ref<_Playlist[]>([])
 function openDropdown(e: MouseEvent) {
     e.preventDefault()
 
-    menuX.value = e.clientX + 6
-    menuY.value = e.clientY + 6
+    menuX.value = e.clientX + OFFSET
+    menuY.value = e.clientY + OFFSET
+
+    dropdownOpen.value = true
+
+    nextTick(() => {
+        if (!dropdownRef.value) return
+
+        const { innerWidth, innerHeight } = window
+        const rect = dropdownRef.value.getBoundingClientRect()
+
+        if (menuX.value + rect.width > innerWidth) {
+            menuX.value = e.clientX - rect.width - OFFSET
+        }
+
+        if (menuY.value + rect.height > innerHeight) {
+            menuY.value = e.clientY - rect.height - OFFSET
+        }
+
+        menuX.value = Math.max(OFFSET, menuX.value)
+        menuY.value = Math.max(OFFSET, menuY.value)
+    })
 
     window.dispatchEvent(
         new CustomEvent('song-context-open', { detail: props.song.uuid })
     )
-
-    dropdownOpen.value = true
 }
+
 
 function handleOtherDropdown(e: Event) {
     const event = e as CustomEvent<string>
@@ -195,15 +216,16 @@ onBeforeUnmount(() => {
             {{ formatDuration(song.duration) }}
         </div>
 
-        <button @click.stop="openDropdown($event)" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+        <button @click.stop="openDropdown($event)" class="p-2 rounded-full">
             <Icon name="dots-vertical" class="size-5" />
         </button>
     </div>
 
     <Teleport to="body">
-        <ul v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white bg-white dark:bg-black
-            border border-gray-200 dark:border-gray-500/6
-            rounded-md shadow-lg py-1 z-50 min-w-[150px]" @click.stop>
+        <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white bg-white dark:bg-black
+         border border-gray-200 dark:border-gray-500/6
+         rounded-md shadow-lg py-1 z-50
+         whitespace-nowrap" @click.stop>
             <li @click="like"
                 class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                 <Icon :name="player.isLiked(song) ? 'heart-off' : 'heart-filled'" :class="player.isLiked(song)
