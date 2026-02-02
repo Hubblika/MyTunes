@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
         player.isPlaying &&
         player.currentPlaylist === props.playlistUuid
         ? 'bg-gray-500/10 dark:bg-white/10'
-        : ''" class="group grid grid-cols-[32px_48px_1fr_1fr_120px_100px_20px]
+        : ''" class="group grid grid-cols-[32px_48px_1fr_1fr_180px_100px_20px]
         items-center gap-4 px-4 py-2 rounded-md
         text-sm text-neutral-400 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
         <div class="text-right group-hover:hidden">{{ index }}</div>

@@ -13,7 +13,7 @@ class LikeController extends Controller
         $user = $request->user();
 
         $likes = UserLike::where('user_id', $user->id)
-            ->pluck('song_id'); // UUIDs
+            ->pluck('song_id');
 
         return response()->json([
             'likes' => $likes,
@@ -24,12 +24,11 @@ class LikeController extends Controller
     {
         $user = $request->user();
 
-        // Ensure song exists
         Song::where('uuid', $uuid)->firstOrFail();
 
         UserLike::firstOrCreate([
             'user_id' => $user->id,
-            'song_id' => $uuid, // UUID by design
+            'song_id' => $uuid,
         ]);
 
         return response()->json([
@@ -41,7 +40,6 @@ class LikeController extends Controller
     {
         $user = $request->user();
 
-        // Ensure song exists
         Song::where('uuid', $uuid)->firstOrFail();
 
         $liked = UserLike::where('user_id', $user->id)
@@ -57,7 +55,6 @@ class LikeController extends Controller
     {
         $user = $request->user();
 
-        // Ensure song exists
         Song::where('uuid', $uuid)->firstOrFail();
 
         UserLike::where('user_id', $user->id)

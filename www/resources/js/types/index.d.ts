@@ -24,7 +24,8 @@ export interface _Song {
     duration: number,
     genre?: string,
     created_at?: string,
-    updated_at?: string
+    updated_at?: string,
+    added_at?: string
 }
 
 export interface _Playlist {

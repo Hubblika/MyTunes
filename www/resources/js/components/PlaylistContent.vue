@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
             </div>
         </div>
 
-        <div class="grid grid-cols-[32px_48px_1fr_1fr_120px_100px_20px] gap-4 px-4 py-2
+        <div class="grid grid-cols-[32px_48px_1fr_1fr_180px_100px_20px] gap-4 px-4 py-2
          text-xs uppercase tracking-widest
          text-black border-black dark:text-neutral-400
          border-b dark:border-neutral-800">

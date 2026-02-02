@@ -367,7 +367,7 @@ export const usePlayerStore = defineStore("player", {
                 const res = await axios.get(`/playlists/${playlist.uuid}/songs`);
                 const songIds: string[] = res.data.map((s: any) => s.song_id);
 
-                if(songIds.includes(song.uuid)) {
+                if (songIds.includes(song.uuid)) {
                     return true;
                 }
                 else {
@@ -377,17 +377,17 @@ export const usePlayerStore = defineStore("player", {
                 console.error("Failed to fetch playlist songs", err);
                 return false;
             }
-        }, 
+        },
 
         async deleteSong(playlist: _Playlist, song: _Song) {
             try {
                 await axios.delete(`/playlists/${playlist.uuid}/songs/${song.uuid}`);
                 return true;
             }
-            catch(err) {
+            catch (err) {
                 console.error("Failed to delete song from playlist", err);
                 return false;
             }
-        }
+        },
     },
 });
