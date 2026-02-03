@@ -47,6 +47,7 @@ export const usePlayerStore = defineStore("player", {
     actions: {
         async playSong(song: _Song) {
             const current = this.currentTrack;
+            console.log(current)
             if (!current || current.uuid !== song.uuid) {
                 if (!this.queue.length) {
                     this.queue = [song];

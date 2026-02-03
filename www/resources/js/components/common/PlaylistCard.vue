@@ -55,7 +55,7 @@ function openDropdown(e: MouseEvent) {
     })
 
     window.dispatchEvent(
-        new CustomEvent('song-context-open', { detail: playlist.uuid })
+        new CustomEvent('playlist-context-open', { detail: playlist.uuid })
     )
 }
 

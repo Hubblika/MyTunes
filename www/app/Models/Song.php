@@ -18,7 +18,7 @@ class Song extends Model
         'title',
         'artist',
         'album',
-        'url',
+        'file_name',
         'cover_url',
         'date',
         'duration',

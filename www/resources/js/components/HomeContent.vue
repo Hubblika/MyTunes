@@ -11,6 +11,7 @@ const getSongs = async () => {
     try {
         const response = await axios.get('/songs');
         songs.value = response.data.data;
+        console.log(songs.value[0].url);
     } catch (error) {
         console.error(error);
     }

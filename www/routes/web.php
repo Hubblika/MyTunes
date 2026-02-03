@@ -5,6 +5,7 @@ use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlaylistSongController;
+use App\Http\Controllers\StreamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,6 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+    Route::get('/stream/{song}', [StreamController::class, 'stream'])->name('songs.stream');
 
     Route::get('/me', fn (Request $request) => ok($request->user()));
 });

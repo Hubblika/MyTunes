@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { SongCard, Icon } from '.'
 import { _Song } from '@/types';
 
-defineProps<{
+const props = defineProps<{
     title: string,
     songs: _Song[]
 }>()
@@ -20,6 +20,7 @@ function updateScroll() {
 onMounted(() => {
     nextTick(() => updateScroll())
     window.addEventListener('resize', updateScroll)
+    console.log(props.songs[0].url);
 })
 
 onUnmounted(() => {

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('artist');
             $table->string('album'); // ->foreignId('user_id')?
-            $table->string('url');
+            $table->string('file_name');
             $table->string('cover_url');
             $table->date('date');
             $table->unsignedMediumInteger('duration');

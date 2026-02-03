@@ -36,11 +36,11 @@ function mute() {
 function openLyrics() { /* implement lyrics panel */ }
 function openQueue() { router.get('/queue') }
 
-const formattedTime = (time: number) => computed(() => {
+const formattedTime = (time: number) => {
     const minutes = Math.floor(time / 60)
     const seconds = time % 60
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
-})
+}
 
 watch(() => player.currentTrack, async (newTrack) => {
     if (!audio.value) return
@@ -108,7 +108,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <audio ref="audio"></audio>
+    <audio ref="audio" preload="metadata"></audio>
     <div class="grid grid-cols-[1fr_auto_1fr] items-center
          left-0 w-full bg-white dark:bg-black backdrop-blur-md
          text-black dark:text-white p-3">
