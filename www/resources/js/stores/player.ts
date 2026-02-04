@@ -213,7 +213,7 @@ export const usePlayerStore = defineStore("player", {
                 );
                 const responses = await Promise.all(requests);
                 this.likedSongs = responses
-                    .map((r) => r.data.data)
+                    .map((r) => r.data)
                     .filter(Boolean);
 
                 return this.likedSongs;
@@ -350,7 +350,7 @@ export const usePlayerStore = defineStore("player", {
                 const songResponses = await Promise.all(songRequests);
 
                 const songs = songResponses
-                    .map((r) => r.data?.data)
+                    .map((r) => r.data)
                     .filter(Boolean) as _Song[];
 
                 const pl = this.playlists.get(uuid);
