@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
                     {{ playlist?.name ?? $t('playlist.likedTitle') }}
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                    {{ playlist?.songs?.length ? player.likedCount : playlist?.songs_count ?? 0 }} {{ $t('playlist.likedNumber') }}
+                    {{ props.uuid === '00000000-0000-0000-0000-000000000000' ? player.likedCount : playlist?.songs_count ?? 0 }} {{ $t('playlist.likedNumber') }}
                 </p>
             </div>
         </header>
