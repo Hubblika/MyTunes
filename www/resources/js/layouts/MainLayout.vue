@@ -1,18 +1,23 @@
 <script setup lang="ts">
-import { Layout } from '@/layouts';
-import { Header, Sidebar, Toolbar } from '@/components';
+import { Layout } from '@/layouts'
+import { Header, Sidebar, Toolbar } from '@/components'
 </script>
 
 <template>
-    <Layout>
-        <Header></Header>
-        <main class="flex-1 min-h-0
-             text-black dark:text-white
-             bg-white dark:bg-black
-             w-full flex flex-row gap-2 px-2">
-            <Sidebar></Sidebar>
-            <slot></slot>
-        </main>
-        <Toolbar></Toolbar>
-    </Layout>
+  <Layout>
+    <!-- COLUMN STACK -->
+    <div class="relative z-10 flex min-h-screen flex-col">
+
+      <Header />
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="flex flex-1 w-full gap-4 px-4 py-4">
+        <Sidebar />
+        <slot />
+      </main>
+
+      <Toolbar />
+
+    </div>
+  </Layout>
 </template>

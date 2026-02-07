@@ -7,12 +7,12 @@ const dropdownOpen = ref(false);
 const logoSrc = ref('');
 
 function updateLogo() {
-  const isDark = document.documentElement.classList.contains('dark');
-  logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg';
+    const isDark = document.documentElement.classList.contains('dark');
+    logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg';
 }
 
 const logout = () => {
-  router.post('/logout');
+    router.post('/logout');
 };
 
 const selectMenu = (item: string) => {
@@ -47,16 +47,20 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
+    document.removeEventListener('click', handleClickOutside)
 })
 
 </script>
 
 <template>
     <header class="flex items-center justify-between
-    bg-white dark:bg-black backdrop-blur-md
-    w-full h-14 sticky top-0 left-0
-    text-black dark:text-white pr-4 shrink-0 z-50">
+         h-14 sticky top-0 left-0 z-50 shrink-0 px-4
+         rounded-2xl mx-4 mt-4
+         border border-black/10 dark:border-white/10
+           bg-white/20 dark:bg-white/5
+         backdrop-blur-md
+         shadow-md dark:shadow-xl
+         transition-all duration-300">
 
         <div class="flex items-center gap-3 flex-none">
             <Button @click="loadHomeContent" class="size-20 p-0 flex justify-center items-center">
@@ -81,7 +85,8 @@ onBeforeUnmount(() => {
                 class="w-full rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
                 <Icon name="download"
                     class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
-                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">{{ $t('header.downloadButton') }}</span>
+                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">{{
+                    $t('header.downloadButton') }}</span>
             </Button>
 
             <div class="relative" ref="dropdownRef">
@@ -90,24 +95,31 @@ onBeforeUnmount(() => {
                     <Icon name="user" />
                 </button>
 
-                <ul v-if="dropdownOpen"
-                    class="absolute right-0 mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50">
-                    <li @click="selectMenu('profile')"
-                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+                <ul v-if="dropdownOpen" class="absolute right-0 mt-2 w-48
+                text-black dark:text-white
+                bg-white/20 dark:bg-black/20
+                backdrop-blur-md
+                border border-black/10 dark:border-white/10
+                rounded-2xl shadow-lg py-2 z-50">
+                    <li @click="selectMenu('profile')" class="flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer
+               hover:bg-white/30 dark:hover:bg-black/30 transition-colors duration-150">
                         <span>{{ $t('header.profileButton') }}</span>
-                        <Icon name="user"></Icon>
+                        <Icon name="user" class="size-5" />
                     </li>
-                    <li @click="selectMenu('settings')"
-                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+
+                    <li @click="selectMenu('settings')" class="flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer
+               hover:bg-white/30 dark:hover:bg-black/30 transition-colors duration-150">
                         <span>{{ $t('header.settingButton') }}</span>
-                        <Icon name="settings"></Icon>
+                        <Icon name="settings" class="size-5" />
                     </li>
-                    <li @click="selectMenu('logout')"
-                        class="flex justify-between px-4 py-2 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+
+                    <li @click="selectMenu('logout')" class="flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer
+               hover:bg-white/30 dark:hover:bg-black/30 transition-colors duration-150">
                         <span>{{ $t('header.logoutButton') }}</span>
-                        <Icon name="logout"></Icon>
+                        <Icon name="logout" class="size-5 text-red-500" />
                     </li>
                 </ul>
+
             </div>
 
         </div>

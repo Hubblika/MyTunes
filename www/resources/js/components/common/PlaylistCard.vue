@@ -164,18 +164,20 @@ onBeforeUnmount(() => {
     </div>
 
     <Teleport to="body">
-        <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white bg-white dark:bg-black
-         border border-gray-200 dark:border-gray-500/6
-         rounded-md shadow-lg py-1 z-50
-         whitespace-nowrap" @click.stop>
+        <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white
+        bg-white/20 dark:bg-black/20
+        backdrop-blur-md
+        border border-black/10 dark:border-white/10
+        rounded-2xl shadow-lg py-2 z-50
+        min-w-[200px] whitespace-nowrap" @click.stop>
             <li @click="selectMenu('rename')"
-                class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
                 <Icon name="pencil" class="size-5" />
                 <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
             </li>
 
             <li @click="selectMenu('delete')"
-                class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
                 <Icon name="trash" class="size-5 text-red-500" />
                 <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
             </li>

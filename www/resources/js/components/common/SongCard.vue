@@ -143,49 +143,62 @@ onBeforeUnmount(() => {
         <h3 class="truncate text-sm font-semibold text-black dark:text-white text-center">{{ props.song.title }}</h3>
     </div>
 
-    <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white bg-white dark:bg-black
-         border border-gray-200 dark:border-gray-500/6
-         rounded-md shadow-lg py-1 z-50
-         whitespace-nowrap" @click.stop>
-        <li @click="like"
-            class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-            <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
-                :class="player.isLiked(props.song) ? 'text-black dark:text-white' : 'text-pink-500 dark:text-pink-500'"
-                class="size-5" />
-            <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
-        </li>
+    <Teleport to="body">
+        <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white
+         bg-white/20 dark:bg-black/20
+         backdrop-blur-md
+         border border-black/10 dark:border-white/10
+         rounded-2xl shadow-lg py-2 z-50
+         min-w-[200px] whitespace-nowrap
+         transition-all duration-200" @click.stop>
+            <li @click="like" class="flex items-center gap-3 px-4 py-2 rounded-lg
+           cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
+           transition-colors duration-150">
+                <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
+                    :class="player.isLiked(props.song) ? 'text-black dark:text-white' : 'text-pink-500 dark:text-pink-500'"
+                    class="size-5" />
+                <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
+            </li>
 
-        <li
-            class="relative flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-            <div @mouseenter="addToPlaylist" class="flex items-center gap-3">
-                <Icon name="square-rounded-plus" class="size-5 text-black dark:text-white" />
-                <span>{{ $t('songCard.addToPlaylist') }}</span>
-            </div>
+            <li class="relative flex items-center gap-3 px-4 py-2 rounded-lg
+           cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
+           transition-colors duration-150">
+                <div @mouseenter="addToPlaylist" class="flex items-center gap-3">
+                    <Icon name="square-rounded-plus" class="size-5 text-black dark:text-white" />
+                    <span>{{ $t('songCard.addToPlaylist') }}</span>
+                </div>
 
-            <ul v-if="showPlaylists"
-                class="absolute left-full top-0 w-fit bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg z-50">
+                <ul v-if="showPlaylists" class="absolute top-0 left-full translate-x-1
+             bg-white/20 dark:bg-black/20
+             backdrop-blur-md
+             border border-black/10 dark:border-white/10
+             rounded-2xl shadow-lg z-50 min-w-[180px]">
+                    <li v-for="playlist in playlists" :key="playlist.uuid"
+                        @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
+                            'flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-150',
+                            (playlist as any).hasSong
+                                ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent'
+                                : 'hover:bg-white/30 dark:hover:bg-black/30'
+                        ]">
+                        {{ playlist.name }}
+                        <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
+                    </li>
 
-                <li v-for="playlist in playlists" :key="playlist.uuid"
-                    @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
-                        'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer',
-                        (playlist as any).hasSong ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent' : ''
-                    ]">
-                    {{ playlist.name }}
-                    <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
-                </li>
+                    <li v-if="playlists.length === 0" class="flex items-center gap-3 px-4 py-2 rounded-lg
+               cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
+               transition-colors duration-150">
+                        <Icon name="cancel" class="size-4 text-red-500" />
+                        <span class="truncate">{{ $t('songCard.noPlaylistsAvailable') }}</span>
+                    </li>
+                </ul>
+            </li>
 
-                <li v-if="playlists.length === 0"
-                    class="flex items-center gap-2 px-4 py-2 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none">
-                    <Icon name="cancel" class="size-4 text-red-500" />
-                    <span class="truncate">{{ $t('songCard.noPlaylistsAvailable') }}</span>
-                </li>
-            </ul>
-        </li>
-
-        <li @click="addToQueue"
-            class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-            <Icon name="playlist-add" class="size-5 text-black dark:text-white" />
-            <span>{{ $t('songCard.addToQueue') }}</span>
-        </li>
-    </ul>
+            <li @click="addToQueue" class="flex items-center gap-3 px-4 py-2 rounded-lg
+           cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
+           transition-colors duration-150">
+                <Icon name="playlist-add" class="size-5 text-black dark:text-white" />
+                <span>{{ $t('songCard.addToQueue') }}</span>
+            </li>
+        </ul>
+    </Teleport>
 </template>

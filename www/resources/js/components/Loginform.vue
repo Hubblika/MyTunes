@@ -11,7 +11,6 @@ const { register } = defineProps<{
 
 const password = ref('')
 const password2 = ref('')
-
 const logoSrc = ref('')
 
 function updateLogo() {
@@ -39,35 +38,24 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <main class="relative min-h-screen w-full overflow-hidden
-        bg-neutral-100 text-neutral-900
-        dark:bg-neutral-950 dark:text-white">ű
-        <div class="pointer-events-none absolute inset-0">
-            <div class="absolute -top-40 -left-40 h-96 w-96 rounded-full
-                bg-fuchsia-500/20 blur-3xl" />
-            <div class="absolute top-1/3 -right-40 h-96 w-96 rounded-full
-                bg-cyan-400/20 blur-3xl" />
-        </div>
-
+    <main class="relative w-full text-neutral-900 dark:text-white">
         <div class="relative z-10 flex min-h-screen items-center justify-center p-6">
-            <div class="flex w-full max-w-sm flex-col items-center text-center gap-6">
-                <img :src="logoSrc" alt="Logo" class="mx-auto block h-32 w-auto
-                        select-none
-                        opacity-90 dark:opacity-100
-                        drop-shadow-sm
-                        dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.15)]" />
+            <div class="flex w-full max-w-sm flex-col items-center gap-6 text-center">
+                <img :src="logoSrc" alt="Logo" class="h-32 w-auto select-none
+                 opacity-90 dark:opacity-100
+                 drop-shadow-sm
+                 dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.15)]" />
 
                 <div class="w-full rounded-2xl
-                    border border-black/10 dark:border-white/10
-                    bg-white/80 dark:bg-white/5
-                    backdrop-blur-xl
-                    px-8 py-10
-                    shadow-xl dark:shadow-2xl
-                    shadow-black/10 dark:shadow-black/40">
+                 border border-black/10 dark:border-white/10
+                 bg-white/80 dark:bg-white/5
+                 backdrop-blur-xl
+                 px-8 py-10
+                 shadow-xl dark:shadow-2xl
+                 shadow-black/10 dark:shadow-black/40">
                     <h1 class="mb-8 text-2xl font-semibold tracking-tight">
-                        <span class="bg-linear-to-r
-                            from-fuchsia-500 to-cyan-500
-                            bg-clip-text text-transparent">
+                        <span class="bg-linear-to-r from-fuchsia-500 to-cyan-500
+                     bg-clip-text text-transparent">
                             {{ register ? $t('register.title') : $t('login.title') }}
                         </span>
                     </h1>
@@ -79,46 +67,46 @@ onBeforeUnmount(() => {
 
                         <Input id="email" type="email" required autofocus :placeholder="register
                             ? $t('register.emailPlaceholder')
-                            : $t('login.emailPlaceholder')" class="bg-transparent" input-class="w-full rounded-xl
-                                bg-white dark:bg-black/30
-                                border border-black/10 dark:border-white/10
-                                px-4 py-3
-                                focus:border-cyan-500/60
-                                focus:ring-2 focus:ring-cyan-500/30
-                                transition">
+                            : $t('login.emailPlaceholder')" input-class="w-full rounded-xl
+                           bg-white dark:bg-black/30
+                           border border-black/10 dark:border-white/10
+                           px-4 py-3
+                           focus:border-cyan-500/60
+                           focus:ring-2 focus:ring-cyan-500/30
+                           transition">
                             {{ register ? $t('register.emailLabel') : $t('login.emailLabel') }}
                         </Input>
 
                         <Input v-model="password" id="password" type="password" required :placeholder="register
                             ? $t('register.passwordPlaceholder')
-                            : $t('login.passwordPlaceholder')" class="bg-transparent" input-class="w-full rounded-xl
-                                bg-white dark:bg-black/30
-                                border border-black/10 dark:border-white/10
-                                px-4 py-3
-                                focus:border-fuchsia-500/60
-                                focus:ring-2 focus:ring-fuchsia-500/30
-                                transition">
+                            : $t('login.passwordPlaceholder')" input-class="w-full rounded-xl
+                           bg-white dark:bg-black/30
+                           border border-black/10 dark:border-white/10
+                           px-4 py-3
+                           focus:border-fuchsia-500/60
+                           focus:ring-2 focus:ring-fuchsia-500/30
+                           transition">
                             {{ register ? $t('register.passwordLabel') : $t('login.passwordLabel') }}
                         </Input>
 
                         <Input v-if="register" v-model="password2" id="password_confirmation" type="password" required
-                            :placeholder="$t('register.confirmPasswordPlaceholder')" class="bg-transparent" input-class="w-full rounded-xl
-                                bg-white dark:bg-black/30
-                                border border-black/10 dark:border-white/10
-                                px-4 py-3
-                                focus:border-cyan-500/60
-                                focus:ring-2 focus:ring-cyan-500/30
-                                transition">
+                            :placeholder="$t('register.confirmPasswordPlaceholder')" input-class="w-full rounded-xl
+                           bg-white dark:bg-black/30
+                           border border-black/10 dark:border-white/10
+                           px-4 py-3
+                           focus:border-cyan-500/60
+                           focus:ring-2 focus:ring-cyan-500/30
+                           transition">
                             {{ $t('register.confirmPasswordLabel') }}
                         </Input>
 
                         <PrimaryButton type="submit" :disabled="processing" class="group relative mt-6 overflow-hidden rounded-xl
-                                bg-linear-to-r from-fuchsia-500 to-cyan-400
-                                px-6 py-3 font-medium text-black
-                                transition-all duration-300
-                                hover:-translate-y-0.5
-                                hover:shadow-lg hover:shadow-cyan-400/30
-                                disabled:opacity-60 disabled:hover:translate-y-0">
+                     bg-linear-to-r from-fuchsia-500 to-cyan-400
+                     px-6 py-3 font-medium text-black
+                     transition-all duration-300
+                     hover:-translate-y-0.5
+                     hover:shadow-lg hover:shadow-cyan-400/30
+                     disabled:opacity-60 disabled:hover:translate-y-0">
                             <span class="relative z-10">
                                 <span v-if="processing">
                                     {{ register
@@ -134,15 +122,12 @@ onBeforeUnmount(() => {
                         </PrimaryButton>
                     </Form>
 
-                    <span class="mt-6 block text-center text-sm
-                        text-neutral-600 dark:text-white/60">
-                        {{ register
-                            ? $t('register.loginText')
-                            : $t('login.signUpText') }}
+                    <span class="mt-6 block text-center text-sm text-neutral-600 dark:text-white/60">
+                        {{ register ? $t('register.loginText') : $t('login.signUpText') }}
                         <TextLink @click="() => router.get(register ? '/login' : '/register')" class="ml-1 font-medium
-                                text-cyan-600 dark:text-cyan-400
-                                hover:text-fuchsia-500 dark:hover:text-fuchsia-400
-                                transition-colors">
+                     text-cyan-600 dark:text-cyan-400
+                     hover:text-fuchsia-500 dark:hover:text-fuchsia-400
+                     transition-colors">
                             {{ register
                                 ? $t('register.loginButton')
                                 : $t('login.signUpButton') }}
