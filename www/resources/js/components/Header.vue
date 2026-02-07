@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
 
         <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-4">
             <div class="flex items-center gap-4">
-                <Button @click="loadHomeContent"
+                <Button @click="loadHomeContent" :tooltip="$t('tooltip.home')"
                     class="size-10 rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
                     <Icon name="home"
                         class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />

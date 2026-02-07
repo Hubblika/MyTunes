@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
-import { PlaylistSong, Icon, RenameModal } from "./common";
+import { PlaylistSong, Icon, RenameModal, Button } from "./common";
 import { _Playlist } from "@/types";
 import { usePlayerStore } from "@/stores/player";
 import { router } from "@inertiajs/vue3";
@@ -98,18 +98,18 @@ onBeforeUnmount(() => {
         </header>
 
         <div class="px-4 flex items-center justify-between">
-            <button @click="play" class="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg
+            <Button @click="play" :tooltip="player.currentPlaylist === props.uuid && player.isPlaying ? $t('tooltip.pause') : $t('tooltip.play')" class="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg
                hover:scale-105 active:scale-95 transition-transform duration-150">
                 <Icon :name="player.currentPlaylist === props.uuid && player.isPlaying
                     ? 'player-pause-filled'
                     : 'player-play-filled'" class="size-8 text-white" />
-            </button>
+            </Button>
 
             <div v-if="props.uuid !== '00000000-0000-0000-0000-000000000000'" class="relative" ref="dropdownRef">
-                <button @click="dropdownOpen = !dropdownOpen"
-                    class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                <Button @click="dropdownOpen = !dropdownOpen" :tooltip="$t('tooltip.moreOptions')"
+                    class="p-2 rounded-full">
                     <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
-                </button>
+                </Button>
 
                 <ul v-if="dropdownOpen"
                     class="absolute mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
             </div>
         </div>
 
-        <div class="grid grid-cols-[32px_48px_1fr_1fr_180px_100px_20px] gap-4 px-4 py-2
+        <div class="grid grid-cols-[32px_48px_1fr_1fr_180px_100px_40px] gap-4 px-4 py-2
          text-xs uppercase tracking-widest
          text-black border-black dark:text-neutral-400
          border-b dark:border-neutral-800">
@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
             <div class="justify-self-end"></div>
         </div>
 
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto overflow-x-hidden">
             <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
                 <PlaylistSong v-for="(song, index) in player.likedSongList" :key="song.uuid" :index="index + 1"
                     :song="song" :playlistUuid="props.uuid" />

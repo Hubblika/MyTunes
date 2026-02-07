@@ -58,7 +58,7 @@ onMounted(getOwnPlaylists);
         <div class="flex items-center justify-between h-16 shrink-0 px-4">
             <h1 class="text-lg font-bold pl-2">{{ $t('sidebar.title') }}</h1>
 
-            <Button @click="addPlaylist" class="group relative">
+            <Button @click="addPlaylist" :tooltip="$t('tooltip.addPlaylist')" class="group relative">
                 <Icon name="circle-plus"
                     class="w-5 h-5 transition-all duration-200 group-hover:text-black/60 dark:group-hover:text-white/80" />
             </Button>
@@ -68,7 +68,7 @@ onMounted(getOwnPlaylists);
             <Searchbar class="w-full shrink-0 mb-4" :placeholder="$t('sidebar.searchbar')" v-model="searchQuery" />
         </div>
 
-        <div class="space-y-1 pt-3 flex-1 overflow-y-auto custom-scrollbar px-4">
+        <div class="space-y-1 pt-3 flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar px-4">
             <PlaylistCard
                 v-if="!searchQuery || $t('sidebar.likedSongs').toLowerCase().startsWith(searchQuery.toLowerCase())"
                 :playlist="{

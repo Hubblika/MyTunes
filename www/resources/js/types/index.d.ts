@@ -44,4 +44,5 @@ export interface ButtonProps {
     href?: string,
     class?: ClassValue,
     disabled?: boolean
+    tooltip?: string
 }

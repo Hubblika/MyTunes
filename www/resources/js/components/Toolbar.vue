@@ -135,7 +135,7 @@ onMounted(() => {
                         {{ player.currentTrack?.artist ?? $t('toolbar.artistName') }}
                     </p>
                 </div>
-                <Button @click="player.toggleLike()" :disabled="!hasTrack"
+                <Button @click="player.toggleLike()" :disabled="!hasTrack" :tooltip="player.isLiked(player.currentTrack) ? $t('tooltip.unlike') : $t('tooltip.like')"
                     :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                     <Icon :name="player.isLiked(player.currentTrack) ? 'heart-filled' : 'heart'"
                         :class="['size-6 transition-colors duration-150', player.isLiked(player.currentTrack) ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
@@ -145,28 +145,28 @@ onMounted(() => {
             <div class="flex flex-col items-center w-2xl space-y-1">
 
                 <div class="flex items-center gap-4">
-                    <Button @click="player.shuffle ? player.sortQueue() : player.shuffleQueue()" :disabled="!hasTrack"
+                    <Button @click="player.shuffle ? player.sortQueue() : player.shuffleQueue()" :disabled="!hasTrack" :tooltip="player.shuffle ? $t('tooltip.disableShuffle') : $t('tooltip.enableShuffle')"
                         :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '', player.shuffle ? 'text-cyan-500 group-hover:text-cyan-300' : '']">
                         <Icon name="arrows-shuffle" class="size-5 transition-colors duration-150" />
                     </Button>
 
-                    <Button @click="skipBack" :disabled="!hasTrack"
+                    <Button @click="skipBack" :disabled="!hasTrack" :tooltip="$t('tooltip.previous')"
                         :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                         <Icon name="skip-back" class="size-6 transition-colors duration-150" />
                     </Button>
 
-                    <Button @click="togglePlay" :disabled="!hasTrack"
+                    <Button @click="togglePlay" :disabled="!hasTrack" :tooltip="player.isPlaying ? $t('tooltip.pause') : $t('tooltip.play')"
                         :class="['w-12 h-12 rounded-full flex items-center justify-center transition-all duration-150', !hasTrack ? 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed' : 'bg-cyan-500 hover:bg-cyan-400']">
                         <Icon :name="player.isPlaying ? 'player-pause-filled' : 'player-play-filled'"
                             class="size-6 text-white" />
                     </Button>
 
-                    <Button @click="skipForward" :disabled="!hasTrack"
+                    <Button @click="skipForward" :disabled="!hasTrack" :tooltip="$t('tooltip.next')"
                         :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                         <Icon name="skip-forward" class="size-6 transition-colors duration-150" />
                     </Button>
 
-                    <Button @click="player.loop = !player.loop" :disabled="!hasTrack"
+                    <Button @click="player.loop = !player.loop" :disabled="!hasTrack" :tooltip="player.loop ? $t('tooltip.disableLoop') : $t('tooltip.enableLoop')"
                         :class="['group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '', player.loop ? 'text-cyan-500 group-hover:text-cyan-300' : '']">
                         <Icon name="repeat" class="size-5 transition-colors duration-150" />
                     </Button>
@@ -185,18 +185,18 @@ onMounted(() => {
             </div>
 
             <div class="flex items-center gap-2 justify-self-end">
-                <Button @click="openLyrics" :disabled="!hasTrack"
+                <Button @click="openLyrics" :disabled="!hasTrack" :tooltip="$t('tooltip.lyrics')"
                     :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                     <Icon name="microphone-2" class="size-5 transition-colors duration-150" />
                 </Button>
 
-                <Button @click="openQueue" :disabled="!hasTrack"
+                <Button @click="openQueue" :disabled="!hasTrack" :tooltip="$t('tooltip.queue')"
                     :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                     <Icon name="list" class="size-5 transition-colors duration-150" />
                 </Button>
 
                 <div class="flex items-center gap-2">
-                    <Button @click="mute" :disabled="!hasTrack"
+                    <Button @click="mute" :disabled="!hasTrack" :tooltip="player.volume > 0 ? $t('tooltip.mute') : $t('tooltip.unmute')"
                         :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                         <Icon :name="volumeIcon" class="size-5 transition-colors duration-150" />
                     </Button>

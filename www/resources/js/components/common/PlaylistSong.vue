@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { Icon } from '.'
+import { Icon, Button } from '.'
 import { _Song, _Playlist } from '@/types'
 import { usePlayerStore } from '@/stores/player'
 import { useI18n } from 'vue-i18n'
@@ -186,16 +186,21 @@ onBeforeUnmount(() => {
         player.isPlaying &&
         player.currentPlaylist === props.playlistUuid
         ? 'bg-gray-500/10 dark:bg-white/10'
-        : ''" class="group grid grid-cols-[32px_48px_1fr_1fr_180px_100px_20px]
-        items-center gap-4 px-4 py-2 rounded-md
-        text-sm text-neutral-400 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+        : ''" class="group grid grid-cols-[32px_48px_1fr_1fr_180px_100px_40px]
+            items-center gap-4 px-4 py-2 rounded-md
+            text-sm text-neutral-400 hover:bg-gray-500/10 dark:hover:bg-white/10
+            cursor-pointer">
+
         <div class="text-right group-hover:hidden">{{ index }}</div>
 
-        <div class="hidden group-hover:flex justify-end">
+        <Button
+            :tooltip="player.currentTrack?.uuid === props.song.uuid && player.isPlaying ? $t('tooltip.pause') : $t('tooltip.play')"
+            class="hidden group-hover:flex justify-center items-center w-10 h-10 p-0 rounded-full">
             <Icon @click.stop="play" :name="player.currentTrack?.uuid === props.song.uuid && player.isPlaying
                 ? 'player-pause-filled'
-                : 'player-play-filled'" class="size-6 text-white" />
-        </div>
+                : 'player-play-filled'"
+                class="text-white size-12 transition-transform duration-150 group-hover:scale-110" />
+        </Button>
 
         <img :src="song.cover_url" alt="cover" class="w-10 h-10 rounded object-cover" />
 
@@ -208,18 +213,16 @@ onBeforeUnmount(() => {
 
         <div class="min-w-0 truncate">{{ song.album }}</div>
 
-        <div class="justify-self-start tabular-nums">
-            {{ formatAddedDate(song.created_at!) }}
-        </div>
+        <div class="justify-self-start tabular-nums">{{ formatAddedDate(song.created_at!) }}</div>
+        <div class="justify-self-end tabular-nums">{{ formatDuration(song.duration) }}</div>
 
-        <div class="justify-self-end tabular-nums">
-            {{ formatDuration(song.duration) }}
-        </div>
-
-        <button @click.stop="openDropdown($event)" class="p-2 rounded-full">
-            <Icon name="dots-vertical" class="size-5" />
-        </button>
+        <Button @click.stop="openDropdown($event)" :tooltip="$t('tooltip.moreOptions')"
+            class="hidden group-hover:flex justify-center items-center w-10 h-10 p-0 rounded-full">
+            <Icon name="dots-vertical"
+                class="text-black dark:text-white size-8 transition-transform duration-150 group-hover:scale-110" />
+        </Button>
     </div>
+
 
     <Teleport to="body">
         <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white

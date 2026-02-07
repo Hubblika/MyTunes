@@ -159,8 +159,8 @@ onBeforeUnmount(() => {
             </span>
         </div>
 
-        <Button @click.stop="openDropdown($event)" v-if="playlist.uuid !== DISABLED_UUID" class="p-2 rounded-full">
-            <Icon name="dots-vertical" class="size-5" />
+        <Button @click.stop="openDropdown($event)" :tooltip="$t('tooltip.moreOptions')" v-if="playlist.uuid !== DISABLED_UUID" class="p-2 rounded-full">
+            <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
         </Button>
     </div>
 

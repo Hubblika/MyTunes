@@ -82,5 +82,27 @@
         "addToQueue": "Add to queue",
         "noPlaylistsAvailable": "No playlist avaliable",
         "removeSong": "Remove song from playlist"
+    },
+    "tooltip": {
+        "like": "Like",
+        "unlike": "Unlike",
+        "enableShuffle": "Enable shuffle",
+        "disableShuffle": "Disable shuffle",
+        "previous": "Previous",
+        "play": "Play",
+        "pause": "Pause",
+        "next": "Next",
+        "enableLoop": "Enable loop",
+        "disableLoop": "Disable loop",
+        "lyrics": "Lirycs",
+        "queue": "Queue",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "home": "Home",
+        "moreOptions": "More options",
+        "addPlaylist": "Add new playlist"
+    },
+    "search": {
+        "noResult": "No songs found."
     }
 }

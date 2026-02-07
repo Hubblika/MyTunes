@@ -82,5 +82,28 @@
         "addToQueue": "Műsorra tűzés",
         "noPlaylistsAvailable": "Nincs elérhető lejátszási lista",
         "removeSong": "Zene eltávolítása a lejátszási listából"
+    },
+    "tooltip": {
+        "like": "Hozzáadás a kedvelt dalokhoz",
+        "unlike": "Eltávolítás a kedvelt dalokból",
+        "enableShuffle": "Véletlen sorrend engedélyezése",
+        "disableShuffle": "Véletlen sorrend letiltása",
+        "previous": "Előző",
+        "play": "Lejátszás",
+        "pause": "Szünet",
+        "next": "Következő",
+        "enableLoop": "Ismétlés engedélyezése",
+        "disableLoop": "Ismétlés letiltása",
+        "lyrics": "Dalszöveg",
+        "queue": "Műsor",
+        "mute": "Néma",
+        "unmute": "Némítás visszavonása",
+        "home": "Főoldal",
+        "moreOptions": "További lehetőségek",
+        "addPlaylist": "Lejátszási lista hozzáadása"
+
+    },
+    "search": {
+        "noResult": "Nincs a keresésnek megfelelő zene."
     }
 }

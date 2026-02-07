@@ -42,7 +42,7 @@ function groupByArtist(songs: any[]) {
     <MainLayout>
         <MainContent>
             <div v-if="songs.length === 0" class="p-6 text-gray-500 dark:text-gray-400">
-                No songs found.
+                {{ $t('search.noResult') }}
             </div>
 
             <div v-else class="p-6 flex flex-col gap-4">
