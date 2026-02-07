@@ -122,6 +122,7 @@ onMounted(async () => {
     window.addEventListener('playlist-context-open', handleOtherDropdown)
     window.addEventListener('click', handleClickOutside)
     await player.fetchLikedSongs()
+    await player.fetchPlaylistSongs(playlist.uuid)
 })
 
 onBeforeUnmount(() => {

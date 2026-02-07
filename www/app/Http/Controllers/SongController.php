@@ -12,12 +12,25 @@ class SongController extends Controller
     /**
      * Display all songs
      */
-    public function index()
+    public function index(Request $request)
     {
-        $songs = Song::orderBy('updated_at')->get();
+        $query = $request->input('q');
+
+        $songsQuery = Song::query();
+
+        if ($query) {
+            $query = strtolower($query);
+            $songsQuery->where(function ($q) use ($query) {
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$query}%"])
+                    ->orWhereRaw('LOWER(artist) LIKE ?', ["%{$query}%"])
+                    ->orWhereRaw('LOWER(album) LIKE ?', ["%{$query}%"]);
+            });
+        }
+
+        $songs = $songsQuery->orderBy('updated_at')->get();
 
         return response()->json([
-            'data' => $songs->map(fn ($song) => $this->transformSong($song)),
+            'data' => $songs->map(fn($song) => $this->transformSong($song)),
         ]);
     }
 
@@ -53,13 +66,11 @@ class SongController extends Controller
         $song->duration = $request->input('duration');
         $song->genre = $request->input('genre');
 
-        // Temporarily save file names; will use song UUID after creation
         $audioFile = $request->file('audio');
         $coverFile = $request->file('cover');
 
-        $song->save(); // generates UUID if model uses `uuid` as primary key
+        $song->save();
 
-        // Store files in public disk
         if ($audioFile) {
             $audioPath = "songs/{$song->uuid}.mp3";
             Storage::disk('public')->putFileAs('songs', $audioFile, "{$song->uuid}.mp3");

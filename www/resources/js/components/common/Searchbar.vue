@@ -28,7 +28,7 @@ watch(query, (val) => {
         <input id="search" type="text" class="font-semibold text-black dark:text-white placeholder-gray-600 dark:placeholder-gray-300
                  h-full outline-none grow placeholder:font-semibold
                  transition-colors duration-200 focus:text-black/90 dark:focus:text-white/90"
-            :placeholder="placeholder" v-model="query" />
+            :placeholder="placeholder" v-model="query" autocomplete="off" />
 
         <button :class="[
             'h-full aspect-square flex justify-center items-center cursor-pointer transition-transform duration-200',

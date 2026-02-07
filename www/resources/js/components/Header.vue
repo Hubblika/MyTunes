@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
 import { Icon, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
+import _ from 'lodash';
 
 const dropdownOpen = ref(false);
 const logoSrc = ref('');
@@ -10,6 +11,15 @@ function updateLogo() {
     const isDark = document.documentElement.classList.contains('dark');
     logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg';
 }
+
+const searchQuery = ref('');
+watch(searchQuery, _.debounce((q: string) => {
+    if (q.trim() !== '') {
+        router.get('/search', { query: q }, { preserveState: true, replace: true });
+    } else {
+        router.get('/');
+    }
+}, 250));
 
 const logout = () => {
     router.post('/logout');
@@ -75,7 +85,7 @@ onBeforeUnmount(() => {
                     <Icon name="home"
                         class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
                 </Button>
-                <Searchbar class="w-96" :placeholder="$t('header.searchbar')" />
+                <Searchbar v-model="searchQuery" class="w-96" :placeholder="$t('header.searchbar')" />
             </div>
         </div>
 
