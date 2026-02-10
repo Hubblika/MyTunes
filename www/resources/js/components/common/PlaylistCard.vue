@@ -29,6 +29,8 @@ const renameInput = ref('')
 const DISABLED_UUID = '00000000-0000-0000-0000-000000000000'
 
 function openDropdown(e: MouseEvent) {
+    if (playlist.uuid === DISABLED_UUID) return
+
     e.preventDefault()
 
     menuX.value = e.clientX + OFFSET
@@ -159,7 +161,8 @@ onBeforeUnmount(() => {
             </span>
         </div>
 
-        <Button @click.stop="openDropdown($event)" :tooltip="$t('tooltip.moreOptions')" v-if="playlist.uuid !== DISABLED_UUID" class="p-2 rounded-full">
+        <Button @click.stop="openDropdown($event)" :tooltip="$t('tooltip.moreOptions')"
+            v-if="playlist.uuid !== DISABLED_UUID" class="p-2 rounded-full">
             <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
         </Button>
     </div>
@@ -183,8 +186,8 @@ onBeforeUnmount(() => {
                 <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
             </li>
         </ul>
-    </Teleport>
 
-    <RenameModal v-model="renamingModal" v-model:inputValue="renameInput" :title="$t('sidebar.renamePlaylistButton')"
-        @save="confirmRename" />
+        <RenameModal v-model="renamingModal" v-model:inputValue="renameInput"
+            :title="$t('sidebar.renamePlaylistButton')" @save="confirmRename" />
+    </Teleport>
 </template>

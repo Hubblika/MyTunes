@@ -92,13 +92,16 @@ onBeforeUnmount(() => {
                     {{ playlist?.name ?? $t('playlist.likedTitle') }}
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                    {{ props.uuid === '00000000-0000-0000-0000-000000000000' ? player.likedCount : playlist?.songs_count ?? 0 }} {{ $t('playlist.likedNumber') }}
+                    {{ props.uuid === '00000000-0000-0000-0000-000000000000' ? player.likedCount : playlist?.songs_count
+                        ?? 0 }} {{ $t('playlist.likedNumber') }}
                 </p>
             </div>
         </header>
 
         <div class="px-4 flex items-center justify-between">
-            <Button @click="play" :tooltip="player.currentPlaylist === props.uuid && player.isPlaying ? $t('tooltip.pause') : $t('tooltip.play')" class="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg
+            <Button @click="play"
+                :tooltip="player.currentPlaylist === props.uuid && player.isPlaying ? $t('tooltip.pause') : $t('tooltip.play')"
+                class="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg
                hover:scale-105 active:scale-95 transition-transform duration-150">
                 <Icon :name="player.currentPlaylist === props.uuid && player.isPlaying
                     ? 'player-pause-filled'
@@ -111,18 +114,24 @@ onBeforeUnmount(() => {
                     <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
                 </Button>
 
-                <ul v-if="dropdownOpen"
-                    class="absolute mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
+                <ul v-if="dropdownOpen" class="absolute right-0 mt-2
+                                        text-black dark:text-white
+                                        bg-white/20 dark:bg-black/20
+                                        backdrop-blur-md
+                                        border border-black/10 dark:border-white/10
+                                        rounded-2xl shadow-lg py-2 z-50
+                                        min-w-[200px] whitespace-nowrap">
                     <li @click="
                         renameInput = playlist?.name ?? '';
                     renamingModal = true;
                     dropdownOpen = false;
-                    "
-                        class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
+                    " class="flex items-center gap-3 px-4 py-2 rounded-lg
+                            hover:bg-white/30 dark:hover:bg-black/30
+                            cursor-pointer">
                         <Icon name="pencil" class="size-5 text-black dark:text-white" />
                         <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
                     </li>
-                    <li class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap"
+                    <li class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer whitespace-nowrap"
                         @click="deleteCurrentPlaylist">
                         <Icon name="trash" class="size-5 text-red-500" />
                         <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
@@ -156,6 +165,8 @@ onBeforeUnmount(() => {
         </div>
     </section>
 
-    <RenameModal v-model="renamingModal" v-model:inputValue="renameInput" :title="$t('sidebar.renamePlaylistButton')"
+    <Teleport to="body">
+        <RenameModal v-model="renamingModal" v-model:inputValue="renameInput" :title="$t('sidebar.renamePlaylistButton')"
         @save="confirmRename" />
+    </Teleport>
 </template>

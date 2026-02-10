@@ -5,6 +5,10 @@ import { MainLayout } from '@/layouts';
 import { HomeRow } from '@/components/common';
 import _ from 'lodash';
 
+defineOptions({
+    layout: MainLayout
+});
+
 const { query } = defineProps<{ query: string }>();
 
 const songs = ref([]);
@@ -39,7 +43,6 @@ function groupByArtist(songs: any[]) {
 </script>
 
 <template>
-    <MainLayout>
         <MainContent>
             <div v-if="songs.length === 0" class="p-6 text-gray-500 dark:text-gray-400">
                 {{ $t('search.noResult') }}
@@ -54,5 +57,4 @@ function groupByArtist(songs: any[]) {
                 />
             </div>
         </MainContent>
-    </MainLayout>
 </template>
