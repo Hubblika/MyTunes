@@ -7,8 +7,6 @@ export interface ApiResult<T extends object> {
     }
 }
 
-
-
 export interface User {
     id: string,
     username: string,
@@ -17,8 +15,6 @@ export interface User {
     created_at: string,
     updated_at: string
 }
-
-
 
 export interface Song {
     id: string,

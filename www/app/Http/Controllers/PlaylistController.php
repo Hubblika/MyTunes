@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Playlist;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PlaylistController extends Controller
 {
@@ -90,9 +91,14 @@ class PlaylistController extends Controller
         if (!$playlist) return err(404);
 
         $user = $request->user();
-        if ($playlist->user_id !== $user->id) {
-            return err(403);
-        }
+        if ($playlist->user_id !== $user->id) return err(403);
+
+        $request->validate([
+            'name' => 'nullable|string|min:1',
+            'cover' => 'nullable|image|max:2048',
+            'description' => 'nullable|string',
+            'public' => 'boolean',
+        ]);
 
         if ($request->filled('name')) {
             $playlist->name = $request->input('name');
@@ -105,6 +111,16 @@ class PlaylistController extends Controller
 
         if ($request->has('public')) {
             $playlist->public = (bool) $request->input('public');
+        }
+
+        if ($request->hasFile('cover')) {
+            if ($playlist->cover_url) {
+                $oldPath = str_replace('/storage/', '', $playlist->cover_url);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $path = $request->file('cover')->store('covers', 'public');
+            $playlist->cover_url = Storage::url($path);
         }
 
         $playlist->save();

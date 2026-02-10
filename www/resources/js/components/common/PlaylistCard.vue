@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { Icon, Button, RenameModal } from '.'
+import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
+import { Icon, Button, PlaylistEditModal } from '.'
 import { router } from '@inertiajs/vue3'
 import { usePlayerStore } from '@/stores/player'
 import axios from 'axios'
 import { _Playlist } from '@/types'
+
+const coverUrl = computed(() => {
+    const pl = player.playlists.get(playlist.uuid)
+    return pl?.cover_url || '/uploads/thumbnails/defaultThumbnail.png'
+})
 
 const player = usePlayerStore()
 
@@ -140,8 +145,9 @@ onBeforeUnmount(() => {
         : ''" class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-500/10 dark:hover:bg-white/10 transition">
         <div class="relative size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0 group cursor-pointer"
             @click="() => router.visit(`/playlist/${playlist.uuid}`)">
-            <img src="/uploads/thumbnails/defaultThumbnail.png"
+            <img :src="coverUrl"
                 class="w-full h-full object-cover transition-opacity duration-150 group-hover:opacity-50" />
+
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-150"
                 @click.stop="play">
                 <Icon :name="player.currentPlaylist === playlist.uuid && player.isPlaying
@@ -174,10 +180,11 @@ onBeforeUnmount(() => {
         border border-black/10 dark:border-white/10
         rounded-2xl shadow-lg py-2 z-50
         min-w-[200px] whitespace-nowrap" @click.stop>
+
             <li @click="selectMenu('rename')"
                 class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
                 <Icon name="pencil" class="size-5" />
-                <span>{{ $t('sidebar.renamePlaylistButton') }}</span>
+                <span>{{ $t('sidebar.editPlaylistButton') }}</span>
             </li>
 
             <li @click="selectMenu('delete')"
@@ -187,7 +194,21 @@ onBeforeUnmount(() => {
             </li>
         </ul>
 
-        <RenameModal v-model="renamingModal" v-model:inputValue="renameInput"
-            :title="$t('sidebar.renamePlaylistButton')" @save="confirmRename" />
+        <PlaylistEditModal v-model="renamingModal" :title="$t('sidebar.editPlaylist')" :name-value="renameInput"
+            :description-value="playlist.description || ''" :cover-url="playlist.cover_url || ''"
+            @update:nameValue="renameInput = $event" @update:descriptionValue="playlist.description = $event"
+            @update:coverFile="file => { }" @save="async () => {
+                const name = renameInput.trim();
+                if (!name) return;
+
+                try {
+                    await axios.put(`/playlists/${playlist.uuid}`, { name, description: playlist.description });
+                    player.renamePlaylist(playlist.uuid, name);
+                    renamingModal = false;
+                } catch (err) {
+                    console.error('Failed to rename playlist', err);
+                }
+            }" />
     </Teleport>
+
 </template>

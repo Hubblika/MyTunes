@@ -19,6 +19,7 @@ class Playlist extends Model
         'name',
         'description',
         'public',
+        'cover_url',
     ];
 
     protected static function boot(): void
@@ -58,6 +59,7 @@ class Playlist extends Model
             'name' => 'string',
             'description' => 'string',
             'public' => 'boolean',
+            'cover_url' => 'string',
         ];
     }
 }

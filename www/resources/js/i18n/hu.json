@@ -43,7 +43,7 @@
         "likedSongs": "Kedvelt Zenéim",
         "playlistNumber": "zene",
         "deletePlaylistButton": "Lejátszási lista törlése",
-        "renamePlaylistButton": "Lejátszási lista átnevezése"
+        "editPlaylistButton": "Lejátszási lista szerkezszése"
     },
 
      "toolbar": {

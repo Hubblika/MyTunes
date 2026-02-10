@@ -308,6 +308,44 @@ export const usePlayerStore = defineStore("player", {
             }
         },
 
+        async updatePlaylist(
+            uuid: string,
+            payload: { name?: string; description?: string; cover?: File }
+        ) {
+            try {
+                const formData = new FormData();
+
+                if (payload.name) formData.append('name', payload.name);
+                if (payload.description) formData.append('description', payload.description);
+                if (payload.cover) formData.append('cover', payload.cover);
+
+                const { data } = await axios.put(`/playlists/${uuid}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+
+                const pl = this.playlists.get(uuid);
+                if (pl) {
+                    const updated: _Playlist = {
+                        ...pl,
+                        name: data.data.name ?? pl.name,
+                        description:
+                            data.data.description !== undefined
+                                ? data.data.description
+                                : pl.description,
+                        cover_url: data.data.cover_url ?? pl.cover_url,
+                        updated_at: data.data.updated_at ?? new Date().toISOString(),
+                    };
+
+                    this.playlists.set(uuid, updated);
+                }
+
+                return data.data;
+            } catch (err) {
+                console.error('Failed to update playlist', err);
+                return null;
+            }
+        },
+
         async addSongToPlaylist(playlistUuid: string, songUuid: string) {
             try {
                 await axios.post(`/playlists/${playlistUuid}/songs`, {

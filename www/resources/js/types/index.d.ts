@@ -32,6 +32,7 @@ export interface _Playlist {
     uuid: string;
     user_id: string;
     name: string;
+    cover_url?: string,
     description?: string;
     public: boolean;
     created_at: string;

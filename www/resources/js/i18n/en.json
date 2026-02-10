@@ -43,7 +43,7 @@
         "likedSongs": "Liked Songs",
         "playlistNumber": "songs",
         "deletePlaylistButton": "Delete playlist",
-        "renamePlaylistButton": "Rename playlist"
+        "editPlaylistButton": "Edit playlist"
     },
 
     "toolbar": {
