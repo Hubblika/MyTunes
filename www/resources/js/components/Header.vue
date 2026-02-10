@@ -111,12 +111,6 @@ onBeforeUnmount(() => {
                 backdrop-blur-md
                 border border-black/10 dark:border-white/10
                 rounded-2xl shadow-lg py-2 z-50">
-                    <li @click="selectMenu('profile')" class="flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer
-               hover:bg-white/30 dark:hover:bg-black/30 transition-colors duration-150">
-                        <span>{{ $t('header.profileButton') }}</span>
-                        <Icon name="user" class="size-5" />
-                    </li>
-
                     <li @click="selectMenu('settings')" class="flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer
                hover:bg-white/30 dark:hover:bg-black/30 transition-colors duration-150">
                         <span>{{ $t('header.settingButton') }}</span>

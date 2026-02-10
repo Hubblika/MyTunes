@@ -43,7 +43,8 @@
         "likedSongs": "Liked Songs",
         "playlistNumber": "songs",
         "deletePlaylistButton": "Delete playlist",
-        "editPlaylistButton": "Edit playlist"
+        "editPlaylistButton": "Edit playlist",
+        "newPlaylistDefaultName": "New Playlist"
     },
 
     "toolbar": {
@@ -104,5 +105,11 @@
     },
     "search": {
         "noResult": "No songs found."
+    },
+    "modal": {
+        "title": "Edit playlist",
+        "charactersLeft": "characters left",
+        "playlistNamePlaceholder": "Playlist Name",
+        "playlistDescriptionPlaceholder": "Description"
     }
 }

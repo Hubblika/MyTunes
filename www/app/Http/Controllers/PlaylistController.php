@@ -141,6 +141,11 @@ class PlaylistController extends Controller
             return err(403);
         }
 
+        if ($playlist->cover_url) {
+            $oldPath = str_replace('/storage/', '', $playlist->cover_url);
+            Storage::disk('public')->delete($oldPath);
+        }
+
         $playlist->delete();
 
         return response()->noContent();

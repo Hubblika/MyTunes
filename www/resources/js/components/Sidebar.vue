@@ -3,10 +3,12 @@ import { onMounted, ref, computed } from 'vue';
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
 import { usePage, router } from '@inertiajs/vue3';
 import { usePlayerStore } from '@/stores/player';
+import { useI18n } from 'vue-i18n'
 import { _Playlist } from '@/types';
 
 const page = usePage();
 const player = usePlayerStore();
+const { t } = useI18n()
 
 const playlists = ref<_Playlist[]>([]);
 const searchQuery = ref('');
@@ -25,7 +27,7 @@ async function getOwnPlaylists() {
 }
 
 async function addPlaylist() {
-    const newPl = await player.addPlaylist('New Playlist');
+    const newPl = await player.addPlaylist(t('sidebar.newPlaylistDefaultName'));
     if (newPl) playlists.value.push(newPl);
 }
 

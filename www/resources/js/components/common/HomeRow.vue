@@ -20,7 +20,6 @@ function updateScroll() {
 onMounted(() => {
     nextTick(() => updateScroll())
     window.addEventListener('resize', updateScroll)
-    console.log(props.songs[0].url);
 })
 
 onUnmounted(() => {

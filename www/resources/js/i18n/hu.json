@@ -43,7 +43,8 @@
         "likedSongs": "Kedvelt Zenéim",
         "playlistNumber": "zene",
         "deletePlaylistButton": "Lejátszási lista törlése",
-        "editPlaylistButton": "Lejátszási lista szerkezszése"
+        "editPlaylistButton": "Lejátszási lista szerkezszése",
+        "newPlaylistDefaultName": "Új lejátszási lista"
     },
 
      "toolbar": {
@@ -105,5 +106,11 @@
     },
     "search": {
         "noResult": "Nincs a keresésnek megfelelő zene."
+    },
+    "modal": {
+        "title": "Lejátszási lista szerkesztése",
+        "charactersLeft": "karakter maradt",
+        "playlistNamePlaceholder": "Lejátszási lista neve",
+        "playlistDescriptionPlaceholder": "Leírás"
     }
 }
