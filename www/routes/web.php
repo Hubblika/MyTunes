@@ -63,9 +63,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
     Route::get('/search', function (Request $request) {
-    $query = $request->input('query', '');
-    return Inertia::render('Search', ['query' => $query]);
-})->name('search');
+        $query = $request->input('query', '');
+        return Inertia::render('Search', ['query' => $query]);
+    })->name('search');
 
     Route::get('/stream/{song}', [StreamController::class, 'stream'])->name('songs.stream');
 

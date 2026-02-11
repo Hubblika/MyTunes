@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->string('title');
             $table->string('artist');
-            $table->string('album'); // ->foreignId('user_id')?
-            $table->string('file_name');
-            $table->string('cover_url');
+            $table->string('album');
+            $table->string('file_name')->nullable();
+            $table->string('cover_url')->nullable();
             $table->date('date');
             $table->unsignedMediumInteger('duration');
             $table->string('genre', 60)->nullable();

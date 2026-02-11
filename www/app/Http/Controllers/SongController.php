@@ -40,12 +40,8 @@ class SongController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        if (!$user->is_admin) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
+        if (!$user) return redirect()->back()->with('error', 'Unauthorized');
+        if (!$user->is_admin) return redirect()->back()->with('error', 'Forbidden');
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -66,20 +62,18 @@ class SongController extends Controller
         $song->duration = $request->input('duration');
         $song->genre = $request->input('genre');
 
-        $audioFile = $request->file('audio');
-        $coverFile = $request->file('cover');
-
         $song->save();
 
-        if ($audioFile) {
-            $audioPath = "songs/{$song->uuid}.mp3";
-            Storage::disk('public')->putFileAs('songs', $audioFile, "{$song->uuid}.mp3");
-            $song->file_name = $audioPath;
+        if ($audioFile = $request->file('audio')) {
+            $fileName = "{$song->title}.mp3";
+            $audioFile->storeAs('songs', $fileName, 'local');
+            $song->file_name = $fileName;
         }
 
-        if ($coverFile) {
-            $coverPath = "songs/{$song->uuid}.jpg";
-            Storage::disk('public')->putFileAs('songs', $coverFile, "{$song->uuid}.jpg");
+
+        if ($coverFile = $request->file('cover')) {
+            $coverFileName = "{$song->title}.jpg";
+            $coverPath = $coverFile->storeAs('songCovers', $coverFileName, 'public');
             $song->cover_url = "/storage/{$coverPath}";
         } else {
             $song->cover_url = '/storage/default-cover.png';
@@ -87,8 +81,11 @@ class SongController extends Controller
 
         $song->save();
 
-        return response()->json($this->transformSong($song));
+        return redirect()->back()->with('success', 'Song uploaded successfully!');
     }
+
+
+
 
     /**
      * Show a single song
