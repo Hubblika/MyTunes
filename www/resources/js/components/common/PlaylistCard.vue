@@ -30,7 +30,7 @@ const OFFSET = 6
 
 const renamingModal = ref(false)
 const renameInput = ref('')
-
+const coverFile = ref<File | null>(null);
 const DISABLED_UUID = '00000000-0000-0000-0000-000000000000'
 
 function openDropdown(e: MouseEvent) {
@@ -195,19 +195,17 @@ onBeforeUnmount(() => {
         </ul>
 
         <PlaylistEditModal v-model="renamingModal" :title="$t('modal.title')" :name-value="renameInput"
-            :description-value="playlist.description || ''" :cover-url="playlist.cover_url || ''"
-            @update:nameValue="renameInput = $event" @update:descriptionValue="playlist.description = $event"
-            @update:coverFile="file => { }" @save="async () => {
-                const name = renameInput.trim();
-                if (!name) return;
-
-                try {
-                    await axios.put(`/playlists/${playlist.uuid}`, { name, description: playlist.description });
-                    player.renamePlaylist(playlist.uuid, name);
-                    renamingModal = false;
-                } catch (err) {
-                    console.error('Failed to rename playlist', err);
-                }
+            :description-value="playlist?.description || ''" :cover-url="playlist?.cover_url || ''"
+            @update:nameValue="renameInput = $event" @update:descriptionValue="playlist!.description = $event"
+            @update:coverFile="coverFile = $event" @save="async () => {
+                if (!playlist) return;
+                await player.updatePlaylist(playlist.uuid, {
+                    name: renameInput,
+                    description: playlist.description ?? undefined,
+                    cover: coverFile ?? undefined
+                });
+                renamingModal = false;
+                coverFile = null;
             }" />
     </Teleport>
 
