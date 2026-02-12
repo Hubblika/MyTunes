@@ -112,5 +112,23 @@
         "charactersLeft": "karakter maradt",
         "playlistNamePlaceholder": "Lejátszási lista neve",
         "playlistDescriptionPlaceholder": "Leírás"
+    },
+    "admin": {
+        "title": "Adminisztrátori felület",
+        "songUpload": "Zene feltöltése",
+        "editPermissions": "Jogosultságok szerkesztése",
+        "uploadTitle": "Új zene feltöltése",
+        "titleLabel": "Cím",
+        "artistLabel": "Előadó",
+        "albumLabel": "Album",
+        "releaseDateLabel": "Kiadás dátuma",
+        "DurationLabel": "Időtartam (másodpercben)", 
+        "genreLabel": "Műfaj",
+        "audioFileLabel": "Audio fájl",
+        "chooseAudio": "Válasszon egy audio fájlt",
+        "coverFileLabel": "Borítókép",
+        "chooseCover": "Válasszon egy borítóképet",
+        "uploading": "Feltöltés folyamatban...",
+        "submitButton": "Feltöltés"
     }
 }

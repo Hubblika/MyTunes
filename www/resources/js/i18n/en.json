@@ -14,7 +14,6 @@
         "signUpText": "Don't have an account?",
         "signUpButton": "Sign Up"
     },
-
     "register": {
         "title": "Sign up for MyTunes",
         "emailLabel": "Email",
@@ -28,15 +27,13 @@
         "loginText": "Already have an account?",
         "loginButton": "Log In"
     },
-
     "header": {
         "searchbar": "Search",
         "downloadButton": "Download the desktop app",
         "profileButton": "Profile",
         "settingButton": "Settings",
         "logoutButton": "Logout"
-    }, 
-
+    },
     "sidebar": {
         "title": "My music",
         "searchbar": "Search",
@@ -46,12 +43,10 @@
         "editPlaylistButton": "Edit playlist",
         "newPlaylistDefaultName": "New Playlist"
     },
-
     "toolbar": {
         "songTitle": "Song Title",
         "artistName": "Artist Name"
     },
-
     "settings": {
         "title": "General Settings",
         "themeTitle": "Theme - switch between light and dark mode",
@@ -111,5 +106,23 @@
         "charactersLeft": "characters left",
         "playlistNamePlaceholder": "Playlist Name",
         "playlistDescriptionPlaceholder": "Description"
+    },
+    "admin": {
+        "title": "Admin Dashboard",
+        "songUpload": "Upload Song",
+        "editPermissions": "Edit Permissions",
+        "uploadTitle": "Upload a new song",
+        "titleLabel": "Title",
+        "artistLabel": "Artist",
+        "albumLabel": "Album",
+        "releaseDateLabel": "Release Date",
+        "DurationLabel": "Duration (in seconds)",
+        "genreLabel": "Genre",
+        "audioFileLabel": "Audio File",
+        "choosseAudio": "Choose an audio file",
+        "coverFileLabel": "Cover Image",
+        "choosseCover": "Choose a cover image",
+        "uploading": "Uploading...",
+        "submitButton": "Upload"
     }
 }

@@ -14,11 +14,10 @@ class User extends Authenticatable
     public $incrementing = false;
 
     protected $fillable = [
-        'username', 'email', 'password', 'is_admin', 'is_searchable', 'description'
+        'username', 'email', 'password', 'is_admin', 'is_searchable', 'description',
     ];
 
     protected $hidden = [
-        'is_admin',
         'is_searchable',
         'password',
         'two_factor_secret',

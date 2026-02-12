@@ -58,8 +58,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/likes/{uuid}', [LikeController::class, 'show']);
     Route::delete('/likes/{uuid}', [LikeController::class, 'destroy']);
 
+    Route::get('/users', [UserController::class, 'index'])->middleware('can:admin');
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::put('/users/admin-status', [UserController::class, 'updateAdminStatus'])->middleware('can:admin');
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
     Route::get('/search', function (Request $request) {
