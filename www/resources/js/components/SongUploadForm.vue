@@ -2,6 +2,9 @@
 import { useForm } from '@inertiajs/vue3'
 import { Layout } from '@/layouts'
 import { Input, PrimaryButton } from '@/components/common'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const form = useForm({
     title: '',
@@ -28,7 +31,7 @@ function submit() {
     form.post('/songs', {
         forceFormData: true,
         onSuccess: () => {
-            alert('Song uploaded successfully!')
+            alert(t('admin.songUploadSuccess'))
             form.reset()
         },
         onError: (errors) => {

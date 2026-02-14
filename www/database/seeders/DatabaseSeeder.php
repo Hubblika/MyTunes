@@ -2,23 +2,24 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $adminUser = User::factory()
+            ->admin()
+            ->create([
+                'username' => 'admin',
+                'email' => 'admin@example.com',
+                'description' => 'Default administrator',
+            ]);
 
-        /*User::factory()->create([
-            'username' => 'Test User',
-            'email' => 'test@example.com'
-        ]);*/
+        $this->command->info('Admin password: ' . env('ADMIN_PASSWORD', '[random generated]'));
+
+        User::factory(30)->create();
 
         $this->call(SongsTableSeeder::class);
     }
