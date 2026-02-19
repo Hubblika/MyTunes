@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\SongController;
@@ -61,8 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->middleware('can:admin');
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::put('/users/admin-status', [UserController::class, 'updateAdminStatus'])->middleware('can:admin');
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+    Route::put('/admin', [AdminController::class, 'updateAdminStatus']);
 
     Route::get('/search', function (Request $request) {
         $query = $request->input('query', '');

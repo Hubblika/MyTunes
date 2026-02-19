@@ -132,6 +132,13 @@
         "coverFileLabel": "Borítókép",
         "chooseCover": "Válasszon egy borítóképet",
         "uploading": "Feltöltés folyamatban...",
-        "submitButton": "Feltöltés"
+        "submitButton": "Feltöltés",
+        "permissionsTitle": "Felhasználói jogosultságok szerkesztése",
+        "saveButton": "Változtatások mentése",
+        "processingMessage": "Feldolgozás folyamatban...",
+        "loadingMessage": "Felhasználók betöltése...",
+        "songUploadSuccess": "Zene sikeresen feltöltve!",
+        "permissionsUpdateSuccess": "Admin jogosultság sikeresen frissítve!",
+        "permissionsUpdateError": "Hiba történt az admin jogosultság frissítésekor."
     }
 }

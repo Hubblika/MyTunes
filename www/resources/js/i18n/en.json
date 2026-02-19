@@ -126,6 +126,13 @@
         "coverFileLabel": "Cover Image",
         "choosseCover": "Choose a cover image",
         "uploading": "Uploading...",
-        "submitButton": "Upload"
+        "submitButton": "Upload",
+        "permissionsTitle": "Edit user permissions",
+        "saveButton": "Save Changes",
+        "processingMessage": "Processing...",
+        "loadingMessage": "Loading users...",
+        "songUploadSuccess": "Song uploaded successfully!",
+        "permissionsUpdateSuccess": "Admin status updated successfully!",
+        "permissionsUpdateError": "An error occurred while updating admin status."
     }
 }

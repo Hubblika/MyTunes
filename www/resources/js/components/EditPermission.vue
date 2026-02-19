@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useForm } from '@inertiajs/vue3'
 import { PrimaryButton, ToggleSwitch } from '@/components/common'
+import { useI18n } from 'vue-i18n'
 
 interface User {
     id: number
@@ -16,6 +17,7 @@ const form = useForm<{ users: User[] }>({
 
 const loading = ref(false)
 const error = ref('')
+const { t } = useI18n()
 
 async function fetchUsers() {
     loading.value = true
@@ -35,11 +37,11 @@ async function fetchUsers() {
 async function submit() {
     form.processing = true
     try {
-        await axios.put('/users/admin-status', { users: form.users })
-        alert('Admin status updated successfully!')
+        await axios.put('/admin', { users: form.users })
+        alert(t('admin.permissionsUpdateSuccess'))
     } catch (err) {
         console.error(err)
-        alert('Failed to update admin status.')
+        alert(t('admin.permissionsUpdateError'))
     } finally {
         form.processing = false
     }
@@ -65,36 +67,41 @@ onMounted(async () => {
                     <h1 class="mb-8 text-2xl font-semibold tracking-tight text-center">
                         <span class="bg-linear-to-r from-fuchsia-500 to-cyan-500
                     bg-clip-text text-transparent">
-                            User Administration
+                            {{ $t('admin.permissionsTitle') }}
                         </span>
                     </h1>
 
-                    <div v-if="loading" class="text-center py-4">Loading users...</div>
+                    <div v-if="loading" class="text-center py-4">{{ $t('admin.loadingMessage') }}</div>
                     <div v-if="error" class="text-red-500 text-center">{{ error }}</div>
 
                     <form @submit.prevent="submit" class="flex flex-col gap-5 text-left" v-if="!loading && !error">
-                        <div v-for="user in form.users" :key="user.id" class="flex items-center justify-between gap-4
-                        rounded-xl border border-black/10 dark:border-white/10
-                        bg-white dark:bg-black/30 px-4 py-3 hover:bg-black/5 dark:hover:bg-white/10
-                        transition">
+                        <div class="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div v-for="user in form.users" :key="user.id" class="flex items-center justify-between gap-4
+                                                                                    rounded-xl border border-black/10 dark:border-white/10
+                                                                                    bg-white dark:bg-black/30 px-4 py-3
+                                                                                    hover:bg-black/5 dark:hover:bg-white/10 transition">
+                                <span class="truncate">{{ user.email }}</span>
 
-                            <span>{{ user.email }}</span>
-
-                            <ToggleSwitch v-model="user.is_admin"/>
+                                <ToggleSwitch v-model="user.is_admin" :disabled="user.email === 'admin@example.com'" />
+                            </div>
                         </div>
 
-                        <PrimaryButton type="submit" :disabled="form.processing"
-                            class="mt-6 flex items-center justify-center gap-2">
-                            <svg v-if="form.processing" class="animate-spin h-5 w-5 text-white"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                            </svg>
-                            <span>{{ form.processing ? 'Saving...' : 'Save Changes' }}</span>
-                        </PrimaryButton>
-                    </form>
+                        <div class="pt-4 border-t border-black/10 dark:border-white/10">
+                            <PrimaryButton type="submit" :disabled="form.processing"
+                                class="mt-2 flex items-center justify-center gap-2 w-full">
+                                <svg v-if="form.processing" class="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4" />
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                </svg>
 
+                                <span>
+                                    {{ form.processing ? $t('admin.processingMessage') : $t('admin.saveButton') }}
+                                </span>
+                            </PrimaryButton>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
