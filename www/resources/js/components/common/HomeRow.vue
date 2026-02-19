@@ -43,7 +43,7 @@ function scroll(direction: 'left' | 'right') {
             {{ title }}
         </h1>
 
-        <div v-if="canScroll" class="absolute top-0 right-0 flex gap-2">
+        <div v-if="canScroll" class="absolute top-0 right-0 flex">
             <button @click="scroll('left')" class="inline-flex items-center justify-center rounded-full
                 bg-cyan-500 text-white hover:bg-cyan-200 transition-colors h-9 w-9">
                 <Icon name="arrow-badge-left-filled" />
@@ -58,7 +58,7 @@ function scroll(direction: 'left' | 'right') {
 
     <section ref="scrollContainer"
         class="flex overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory no-scrollbar">
-        <div v-for="song in songs" :key="song.uuid" class="shrink-0 w-48 snap-start">
+        <div v-for="song in songs" :key="song.uuid" class="shrink-0 w-38 snap-start">
             <SongCard :title="song.title"
                 :image="song.cover_url ?? '/uploads/thumbnails/playlist/defaultThumbnail.png'" :song="song"/>
         </div>

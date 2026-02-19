@@ -123,7 +123,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="group relative w-44 cursor-pointer rounded-lg p-3 transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
+    <div class="group relative w-36 cursor-pointer rounded-lg transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
         :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying ? 'bg-gray-500/10 dark:bg-white/10' : ''"
         @contextmenu.prevent="openDropdown">
 

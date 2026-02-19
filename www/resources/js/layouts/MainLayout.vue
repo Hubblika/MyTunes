@@ -1,21 +1,34 @@
 <script setup lang="ts">
 import { Layout } from '@/layouts'
-import { Header, Sidebar, Toolbar } from '@/components'
+import { Header, Sidebar, Toolbar, MobileToolbar, MobileNavbar } from '@/components'
 </script>
 
 <template>
-  <Layout>
-    <div class="relative z-10 flex min-h-screen flex-col">
+    <Layout>
+        <div class="relative z-10 flex min-h-screen flex-col">
 
-      <Header />
+            <div class="hidden lg:block">
+                <Header />
+            </div>
 
-      <main class="flex flex-1 w-full gap-4 px-4 py-4">
-        <Sidebar />
-        <slot />
-      </main>
+            <main class="flex flex-1 w-full gap-4 px-4 py-4">
+                <div class="hidden lg:block">
+                    <Sidebar />
+                </div>
 
-      <Toolbar />
+                <slot />
+            </main>
 
-    </div>
-  </Layout>
+            <div class="hidden lg:block">
+                <Toolbar />
+            </div>
+
+            <div class="block lg:hidden">
+                <MobileToolbar class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50" />
+
+                <MobileNavbar class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40" />
+            </div>
+
+        </div>
+    </Layout>
 </template>

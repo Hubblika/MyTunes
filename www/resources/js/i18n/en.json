@@ -49,11 +49,14 @@
     },
     "settings": {
         "title": "General Settings",
-        "themeTitle": "Theme - switch between light and dark mode",
+        "themeTitle": "Theme",
+        "themeDescription": "switch between light and dark mode",
         "darkTheme": "Dark",
         "lightTheme": "Light",
-        "languageTitle": "Language - switch app language (Hungarian/English)",
-        "languageLabel": "English"
+        "languageTitle": "Language",
+        "languageDescription": "switch app language (Hungarian/English)",
+        "languageLabel": "English",
+        "logout": "Logout"
     },
     "queue": {
         "title": "Queue",

@@ -1,6 +1,8 @@
 export { default as Header } from './Header.vue';
+export { default as MobileNavbar } from './MobileNavbar.vue'
 export { default as Preview } from './Preview.vue';
 export { default as Toolbar } from './Toolbar.vue';
+export { default as MobileToolbar } from './MobileToolbar.vue';
 export { default as Sidebar } from './Sidebar.vue';
 export { default as MainContent } from './Maincontent.vue';
 export { default as Loginform } from './Loginform.vue';

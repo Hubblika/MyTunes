@@ -54,11 +54,14 @@
 
     "settings": {
         "title": "Általános Beállítások",
-        "themeTitle": "Téma - váltás világos és sötét téma között",
+        "themeTitle": "Téma",
+        "themeDescription": "váltás világos és sötét téma között",
         "darkTheme": "Sötét",
         "lightTheme": "Világos",
-        "languageTitle": "Nyelv - az applikáció nyelvének váltása (Magyar/Angol)",
-        "languageLabel": "Magyar"
+        "languageTitle": "Nyelv",
+        "languageDescription": "az applikáció nyelvének váltása (Magyar/Angol)",
+        "languageLabel": "Magyar",
+        "logout": "Kijelentkezés"
     },
     "queue": {
         "title": "Műsor",
