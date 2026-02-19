@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { Button, Icon } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
 
@@ -28,6 +28,34 @@ const onTouchEnd = (e: TouchEvent) => {
 
     touchStartX.value = null
 }
+
+const titleRef = ref<HTMLParagraphElement | null>(null)
+const artistRef = ref<HTMLParagraphElement | null>(null)
+const scrollSpeed = 2
+
+const scrollText = (el: HTMLParagraphElement | null) => {
+    if (!el) return
+    const scrollWidth = el.scrollWidth
+    const clientWidth = el.clientWidth
+
+    if (scrollWidth <= clientWidth) return
+
+    let scrollPos = 0
+    const animate = () => {
+        scrollPos += 1
+        if (scrollPos > scrollWidth) scrollPos = -clientWidth
+        el.scrollLeft = scrollPos
+        requestAnimationFrame(animate)
+    }
+    animate()
+}
+
+onMounted(() => {
+    nextTick(() => {
+        scrollText(titleRef.value)
+        scrollText(artistRef.value)
+    })
+})
 </script>
 
 <template>
@@ -41,16 +69,16 @@ const onTouchEnd = (e: TouchEvent) => {
              backdrop-blur-xl
              shadow-xl dark:shadow-2xl
              transition-all duration-300">
-            <!-- Track info -->
-            <div class="flex items-center gap-2 min-w-0">
-                <img :src="player.currentTrack?.cover_url ?? '/uploads/thumbnails/defaultThumbnail.png'"
-                    class="w-8 h-8 rounded-xl object-cover" />
 
-                <div class="min-w-0">
-                    <p class="text-sm font-semibold truncate">
+            <div class="flex items-center gap-3 min-w-0">
+                <img :src="player.currentTrack?.cover_url ?? '/uploads/thumbnails/defaultThumbnail.png'"
+                    class="w-10 h-10 rounded-xl object-cover" />
+
+                <div class="min-w-0 flex flex-col overflow-hidden">
+                    <p ref="titleRef" class="text-sm font-semibold truncate whitespace-nowrap">
                         {{ player.currentTrack?.title ?? $t('toolbar.songTitle') }}
                     </p>
-                    <p class="text-xs text-gray-500 truncate">
+                    <p ref="artistRef" class="text-xs text-gray-500 truncate whitespace-nowrap">
                         {{ player.currentTrack?.artist ?? $t('toolbar.artistName') }}
                     </p>
                 </div>
@@ -58,17 +86,16 @@ const onTouchEnd = (e: TouchEvent) => {
 
             <div></div>
 
-            <!-- Buttons -->
-            <div class="flex justify-end items-center gap-2">
+            <div class="flex justify-end items-center gap-3">
                 <Button @click="player.toggleLike()" :disabled="!hasTrack"
-                    class="w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition">
+                    class="w-12 h-12 rounded-full flex items-center justify-center active:scale-90 transition">
                     <Icon :name="player.isLiked(player.currentTrack) ? 'heart-filled' : 'heart'"
-                        :class="['size-5 transition-colors duration-150', player.isLiked(player.currentTrack) ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
+                        :class="['size-6 transition-colors duration-150', player.isLiked(player.currentTrack) ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
                 </Button>
 
                 <Button @click="player.togglePlay" :disabled="!hasTrack"
-                    class="w-10 h-10 rounded-full flex items-center justify-center text-white active:scale-90 transition">
-                    <Icon :name="player.isPlaying ? 'player-pause-filled' : 'player-play-filled'" />
+                    class="w-14 h-14 rounded-full flex items-center justify-center text-black dark:text-white active:scale-90 transition">
+                    <Icon :name="player.isPlaying ? 'player-pause-filled' : 'player-play-filled'" class="size-7" />
                 </Button>
             </div>
         </div>

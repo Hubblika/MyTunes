@@ -33,7 +33,6 @@ function mute() {
 }
 
 
-function openLyrics() { /* implement lyrics panel */ }
 function openQueue() { router.get('/queue') }
 
 const formattedTime = (time: number) => {
@@ -185,11 +184,6 @@ onMounted(() => {
             </div>
 
             <div class="flex items-center gap-2 justify-self-end">
-                <Button @click="openLyrics" :disabled="!hasTrack" :tooltip="$t('tooltip.lyrics')"
-                    :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
-                    <Icon name="microphone-2" class="size-5 transition-colors duration-150" />
-                </Button>
-
                 <Button @click="openQueue" :disabled="!hasTrack" :tooltip="$t('tooltip.queue')"
                     :class="['px-2! group transition-all duration-150', !hasTrack ? 'cursor-not-allowed opacity-50' : '']">
                     <Icon name="list" class="size-5 transition-colors duration-150" />

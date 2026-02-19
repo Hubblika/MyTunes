@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { ButtonProps } from '@/types'
 
 const {
@@ -18,6 +18,8 @@ const buttonRef = ref<HTMLElement | null>(null)
 const tooltipVisible = ref(false)
 const tooltipStyle = ref<Record<string, string>>({})
 
+let hoverMedia: MediaQueryList | null = null
+
 function showTooltip() {
     if (!buttonRef.value) return
 
@@ -26,12 +28,7 @@ function showTooltip() {
     const tooltipHeight = 32
 
     let top = rect.top - tooltipHeight - margin
-    let position = 'top'
-
-    if (top < 8) {
-        top = rect.bottom + margin
-        position = 'bottom'
-    }
+    if (top < 8) top = rect.bottom + margin
 
     tooltipStyle.value = {
         left: `${rect.left + rect.width / 2}px`,
@@ -45,13 +42,22 @@ function showTooltip() {
 function hideTooltip() {
     tooltipVisible.value = false
 }
+
+onMounted(() => {
+    hoverMedia = window.matchMedia('(hover: hover)')
+})
+
+onBeforeUnmount(() => {
+    hoverMedia = null
+})
 </script>
 
 <template>
-    <component ref="buttonRef" :is="tag" :href :type :disabled :class="[
-        'group h-10 px-3 flex justify-center items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed',
+    <component ref="buttonRef" :is="tag" :href="href" :type="type" :disabled="disabled" :class="[
+        'group h-10 px-3 flex justify-center items-center cursor-pointer disabled:cursor-not-allowed',
         classList
-    ]" @mouseenter="showTooltip" @mouseleave="hideTooltip" @click.stop="emit('click', $event)">
+    ]" @mouseenter="hoverMedia?.matches && showTooltip()" @mouseleave="hoverMedia?.matches && hideTooltip()"
+        @click.stop="emit('click', $event)">
         <slot />
     </component>
 

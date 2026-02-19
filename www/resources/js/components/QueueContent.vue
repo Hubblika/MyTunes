@@ -8,7 +8,7 @@ const { queue } = storeToRefs(player);
 </script>
 
 <template>
-    <section class="flex flex-col h-full gap-4">
+    <section class="flex flex-col h-full gap-4 p-4">
         <header class="px-4">
             <h1 class="text-2xl font-bold text-black dark:text-white">
                 {{ $t('queue.title') }}

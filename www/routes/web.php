@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Queue');
     })->name('queue');
 
+     Route::get('/library', function () {
+        return Inertia::render('Library');
+    })->name('library');
+
     Route::get('/playlist/{uuid}', function ($uuid) {
         return Inertia::render('Playlist', ['uuid' => $uuid]);
     })->whereUuid('uuid')

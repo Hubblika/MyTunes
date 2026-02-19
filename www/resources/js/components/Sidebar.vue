@@ -70,7 +70,7 @@ onMounted(getOwnPlaylists);
             <Searchbar class="w-full shrink-0 mb-4" :placeholder="$t('sidebar.searchbar')" v-model="searchQuery" />
         </div>
 
-        <div class="space-y-1 pt-3 flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar px-4">
+        <div class="space-y-1 pt-3 flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar px-4 pb-36">
             <PlaylistCard
                 v-if="!searchQuery || $t('sidebar.likedSongs').toLowerCase().startsWith(searchQuery.toLowerCase())"
                 :playlist="{
