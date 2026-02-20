@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <section class="flex flex-col h-full gap-4">
+    <section class="flex flex-col h-full gap-4 p-4">
         <header class="px-4 flex flex-col md:flex-row items-start md:items-end gap-4 md:gap-6">
             <div class="relative w-32 h-32 rounded-lg overflow-hidden group"
                 :class="canEditPlaylist ? 'cursor-pointer' : 'cursor-default'"

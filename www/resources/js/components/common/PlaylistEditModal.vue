@@ -100,7 +100,7 @@ function cancel() {
                 </div>
 
                 <div class="flex-1 flex flex-col">
-                    <input v-model="localName" type="text" placeholder="Playlist Name" :maxlength="MAX_NAME_LENGTH"
+                    <input v-model="localName" type="text" :placeholder="$t('playlistEditModal.playlistName')" :maxlength="MAX_NAME_LENGTH"
                         class="w-full px-4 py-2 rounded-xl bg-white/20 dark:bg-black/20
                      backdrop-blur-md border border-black/10 dark:border-white/10
                      placeholder-black/50 dark:placeholder-white/50 focus:outline-none
@@ -111,7 +111,7 @@ function cancel() {
                 </div>
             </div>
 
-            <textarea v-model="localDescription" placeholder="Description" :maxlength="MAX_DESCRIPTION_LENGTH" class="w-full px-4 py-2 mb-4 rounded-xl bg-white/20 dark:bg-black/20
+            <textarea v-model="localDescription" :placeholder="$t('playlistEditModal.description')" :maxlength="MAX_DESCRIPTION_LENGTH" class="w-full px-4 py-2 mb-4 rounded-xl bg-white/20 dark:bg-black/20
                  backdrop-blur-md border border-black/10 dark:border-white/10
                  placeholder-black/50 dark:placeholder-white/50 focus:outline-none
                  focus:ring-2 focus:ring-cyan-500/50 resize-none h-28"></textarea>

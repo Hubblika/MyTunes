@@ -140,5 +140,9 @@
         "songUploadSuccess": "Zene sikeresen feltöltve!",
         "permissionsUpdateSuccess": "Admin jogosultság sikeresen frissítve!",
         "permissionsUpdateError": "Hiba történt az admin jogosultság frissítésekor."
+    },
+    "playlistEditModal": {
+        "playlistName": "Lejátszási lista neve",
+        "description": "Leírás"
     }
 }
