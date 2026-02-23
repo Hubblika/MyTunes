@@ -45,7 +45,8 @@
     },
     "toolbar": {
         "songTitle": "Song Title",
-        "artistName": "Artist Name"
+        "artistName": "Artist Name",
+        "nowPlaying": "Now Playing"
     },
     "settings": {
         "title": "General Settings",

@@ -2,9 +2,9 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { Button, Icon } from '@/components/common'
 import { usePlayerStore } from '@/stores/player'
+import { router } from '@inertiajs/vue3'
 
 const player = usePlayerStore()
-
 const hasTrack = computed(() => !!player.currentTrack)
 
 const touchStartX = ref<number | null>(null)
@@ -31,22 +31,24 @@ const onTouchEnd = (e: TouchEvent) => {
 
 const titleRef = ref<HTMLParagraphElement | null>(null)
 const artistRef = ref<HTMLParagraphElement | null>(null)
-const scrollSpeed = 2
 
 const scrollText = (el: HTMLParagraphElement | null) => {
     if (!el) return
+
     const scrollWidth = el.scrollWidth
     const clientWidth = el.clientWidth
 
     if (scrollWidth <= clientWidth) return
 
     let scrollPos = 0
+
     const animate = () => {
         scrollPos += 1
         if (scrollPos > scrollWidth) scrollPos = -clientWidth
         el.scrollLeft = scrollPos
         requestAnimationFrame(animate)
     }
+
     animate()
 }
 
@@ -59,8 +61,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-md" @touchstart="onTouchStart"
-        @touchend="onTouchEnd">
+    <div class="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-md"
+        @touchstart="onTouchStart" @touchend="onTouchEnd">
         <div class="grid grid-cols-[1fr_auto_1fr] items-center
              p-3
              rounded-4xl
@@ -78,6 +80,7 @@ onMounted(() => {
                     <p ref="titleRef" class="text-sm font-semibold truncate whitespace-nowrap">
                         {{ player.currentTrack?.title ?? $t('toolbar.songTitle') }}
                     </p>
+
                     <p ref="artistRef" class="text-xs text-gray-500 truncate whitespace-nowrap">
                         {{ player.currentTrack?.artist ?? $t('toolbar.artistName') }}
                     </p>
@@ -87,16 +90,22 @@ onMounted(() => {
             <div></div>
 
             <div class="flex justify-end items-center gap-3">
-                <Button @click="player.toggleLike()" :disabled="!hasTrack"
+
+                <Button @click.stop="player.toggleLike()" :disabled="!hasTrack"
                     class="w-12 h-12 rounded-full flex items-center justify-center active:scale-90 transition">
-                    <Icon :name="player.isLiked(player.currentTrack) ? 'heart-filled' : 'heart'"
-                        :class="['size-6 transition-colors duration-150', player.isLiked(player.currentTrack) ? 'text-pink-500 group-hover:text-pink-400' : 'text-black dark:text-white group-hover:text-black/60 dark:group-hover:text-white/80']" />
+                    <Icon :name="player.isLiked(player.currentTrack) ? 'heart-filled' : 'heart'" :class="[
+                        'size-6 transition-colors duration-150',
+                        player.isLiked(player.currentTrack)
+                            ? 'text-pink-500'
+                            : 'text-black dark:text-white'
+                    ]" />
                 </Button>
 
-                <Button @click="player.togglePlay" :disabled="!hasTrack"
+                <Button @click.stop="player.togglePlay" :disabled="!hasTrack"
                     class="w-14 h-14 rounded-full flex items-center justify-center text-black dark:text-white active:scale-90 transition">
                     <Icon :name="player.isPlaying ? 'player-pause-filled' : 'player-play-filled'" class="size-7" />
                 </Button>
+
             </div>
         </div>
     </div>
