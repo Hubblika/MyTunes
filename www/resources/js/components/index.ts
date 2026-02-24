@@ -10,6 +10,7 @@ export { default as SettingsMenu } from './SettingsMenu.vue';
 export { default as HomeContent } from './HomeContent.vue';
 export { default as QueueContent } from './QueueContent.vue';
 export { default as PlaylistContent } from './PlaylistContent.vue';
+export { default as MobilePlaylistContent } from './MobilePlaylistContent.vue';
 export { default as SongUploadForm } from './SongUploadForm.vue';
 export { default as EditPermission } from './EditPermission.vue';
 export { default as PlayerShell } from './PlayerShell.vue';
