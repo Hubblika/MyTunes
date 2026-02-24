@@ -53,40 +53,54 @@ onMounted(async () => {
 </script>
 
 <template>
-    <main class="relative w-full text-neutral-900 dark:text-white">
-        <div class="relative z-10 flex max-h-screen items-center justify-center p-6">
-            <div class="flex min-w-md flex-col gap-6">
-                <div class="w-full rounded-2xl
-                border border-black/10 dark:border-white/10
-                bg-white/80 dark:bg-white/5
-                backdrop-blur-xl
-                px-10 py-10
-                shadow-xl dark:shadow-2xl
-                shadow-black/10 dark:shadow-black/40">
+    <main class="relative w-full min-h-screen text-neutral-900 dark:text-white">
+        <div class="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6">
 
-                    <h1 class="mb-8 text-2xl font-semibold tracking-tight text-center">
-                        <span class="bg-linear-to-r from-fuchsia-500 to-cyan-500
-                    bg-clip-text text-transparent">
+            <div class="w-full max-w-md">
+                <div class="rounded-2xl
+                            border border-black/10 dark:border-white/10
+                            bg-white/80 dark:bg-white/5
+                            backdrop-blur-xl
+                            px-5 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10
+                            shadow-xl dark:shadow-2xl
+                            shadow-black/10 dark:shadow-black/40">
+
+                    <h1 class="mb-6 sm:mb-8 text-xl sm:text-2xl font-semibold tracking-tight text-center">
+                        <span class="bg-linear-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
                             {{ $t('admin.permissionsTitle') }}
                         </span>
                     </h1>
 
-                    <div v-if="loading" class="text-center py-4">{{ $t('admin.loadingMessage') }}</div>
-                    <div v-if="error" class="text-red-500 text-center">{{ error }}</div>
+                    <div v-if="loading" class="text-center py-4">
+                        {{ $t('admin.loadingMessage') }}
+                    </div>
 
-                    <form @submit.prevent="submit" class="flex flex-col gap-5 text-left" v-if="!loading && !error">
-                        <div class="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                            <div v-for="user in form.users" :key="user.id" class="flex items-center justify-between gap-4
-                                                                                    rounded-xl border border-black/10 dark:border-white/10
-                                                                                    bg-white dark:bg-black/30 px-4 py-3
-                                                                                    hover:bg-black/5 dark:hover:bg-white/10 transition">
-                                <span class="truncate">{{ user.email }}</span>
+                    <div v-if="error" class="text-red-500 text-center">
+                        {{ error }}
+                    </div>
 
-                                <ToggleSwitch v-model="user.is_admin" :disabled="user.email === 'admin@example.com'" />
+                    <form v-if="!loading && !error" @submit.prevent="submit"
+                        class="flex flex-col gap-4 sm:gap-5 text-left">
+
+
+                        <div class="flex flex-col gap-3
+                                    max-h-[45vh] sm:max-h-[50vh] md:max-h-[55vh]
+                                    overflow-y-auto custom-scrollbar">
+                            <div v-for="user in form.users" :key="user.id" class="flex items-center justify-between gap-3 sm:gap-4
+                            rounded-xl border border-black/10 dark:border-white/10
+                            bg-white dark:bg-black/30
+                            px-3 py-2 sm:px-4 sm:py-3
+                            hover:bg-black/5 dark:hover:bg-white/10 transition">
+                                <span class="text-sm sm:text-base break-all">
+                                    {{ user.email }}
+                                </span>
+
+                                <ToggleSwitch v-model="user.is_admin" :disabled="user.email === 'admin@example.com'"
+                                    class="shrink-0" />
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-black/10 dark:border-white/10">
+                        <div class="pt-3 sm:pt-4 border-t border-black/10 dark:border-white/10">
                             <PrimaryButton type="submit" :disabled="form.processing"
                                 class="mt-2 flex items-center justify-center gap-2 w-full">
                                 <svg v-if="form.processing" class="animate-spin h-5 w-5 text-white"
@@ -102,6 +116,7 @@ onMounted(async () => {
                             </PrimaryButton>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
