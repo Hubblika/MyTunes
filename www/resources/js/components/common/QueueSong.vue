@@ -6,38 +6,38 @@ import { usePlayerStore } from '@/stores/player'
 const props = defineProps<{
     index: number;
     song: _Song;
-}>();
+}>()
 
 const player = usePlayerStore()
 
 async function play() {
-    const current = player.currentTrack;
-    player.currentPlaylist = null;
+    const current = player.currentTrack
+    player.currentPlaylist = null
 
     if (!current || current.uuid !== props.song.uuid) {
-        await player.playSong(props.song);
+        await player.playSong(props.song)
     } else {
-        await player.togglePlay();
+        await player.togglePlay()
     }
 }
 
 function formatDuration(seconds: number) {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
+    const m = Math.floor(seconds / 60)
+    const s = seconds % 60
+    return `${m}:${s.toString().padStart(2, "0")}`
 }
 </script>
 
 <template>
-    <div :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying
+    <div @click="play" :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying
         ? 'bg-gray-500/10 dark:bg-white/10'
         : ''" class="group grid grid-cols-[32px_48px_1fr_100px]
        items-center gap-4 px-4 py-2 rounded-md
-       text-sm text-neutral-400 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer"">
+       text-sm text-neutral-400 hover:bg-gray-500/10 dark:hover:bg-white/10 cursor-pointer">
+
         <div class="text-right group-hover:hidden">
             {{ index }}
         </div>
-
         <div class="hidden group-hover:flex justify-end">
             <Icon @click.stop="play" :name="player.currentTrack?.uuid === props.song.uuid && player.isPlaying
                 ? 'player-pause-filled'

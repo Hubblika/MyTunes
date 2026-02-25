@@ -17,9 +17,14 @@ const menuX = ref(0)
 const menuY = ref(0)
 const OFFSET = 6
 
-
 const showPlaylists = ref(false)
 const playlists = ref<_Playlist[]>([])
+
+const isMobile = ref(false)
+
+function checkMobile() {
+    isMobile.value = window.innerWidth <= 768
+}
 
 async function play() {
     player.currentPlaylist = null
@@ -79,8 +84,9 @@ async function addToPlaylist() {
         );
 
         playlists.value = checks;
-        showPlaylists.value = true;
     }
+
+    showPlaylists.value = !showPlaylists.value;
 }
 
 async function addSongToPlaylist(playlistUuid: string) {
@@ -104,9 +110,17 @@ function handleOtherDropdown(e: Event) {
 }
 
 
-function handleClickOutside() {
-    dropdownOpen.value = false
-    showPlaylists.value = false
+function handleClickOutside(e: MouseEvent) {
+    const target = e.target as Node
+    const isOutsideDesktop = dropdownRef.value && !dropdownRef.value.contains(target)
+
+    const mobileDropdown = document.querySelector('#mobile-dropdown')
+    const isOutsideMobile = mobileDropdown && !mobileDropdown.contains(target)
+
+    if (isOutsideDesktop && isOutsideMobile) {
+        dropdownOpen.value = false
+        showPlaylists.value = false
+    }
 }
 
 
@@ -114,11 +128,14 @@ function handleClickOutside() {
 onMounted(() => {
     window.addEventListener('song-context-open', handleOtherDropdown)
     window.addEventListener('click', handleClickOutside)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
 })
 
 onBeforeUnmount(() => {
     window.removeEventListener('song-context-open', handleOtherDropdown)
     window.removeEventListener('click', handleClickOutside)
+    window.removeEventListener('resize', checkMobile)
 })
 </script>
 
@@ -126,14 +143,11 @@ onBeforeUnmount(() => {
     <div class="group relative w-36 cursor-pointer rounded-lg transition-colors duration-200"
         :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying ? 'bg-gray-500/10 dark:bg-white/10' : ''">
 
-        <!-- Song Cover -->
         <div class="relative mb-3 aspect-square overflow-hidden rounded-md">
             <img :src="props.song.cover_url ?? '/uploads/thumbnails/defaultThumbnail.png'" alt=""
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
 
-            <!-- Buttons overlay -->
             <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
-                <!-- 3-dot menu button (left) -->
                 <button @click.stop="openDropdown" class="flex h-10 w-10 items-center justify-center rounded-full
              bg-gray-200/80 dark:bg-black/50
              text-black dark:text-white shadow-lg
@@ -142,7 +156,6 @@ onBeforeUnmount(() => {
                     <Icon name="dots-vertical" class="size-5" />
                 </button>
 
-                <!-- Play button (right) -->
                 <button @click.stop="play" class="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg
              hover:scale-105 active:scale-95 transition-transform duration-200">
                     <Icon
@@ -152,18 +165,13 @@ onBeforeUnmount(() => {
             </div>
         </div>
 
-        <!-- Song Title -->
         <h3 class="truncate text-sm font-semibold text-black dark:text-white text-center">{{ props.song.title }}</h3>
     </div>
 
     <Teleport to="body">
-        <ul ref="dropdownRef" v-if="dropdownOpen" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white
-         bg-white/20 dark:bg-black/20
-         backdrop-blur-md
-         border border-black/10 dark:border-white/10
-         rounded-2xl shadow-lg py-2 z-50
-         min-w-[200px] whitespace-nowrap
-         transition-all duration-200" @click.stop>
+        <ul ref="dropdownRef" v-if="dropdownOpen && !isMobile" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white bg-white/20 dark:bg-black/20 backdrop-blur-md
+           border border-black/10 dark:border-white/10 rounded-2xl shadow-lg py-2 z-50
+           min-w-[200px] whitespace-nowrap transition-all duration-200" @click.stop>
             <li @click="like" class="flex items-center gap-3 px-4 py-2 rounded-lg
            cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
            transition-colors duration-150">
@@ -213,5 +221,51 @@ onBeforeUnmount(() => {
                 <span>{{ $t('songCard.addToQueue') }}</span>
             </li>
         </ul>
+    </Teleport>
+
+    <Teleport to="body">
+        <transition name="slide-up">
+            <div id="mobile-dropdown" v-if="dropdownOpen && isMobile" @click.self="dropdownOpen = false"
+                class="fixed inset-0 bg-black/40 z-50 flex justify-center items-end">
+
+                <div class="bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10
+      rounded-t-3xl w-full max-h-[80vh] overflow-auto p-4">
+                    <li @click="like"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition">
+                        <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
+                            :class="player.isLiked(props.song) ? 'text-black dark:text-white' : 'text-pink-500'"
+                            class="size-5" />
+                        <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
+                    </li>
+
+                    <li class="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition"
+                        @click="addToPlaylist">
+                        <Icon name="square-rounded-plus" class="size-5" />
+                        <span>{{ $t('songCard.addToPlaylist') }}</span>
+                    </li>
+
+                    <li @click="addToQueue"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition">
+                        <Icon name="playlist-add" class="size-5" />
+                        <span>{{ $t('songCard.addToQueue') }}</span>
+                    </li>
+
+                    <ul v-if="showPlaylists"
+                        class="mt-2 bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10 rounded-2xl shadow-inner overflow-auto max-h-64">
+                        <li v-for="playlist in playlists" :key="playlist.uuid"
+                            @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
+                                'flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-150',
+                                (playlist as any).hasSong
+                                    ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent'
+                                    : 'hover:bg-white/30 dark:hover:bg-black/30'
+                            ]">
+                            {{ playlist.name }}
+                            <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </transition>
     </Teleport>
 </template>
