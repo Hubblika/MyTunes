@@ -17,47 +17,55 @@ const form = useForm({
     cover: null as File | null,
 })
 
+const inputStyles = "w-full rounded-xl bg-white dark:bg-black/30 border border-black/10 dark:border-white/10 px-4 py-3 focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/30 transition"
+
 function submit() {
-    if (!form.audio) {
-        form.setError('audio', 'Please select an audio file.')
-        return
+    // 1. Clear previous errors to start fresh
+    form.clearErrors();
+    let hasError = false;
+
+    // 2. Manual Validation (Replaces default browser bubbles)
+    if (!form.title) { form.setError('title', 'admin.validation.required'); hasError = true; }
+    if (!form.artist) { form.setError('artist', 'admin.validation.required'); hasError = true; }
+    if (!form.album) { form.setError('album', 'admin.validation.required'); hasError = true; }
+    if (!form.date) { form.setError('date', 'admin.validation.required'); hasError = true; }
+
+    const durationValue = Number(form.duration);
+    if (!form.duration || durationValue <= 0) {
+        form.setError('duration', 'admin.validation.invalidDuration');
+        hasError = true;
     }
 
-    if (!form.cover) {
-        form.setError('cover', 'Please select a cover image.')
-        return
-    }
+    // File fields validation
+    if (!form.audio) { form.setError('audio', 'admin.validation.audioRequired'); hasError = true; }
+    if (!form.cover) { form.setError('cover', 'admin.validation.coverRequired'); hasError = true; }
 
+    // 3. Stop if any manual validation failed
+    if (hasError) return;
+
+    // 4. Send the Request to Laravel/Inertia
     form.post('/songs', {
-        forceFormData: true,
+        forceFormData: true, // Required for sending File objects (audio/cover)
+        preserveScroll: true,
         onSuccess: () => {
-            alert(t('admin.songUploadSuccess'))
-            form.reset()
+            // Use the i18n translation for the success message
+            alert(t('admin.songUploadSuccess'));
+            form.reset(); // Clear the form after a successful upload
         },
         onError: (errors) => {
-            console.error('Validation errors:', errors)
+            // These are errors returned from the server-side Laravel validator
+            console.error('Server-side validation failed:', errors);
         }
-    })
+    });
 }
 </script>
 
 <template>
     <main class="relative w-full min-h-screen overflow-hidden text-neutral-900 dark:text-white">
         <div class="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6">
-
             <div class="w-full max-w-md lg:max-w-2xl xl:max-w-3xl">
-
-                <div class="rounded-2xl
-          border border-black/10 dark:border-white/10
-          bg-white/80 dark:bg-white/5
-          backdrop-blur-xl
-          shadow-xl dark:shadow-2xl
-          shadow-black/10 dark:shadow-black/40
-
-          px-5 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10
-
-          max-h-[90vh]
-          flex flex-col">
+                <div
+                    class="rounded-2xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-xl shadow-xl dark:shadow-2xl shadow-black/10 dark:shadow-black/40 px-5 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 max-h-[90vh] flex flex-col">
 
                     <h1 class="mb-6 sm:mb-8 text-xl sm:text-2xl font-semibold tracking-tight text-center shrink-0">
                         <span class="bg-linear-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent">
@@ -65,82 +73,108 @@ function submit() {
                         </span>
                     </h1>
 
-                    <form @submit.prevent="submit"
-                        class="flex flex-col p-2 gap-4 sm:gap-5 text-left min-h-0 overflow-hidden custom-scrollbar">
+                    <form @submit.prevent="submit" novalidate
+                        class="flex flex-col p-2 gap-4 sm:gap-5 text-left min-h-0 overflow-y-auto custom-scrollbar">
 
-                        <Input class="w-full" v-model="form.title" id="title" type="text" required>
-                            {{ $t('admin.titleLabel') }}
-                        </Input>
-                        <div v-if="form.errors.title" class="text-sm text-red-500">{{ form.errors.title }}</div>
+                        <div class="flex flex-col gap-1">
+                            <Input v-model="form.title" id="title" type="text" :placeholder="$t('admin.titleLabel')"
+                                :input-class="inputStyles">
+                                {{ $t('admin.titleLabel') }}
+                            </Input>
+                            <span v-if="form.errors.title"
+                                class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                {{ $t(form.errors.title) }}
+                            </span>
+                        </div>
 
-                        <Input class="w-full" v-model="form.artist" id="artist" type="text" required>
-                            {{ $t('admin.artistLabel') }}
-                        </Input>
-                        <div v-if="form.errors.artist" class="text-sm text-red-500">{{ form.errors.artist }}</div>
+                        <div class="flex flex-col gap-1">
+                            <Input v-model="form.artist" id="artist" type="text" :placeholder="$t('admin.artistLabel')"
+                                :input-class="inputStyles">
+                                {{ $t('admin.artistLabel') }}
+                            </Input>
+                            <span v-if="form.errors.artist"
+                                class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                {{ $t(form.errors.artist) }}
+                            </span>
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <Input class="w-full" v-model="form.album" id="album" type="text" required>
+                            <div class="flex flex-col gap-1">
+                                <Input v-model="form.album" id="album" type="text" :placeholder="$t('admin.albumLabel')"
+                                    :input-class="inputStyles">
                                     {{ $t('admin.albumLabel') }}
                                 </Input>
-                                <div v-if="form.errors.album" class="text-sm text-red-500">{{ form.errors.album }}</div>
+                                <span v-if="form.errors.album"
+                                    class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                    {{ $t(form.errors.album) }}
+                                </span>
                             </div>
 
-                            <div>
-                                <Input class="w-full" v-model="form.genre" id="genre" type="text">
+                            <div class="flex flex-col gap-1">
+                                <Input v-model="form.genre" id="genre" type="text" :placeholder="$t('admin.genreLabel')"
+                                    :input-class="inputStyles">
                                     {{ $t('admin.genreLabel') }}
                                 </Input>
-                                <div v-if="form.errors.genre" class="text-sm text-red-500">{{ form.errors.genre }}</div>
+                                <span v-if="form.errors.genre"
+                                    class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                    {{ $t(form.errors.genre) }}
+                                </span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <Input class="w-full" v-model="form.date" id="date" type="date" required>
+                            <div class="flex flex-col gap-1">
+                                <Input v-model="form.date" id="date" type="date" :input-class="inputStyles">
                                     {{ $t('admin.releaseDateLabel') }}
                                 </Input>
-                                <div v-if="form.errors.date" class="text-sm text-red-500">{{ form.errors.date }}</div>
+                                <span v-if="form.errors.date"
+                                    class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                    {{ $t(form.errors.date) }}
+                                </span>
                             </div>
 
-                            <div>
-                                <Input class="w-full" v-model="form.duration" id="duration" type="number" required>
+                            <div class="flex flex-col gap-1">
+                                <Input v-model="form.duration" id="duration" type="number"
+                                    :placeholder="$t('admin.DurationLabel')" :input-class="inputStyles">
                                     {{ $t('admin.DurationLabel') }}
                                 </Input>
-                                <div v-if="form.errors.duration" class="text-sm text-red-500">{{ form.errors.duration }}
-                                </div>
+                                <span v-if="form.errors.duration"
+                                    class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                    {{ $t(form.errors.duration) }}
+                                </span>
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label class="w-full cursor-pointer rounded-xl
-                border border-black/10 dark:border-white/10
-                bg-white dark:bg-black/30
-                px-4 py-3 text-left text-sm sm:text-base
-                hover:bg-black/5 dark:hover:bg-white/10
-                transition">
-                                {{ form.audio ? form.audio.name : $t('admin.chooseAudio') }}
+                            <label
+                                class="w-full cursor-pointer rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-black/30 px-4 py-3 text-left text-sm sm:text-base hover:bg-black/5 dark:hover:bg-white/10 transition">
+                                <span class="block text-xs mb-1 opacity-60">{{ $t('admin.audioFileLabel') }}</span>
+                                <span class="font-medium truncate block">
+                                    {{ form.audio ? form.audio.name : $t('admin.choosseAudio') }}
+                                </span>
                                 <input type="file" accept=".mp3" class="hidden"
                                     @change="e => form.audio = (e.target as HTMLInputElement).files?.[0] ?? null" />
                             </label>
-                            <div v-if="form.errors.audio" class="text-sm text-red-500">
-                                {{ form.errors.audio }}
-                            </div>
+                            <span v-if="form.errors.audio"
+                                class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                {{ $t(form.errors.audio) }}
+                            </span>
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label class="w-full cursor-pointer rounded-xl
-                border border-black/10 dark:border-white/10
-                bg-white dark:bg-black/30
-                px-4 py-3 text-left text-sm sm:text-base
-                hover:bg-black/5 dark:hover:bg-white/10
-                transition">
-                                {{ form.cover ? form.cover.name : $t('admin.chooseCover') }}
+                            <label
+                                class="w-full cursor-pointer rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-black/30 px-4 py-3 text-left text-sm sm:text-base hover:bg-black/5 dark:hover:bg-white/10 transition">
+                                <span class="block text-xs mb-1 opacity-60">{{ $t('admin.coverFileLabel') }}</span>
+                                <span class="font-medium truncate block">
+                                    {{ form.cover ? form.cover.name : $t('admin.chooseCover') }}
+                                </span>
                                 <input type="file" accept="image/*" class="hidden"
                                     @change="e => form.cover = (e.target as HTMLInputElement).files?.[0] ?? null" />
                             </label>
-                            <div v-if="form.errors.cover" class="text-sm text-red-500">
-                                {{ form.errors.cover }}
-                            </div>
+                            <span v-if="form.errors.cover"
+                                class="ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-in fade-in slide-in-from-top-1">
+                                {{ $t(form.errors.cover) }}
+                            </span>
                         </div>
 
                         <PrimaryButton type="submit" :disabled="form.processing" class="mt-2 sm:mt-4 w-full shrink-0">

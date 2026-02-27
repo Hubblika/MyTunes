@@ -185,9 +185,8 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </transition>
-    </Teleport>
 
-    <PlaylistEditModal v-model="renamingModal" :title="$t('modal.title')" :name-value="renameInput"
+         <PlaylistEditModal v-model="renamingModal" :title="$t('modal.title')" :name-value="renameInput"
         :description-value="playlist?.description || ''" :cover-url="playlist?.cover_url || ''"
         @update:nameValue="renameInput = $event" @update:descriptionValue="playlist!.description = $event"
         @update:coverFile="coverFile = $event" @save="async () => {
@@ -200,4 +199,5 @@ onBeforeUnmount(() => {
             renamingModal = false;
             coverFile = null;
         }" />
+    </Teleport>
 </template>

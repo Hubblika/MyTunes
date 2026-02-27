@@ -1,4 +1,10 @@
 {
+    "The email field is required.": "Az e-mail mező kitöltése kötelező.",
+    "The password field is required.": "A jelszó mező kitöltése kötelező.",
+    "These credentials do not match our records.": "A megadott adatok nem egyeznek a rendszerünkben.",
+    "The password field must be at least 8 characters.": "A jelszónak legalább 8 karakterből kell állnia.",
+    "The password field confirmation does not match.": "A jelszó megerősítése nem egyezik.",
+    "The email has already been taken.": "Ez az e-mail cím már foglalt.",
     "generic": {
         "cancel": "Mégsem",
         "save": "Mentés"
@@ -14,7 +20,6 @@
         "signUpText": "Nincs még fiókja?",
         "signUpButton": "Regisztráció"
     },
-
     "register": {
         "title": "Regisztráció MyTunes-ba",
         "emailLabel": "E-mail",
@@ -28,7 +33,6 @@
         "loginText": "Már van fiókja?",
         "loginButton": "Bejelentkezés"
     },
-
     "header": {
         "searchbar": "Keresés",
         "downloadButton": "Alkalmazás letöltése",
@@ -36,7 +40,6 @@
         "settingButton": "Beállítások",
         "logoutButton": "Kijelentkezés"
     },
-
     "sidebar": {
         "title": "Zenéim",
         "searchbar": "Keresés",
@@ -46,13 +49,11 @@
         "editPlaylistButton": "Lejátszási lista szerkezszése",
         "newPlaylistDefaultName": "Új lejátszási lista"
     },
-
-     "toolbar": {
+    "toolbar": {
         "songTitle": "Zene címe",
         "artistName": "Előadó neve",
         "nowPlaying": "Műsoron"
     },
-
     "settings": {
         "title": "Általános Beállítások",
         "themeTitle": "Téma",
@@ -106,7 +107,6 @@
         "home": "Főoldal",
         "moreOptions": "További lehetőségek",
         "addPlaylist": "Lejátszási lista hozzáadása"
-
     },
     "search": {
         "noResult": "Nincs a keresésnek megfelelő zene."
@@ -120,13 +120,12 @@
     "admin": {
         "title": "Adminisztrátori felület",
         "songUpload": "Zene feltöltése",
-        "editPermissions": "Jogosultságok szerkesztése",
         "uploadTitle": "Új zene feltöltése",
         "titleLabel": "Cím",
         "artistLabel": "Előadó",
         "albumLabel": "Album",
         "releaseDateLabel": "Kiadás dátuma",
-        "DurationLabel": "Időtartam (másodpercben)", 
+        "DurationLabel": "Időtartam (másodpercben)",
         "genreLabel": "Műfaj",
         "audioFileLabel": "Audio fájl",
         "chooseAudio": "Válasszon egy audio fájlt",
@@ -134,13 +133,14 @@
         "chooseCover": "Válasszon egy borítóképet",
         "uploading": "Feltöltés folyamatban...",
         "submitButton": "Feltöltés",
-        "permissionsTitle": "Felhasználói jogosultságok szerkesztése",
-        "saveButton": "Változtatások mentése",
-        "processingMessage": "Feldolgozás folyamatban...",
-        "loadingMessage": "Felhasználók betöltése...",
         "songUploadSuccess": "Zene sikeresen feltöltve!",
-        "permissionsUpdateSuccess": "Admin jogosultság sikeresen frissítve!",
-        "permissionsUpdateError": "Hiba történt az admin jogosultság frissítésekor."
+        "validation": {
+            "required": "Ezt a mezőt kötelező kitölteni",
+            "audioRequired": "Kérjük, válasszon egy audio fájlt",
+            "coverRequired": "Kérjük, válasszon egy borítóképet",
+            "invalidDate": "Kérjük, adjon meg egy érvényes dátumot",
+            "invalidDuration": "Az időtartamnak pozitív számnak kell lennie"
+        }
     },
     "playlistEditModal": {
         "playlistName": "Lejátszási lista neve",
