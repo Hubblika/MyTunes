@@ -18,7 +18,9 @@
         "mainButton": "Bejelentkezés",
         "statusMessage": "Kérem, várjon...",
         "signUpText": "Nincs még fiókja?",
-        "signUpButton": "Regisztráció"
+        "signUpButton": "Regisztráció",
+        "rememberMe": "Emlékezz Rám",
+        "forgotPassword": "Elfelejtet Jelszó?"
     },
     "register": {
         "title": "Regisztráció MyTunes-ba",
@@ -32,6 +34,13 @@
         "statusMessage": "Kérem, várjon...",
         "loginText": "Már van fiókja?",
         "loginButton": "Bejelentkezés"
+    },
+    "forgotPassword": {
+        "title": "Jelszó visszaállítása",
+        "description": "Adja meg az e-mail címét és kövesse az e-mailben kapott utasításokat a jelszó visszaállításához.",
+        "submitButton": "Küldés",
+        "backToLogin": "Vissza a bejelentkezéshez",
+        "sending": "Küldés..."
     },
     "header": {
         "searchbar": "Keresés",

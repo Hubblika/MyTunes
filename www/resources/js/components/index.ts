@@ -15,3 +15,4 @@ export { default as SongUploadForm } from './SongUploadForm.vue';
 export { default as EditPermission } from './EditPermission.vue';
 export { default as PlayerShell } from './PlayerShell.vue';
 export { default as NowPlaying } from './NowPlaying.vue';
+export { default as ForgotPassword } from './ForgotPassword.vue';

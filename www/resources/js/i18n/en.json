@@ -19,11 +19,8 @@
         "statusMessage": "Please wait...",
         "signUpText": "Don't have an account?",
         "signUpButton": "Sign Up",
-        "errors": {
-            "failed": "These credentials do not match our records.",
-            "password": "The provided password is incorrect.",
-            "throttle": "Too many login attempts. Please try again in {seconds} seconds."
-        }
+        "rememberMe": "Remember Me",
+        "forgotPassword": "Forgot Password?"
     },
     "register": {
         "title": "Sign up for MyTunes",
@@ -36,16 +33,14 @@
         "mainButton": "Sign Up",
         "statusMessage": "Please wait...",
         "loginText": "Already have an account?",
-        "loginButton": "Log In",
-        "errors": {
-            "email_taken": "This email is already registered.",
-            "password_mismatch": "The password confirmation does not match.",
-            "password_length": "The password must be at least 8 characters."
-        }
+        "loginButton": "Log In"
     },
-    "validation": {
-        "required": "This field is required.",
-        "email": "Please enter a valid email address."
+    "forgotPassword": {
+        "title": "Reset password",
+        "description": "Enter your email below and follow the instructions to reset your password",
+        "submitButton": "Submit",
+        "backToLogin": "Back to login",
+        "sending": "Sending..."
     },
     "header": {
         "searchbar": "Search",
