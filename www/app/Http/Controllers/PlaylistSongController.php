@@ -9,13 +9,17 @@ use App\Models\Playlist;
 
 class PlaylistSongController extends Controller
 {
-    public function index($playlist)
+    public function index($uuid)
     {
-        $playlist = Playlist::where('uuid', $playlist)->firstOrFail();
+        if ($uuid !== '00000000-0000-0000-0000-000000000000') {
+            $playlist = Playlist::where('uuid', $uuid)->firstOrFail();
 
-        $songs = $playlist->songs()
-            ->orderBy('playlist_songs.created_at', 'desc')
-            ->get();
+            $songs = $playlist->songs()
+                ->orderBy('playlist_songs.created_at', 'desc')
+                ->get();
+        } else {
+            $songs = collect([]);
+        }
 
         return response()->json($songs);
     }
