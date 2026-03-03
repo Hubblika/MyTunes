@@ -48,7 +48,7 @@ class Playlist extends Model
             'playlist_songs',
             'playlist_id',
             'song_id'
-        )->withPivot('position')
+        )->withPivot('position', 'created_at')
          ->withTimestamps();
     }
 

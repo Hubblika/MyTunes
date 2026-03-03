@@ -47,7 +47,7 @@ export const usePlayerStore = defineStore("player", {
     actions: {
         async playSong(song: _Song) {
             const current = this.currentTrack;
-            console.log(current)
+            console.log(current);
             if (!current || current.uuid !== song.uuid) {
                 if (!this.queue.length) {
                     this.queue = [song];
@@ -202,19 +202,26 @@ export const usePlayerStore = defineStore("player", {
         async fetchLikedSongs() {
             try {
                 const res = await axios.get("/likes");
-                const likedUUIDs: string[] = res.data.likes || [];
-                if (!likedUUIDs.length) {
+                const likedData: { uuid: string; added_at: string }[] =
+                    res.data.likes || [];
+
+                if (!likedData.length) {
                     this.likedSongs = [];
                     return [];
                 }
 
-                const requests = likedUUIDs.map((uuid) =>
-                    axios.get(`/songs/${uuid}`),
+                const requests = likedData.map((item) =>
+                    axios.get(`/songs/${item.uuid}`),
                 );
                 const responses = await Promise.all(requests);
+
                 this.likedSongs = responses
-                    .map((r) => r.data)
-                    .filter(Boolean);
+                    .map((r, i) => {
+                        const song = r.data;
+                        if (!song) return null;
+                        return { ...song, added_at: likedData[i].added_at };
+                    })
+                    .filter(Boolean) as _Song[];
 
                 return this.likedSongs;
             } catch (err) {
@@ -310,18 +317,23 @@ export const usePlayerStore = defineStore("player", {
 
         async updatePlaylist(
             uuid: string,
-            payload: { name?: string; description?: string; cover?: File }
+            payload: { name?: string; description?: string; cover?: File },
         ) {
             try {
                 const formData = new FormData();
 
-                if (payload.name) formData.append('name', payload.name);
-                if (payload.description) formData.append('description', payload.description);
-                if (payload.cover) formData.append('cover', payload.cover);
+                if (payload.name) formData.append("name", payload.name);
+                if (payload.description)
+                    formData.append("description", payload.description);
+                if (payload.cover) formData.append("cover", payload.cover);
 
-                const { data } = await axios.put(`/playlists/${uuid}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
+                const { data } = await axios.put(
+                    `/playlists/${uuid}`,
+                    formData,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    },
+                );
 
                 const pl = this.playlists.get(uuid);
                 if (pl) {
@@ -333,7 +345,8 @@ export const usePlayerStore = defineStore("player", {
                                 ? data.data.description
                                 : pl.description,
                         cover_url: data.data.cover_url ?? pl.cover_url,
-                        updated_at: data.data.updated_at ?? new Date().toISOString(),
+                        updated_at:
+                            data.data.updated_at ?? new Date().toISOString(),
                     };
 
                     this.playlists.set(uuid, updated);
@@ -341,7 +354,7 @@ export const usePlayerStore = defineStore("player", {
 
                 return data.data;
             } catch (err) {
-                console.error('Failed to update playlist', err);
+                console.error("Failed to update playlist", err);
                 return null;
             }
         },
@@ -380,16 +393,11 @@ export const usePlayerStore = defineStore("player", {
         async fetchPlaylistSongs(uuid: string) {
             try {
                 const res = await axios.get(`/playlists/${uuid}/songs`);
-                const songIds: string[] = res.data.map((s: any) => s.song_id);
 
-                const songRequests = songIds.map((id) =>
-                    axios.get(`/songs/${id}`),
-                );
-                const songResponses = await Promise.all(songRequests);
-
-                const songs = songResponses
-                    .map((r) => r.data)
-                    .filter(Boolean) as _Song[];
+                const songs = res.data.map((song: any) => ({
+                    ...song,
+                    added_at: song.pivot?.created_at,
+                })) as _Song[];
 
                 const pl = this.playlists.get(uuid);
                 if (!pl) return;
@@ -403,13 +411,14 @@ export const usePlayerStore = defineStore("player", {
 
         async containsSong(playlist: _Playlist, song: _Song) {
             try {
-                const res = await axios.get(`/playlists/${playlist.uuid}/songs`);
+                const res = await axios.get(
+                    `/playlists/${playlist.uuid}/songs`,
+                );
                 const songIds: string[] = res.data.map((s: any) => s.song_id);
 
                 if (songIds.includes(song.uuid)) {
                     return true;
-                }
-                else {
+                } else {
                     return false;
                 }
             } catch (err) {
@@ -420,10 +429,11 @@ export const usePlayerStore = defineStore("player", {
 
         async deleteSong(playlist: _Playlist, song: _Song) {
             try {
-                await axios.delete(`/playlists/${playlist.uuid}/songs/${song.uuid}`);
+                await axios.delete(
+                    `/playlists/${playlist.uuid}/songs/${song.uuid}`,
+                );
                 return true;
-            }
-            catch (err) {
+            } catch (err) {
                 console.error("Failed to delete song from playlist", err);
                 return false;
             }

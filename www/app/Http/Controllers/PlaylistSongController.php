@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\PlaylistSong;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\Playlist;
 
 class PlaylistSongController extends Controller
 {
     public function index($playlist)
     {
-        $songs = PlaylistSong::where('playlist_id', $playlist)->get();
+        $playlist = Playlist::where('uuid', $playlist)->firstOrFail();
+
+        $songs = $playlist->songs()
+            ->orderBy('playlist_songs.created_at', 'desc')
+            ->get();
+
         return response()->json($songs);
     }
 
@@ -21,22 +27,22 @@ class PlaylistSongController extends Controller
             'position' => 'nullable|integer',
         ]);
 
-        $playlistSong = PlaylistSong::create([
-            'playlist_id' => $playlist,
-            'song_id' => $request->song_id,
+        $playlistModel = Playlist::where('uuid', $playlist)->firstOrFail();
+
+        $playlistModel->songs()->attach($request->song_id, [
             'position' => $request->position,
         ]);
 
-        return response()->json($playlistSong, Response::HTTP_CREATED);
+        return response()->json(['message' => 'Song added'], Response::HTTP_CREATED);
     }
 
     public function destroy($playlist, $song)
     {
-        $deleted = PlaylistSong::where('playlist_id', $playlist)
-            ->where('song_id', $song)
-            ->delete();
+        $playlistModel = Playlist::where('uuid', $playlist)->firstOrFail();
 
-        if ($deleted) {
+        $detached = $playlistModel->songs()->detach($song);
+
+        if ($detached) {
             return response()->json(['message' => 'Song removed from playlist']);
         }
 

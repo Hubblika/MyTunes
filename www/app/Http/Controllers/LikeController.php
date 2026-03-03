@@ -13,10 +13,18 @@ class LikeController extends Controller
         $user = $request->user();
 
         $likes = UserLike::where('user_id', $user->id)
-            ->pluck('song_id');
+            ->orderBy('created_at', 'desc')
+            ->get(['song_id', 'created_at']);
+
+        $likesData = $likes->map(function ($like) {
+            return [
+                'uuid' => $like->song_id,
+                'added_at' => $like->created_at,
+            ];
+        });
 
         return response()->json([
-            'likes' => $likes,
+            'likes' => $likesData,
         ]);
     }
 

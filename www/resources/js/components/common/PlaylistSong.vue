@@ -213,7 +213,7 @@ onBeforeUnmount(() => {
 
         <div class="min-w-0 truncate">{{ song.album }}</div>
 
-        <div class="justify-self-start tabular-nums">{{ formatAddedDate(song.created_at!) }}</div>
+        <div class="justify-self-start tabular-nums">{{ formatAddedDate(song.added_at!) }}</div>
         <div class="justify-self-end tabular-nums">{{ formatDuration(song.duration) }}</div>
 
         <Button @click.stop="openDropdown($event)" :tooltip="$t('tooltip.moreOptions')"
