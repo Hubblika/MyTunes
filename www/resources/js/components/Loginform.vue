@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
                                 </div>
 
                                 <button type="button" @click="router.get('/forgot-password')"
-                                    class="text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:text-fuchsia-500 transition-colors">
+                                    class="text-xs font-medium text-cyan-600 dark:text-cyan-400 hover:text-fuchsia-500 transition-colors cursor-pointer">
                                     {{ $t('login.forgotPassword') }}
                                 </button>
                             </div>

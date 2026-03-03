@@ -31,6 +31,8 @@ COPY . /var/www
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
-CMD ["php-fpm"]
+# Expose port 9000 for PHP-FPM and 5173 for Vite
+EXPOSE 9000 5173
+
+# Start PHP-FPM and Vite in development mode
+CMD bash -c "php-fpm & npm install && npm run dev"

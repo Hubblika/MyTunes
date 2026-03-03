@@ -12,9 +12,7 @@ export default defineConfig({
             refresh: true,
         }),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        wayfinder({ formVariants: true }),
         vue({
             template: {
                 transformAssetUrls: {
@@ -25,17 +23,10 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: "0.0.0.0", // Listen on all interfaces for Docker
-        port: 5173, // Default Vite port
-        strictPort: true, // Fail if port is already in use
+        host: '0.0.0.0', // Listen on all network interfaces
+        port: 5173,       // Default Vite port
         hmr: {
-            host: "localhost",
-            port: 5173,
-        },
-    },
-    resolve: {
-        alias: {
-            "@": "/resources/js",
+            host: 'localhost', // HMR will connect back to your host
         },
     },
 });
