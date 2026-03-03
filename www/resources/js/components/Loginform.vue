@@ -11,7 +11,7 @@ const { register } = defineProps<{
 
 const password = ref('')
 const password2 = ref('')
-const remember = ref(false) // This holds our state
+const remember = ref(false)
 const logoSrc = ref('')
 
 const currentStore = computed(() => register ? registerStore : loginStore)
