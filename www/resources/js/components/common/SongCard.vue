@@ -112,18 +112,21 @@ function handleOtherDropdown(e: Event) {
 
 function handleClickOutside(e: MouseEvent) {
     const target = e.target as Node
-    const isOutsideDesktop = dropdownRef.value && !dropdownRef.value.contains(target)
 
-    const mobileDropdown = document.querySelector('#mobile-dropdown')
-    const isOutsideMobile = mobileDropdown && !mobileDropdown.contains(target)
+    const desktopDropdown = dropdownRef.value
+    const mobileDropdown = document.getElementById('mobile-dropdown')
 
-    if (isOutsideDesktop && isOutsideMobile) {
+    const clickedInsideDesktop =
+        desktopDropdown && desktopDropdown.contains(target)
+
+    const clickedInsideMobile =
+        mobileDropdown && mobileDropdown.contains(target)
+
+    if (!clickedInsideDesktop && !clickedInsideMobile) {
         dropdownOpen.value = false
         showPlaylists.value = false
     }
 }
-
-
 
 onMounted(() => {
     window.addEventListener('song-context-open', handleOtherDropdown)
@@ -140,7 +143,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="group relative w-36 cursor-pointer rounded-lg transition-colors duration-200"
+    <div class="group relative w-36 cursor-pointer rounded-lg p-2 transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
+        @contextmenu="openDropdown"
         :class="player.currentTrack?.uuid === props.song.uuid && player.isPlaying ? 'bg-gray-500/10 dark:bg-white/10' : ''">
 
         <div class="relative mb-3 aspect-square overflow-hidden rounded-md">
