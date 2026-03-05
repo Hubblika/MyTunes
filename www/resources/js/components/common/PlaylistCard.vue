@@ -81,17 +81,6 @@ const selectMenu = (item: 'rename' | 'delete') => {
     }
 }
 
-async function confirmRename() {
-    const name = renameInput.value.trim()
-    if (!name) return
-    try {
-        await axios.put(`/playlists/${playlist.uuid}`, { name })
-        player.renamePlaylist(playlist.uuid, name)
-    } catch (err) {
-        console.error('Failed to rename playlist', err)
-    }
-}
-
 async function play() {
     const isLikedPlaylist = playlist.uuid === DISABLED_UUID
     if (isLikedPlaylist) {

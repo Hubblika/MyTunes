@@ -320,33 +320,54 @@ export const usePlayerStore = defineStore("player", {
             payload: { name?: string; description?: string; cover?: File },
         ) {
             try {
+                console.log(payload)
+                // We use FormData because we are sending a File (binary data)
                 const formData = new FormData();
 
-                if (payload.name) formData.append("name", payload.name);
-                if (payload.description)
-                    formData.append("description", payload.description);
-                if (payload.cover) formData.append("cover", payload.cover);
+                /**
+                 * THE DOCKER/PHP FIX:
+                 * PHP only populates $_FILES and $_POST for POST requests.
+                 * To perform a PUT request with files, we send a POST and 
+                 * tell Laravel to "spoof" the PUT method.
+                 */
+                formData.append("_method", "PUT");
 
-                const { data } = await axios.put(
+                // Append only the data that exists in the payload
+                if (payload.name) {
+                    formData.append("name", payload.name);
+                }
+
+                if (payload.description !== undefined) {
+                    // If description is empty string, we still want to send it to clear it
+                    formData.append("description", payload.description);
+                }
+
+                if (payload.cover) {
+                    formData.append("cover", payload.cover);
+                }
+
+                // We use axios.post here!
+                const { data } = await axios.post(
                     `/playlists/${uuid}`,
                     formData,
                     {
-                        headers: { "Content-Type": "multipart/form-data" },
+                        headers: {
+                            "Content-Type": "multipart/form-data"
+                        },
                     },
                 );
 
+                // Update the local state/cache
                 const pl = this.playlists.get(uuid);
-                if (pl) {
+                if (pl && data.data) {
                     const updated: _Playlist = {
                         ...pl,
                         name: data.data.name ?? pl.name,
-                        description:
-                            data.data.description !== undefined
-                                ? data.data.description
-                                : pl.description,
+                        description: data.data.description !== undefined
+                            ? data.data.description
+                            : pl.description,
                         cover_url: data.data.cover_url ?? pl.cover_url,
-                        updated_at:
-                            data.data.updated_at ?? new Date().toISOString(),
+                        updated_at: data.data.updated_at ?? new Date().toISOString(),
                     };
 
                     this.playlists.set(uuid, updated);
@@ -354,7 +375,8 @@ export const usePlayerStore = defineStore("player", {
 
                 return data.data;
             } catch (err) {
-                console.error("Failed to update playlist", err);
+                // Log the error for debugging
+                console.error("Failed to update playlist:", err);
                 return null;
             }
         },

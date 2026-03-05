@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nano \
     supervisor \
+    netcat-openbsd \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd \
-    # Install Node.js 20.x and npm
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest
@@ -31,8 +31,18 @@ COPY . /var/www
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www
 
-# Expose port 9000 for PHP-FPM and 5173 for Vite
+# ... (rest of your Dockerfile above)
+
+# Copy the entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+COPY php/local.ini /usr/local/etc/php/conf.d/local.ini
+
+# Set the entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Expose ports
 EXPOSE 9000 5173
 
-# Start PHP-FPM and Vite in development mode
-CMD bash -c "php-fpm & npm install && npm run dev"
+# We leave CMD empty because the entrypoint handles the startup

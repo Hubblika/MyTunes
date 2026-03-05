@@ -8,12 +8,13 @@ services:
     working_dir: /var/www
     volumes:
       - .:/var/www:cached
+    environment:
+      - VITE_ALLOW_SET_ID=true 
     ports:
     - "9000:9000"
-    - "5173:5173"  # Vite dev server
+    - "5173:5173"
     networks:
       - laravel
-    restart: unless-stopped
 
   webserver:
     image: nginx:alpine
