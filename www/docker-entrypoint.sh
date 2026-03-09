@@ -26,9 +26,13 @@ done
 
 # Run migrations and seeders
 echo "Checking database state..."
-# This checks if the 'users' table exists (common Laravel indicator)
-# If it doesn't exist, we assume a fresh install
-if ! php artisan tinker --execute="Schema::hasTable('users')" | grep -q "true"; then
+
+# We ask PHP to check if the 'migrations' table exists and has at least 1 row.
+# '1' means it's already set up. '0' means it's empty.
+HAS_TABLES=$(php -r "include 'vendor/autoload.php'; \$app = include 'bootstrap/app.php'; \$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap(); echo Schema::hasTable('migrations') && DB::table('migrations')->count() > 0 ? '1' : '0';")
+echo "$HAS_TABLES"
+
+if [ "$HAS_TABLES" = "0" ]; then
     echo "Fresh database detected. Running migrations and seeders..."
     php artisan migrate:fresh --seed --force
 else

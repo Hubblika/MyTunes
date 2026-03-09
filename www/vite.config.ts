@@ -23,10 +23,14 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '0.0.0.0', // Listen on all network interfaces
-        port: 5173,       // Default Vite port
+        host: '0.0.0.0',
+        port: 5173,
+        strictPort: true, // Prevents Vite from trying other ports
         hmr: {
-            host: 'localhost', // HMR will connect back to your host
+            host: 'localhost',
+        },
+        watch: {
+            usePolling: true, // IMPORTANT: Needed for Docker on Windows/macOS
         },
     },
 });
