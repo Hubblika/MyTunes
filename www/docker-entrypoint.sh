@@ -1,23 +1,26 @@
 #!/bin/bash
 set -e
 
+#Create the env file based on the env example
 if [ ! -f .env ]; then
     echo "Creating .env file..."
     cp .env.example .env
 fi
 
+#Install composer dependencies and generate priject key
 if [ ! -d "vendor" ]; then
     echo "Installing composer dependencies..."
     composer install --no-interaction --optimize-autoloader
     php artisan key:generate
 fi
 
+#Install npm dependencies
 if [ ! -d "node_modules" ]; then
     echo "Installing npm dependencies..."
     npm install
 fi
 
-# OPTIONAL: Wait for MySQL to be ready before moving on
+#Wait for MySQL to be ready before moving on
  echo "Waiting for database..."
 until php -r "try { new PDO('mysql:host=db;port=3306', 'laravel', 'secret'); exit(0); } catch (Exception \$e) { exit(1); }"; do
   echo "Waiting for database connection..."
@@ -30,7 +33,6 @@ echo "Checking database state..."
 # We ask PHP to check if the 'migrations' table exists and has at least 1 row.
 # '1' means it's already set up. '0' means it's empty.
 HAS_TABLES=$(php -r "include 'vendor/autoload.php'; \$app = include 'bootstrap/app.php'; \$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap(); echo Schema::hasTable('migrations') && DB::table('migrations')->count() > 0 ? '1' : '0';")
-echo "$HAS_TABLES"
 
 if [ "$HAS_TABLES" = "0" ]; then
     echo "Fresh database detected. Running migrations and seeders..."
@@ -40,9 +42,11 @@ else
     php artisan migrate --force
 fi
 
+#Create storage link
 echo "Creating storage link..."
 php artisan storage:link --force
 
+#Fix file system permissions
 echo "Fixing permissions..."
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
