@@ -149,7 +149,12 @@
             "coverRequired": "Kérjük, válasszon egy borítóképet",
             "invalidDate": "Kérjük, adjon meg egy érvényes dátumot",
             "invalidDuration": "Az időtartamnak pozitív számnak kell lennie"
-        }
+        },
+
+        "editPermissions": "Jogosultságok szerkesztése",
+        "loadingMessage": "Betöltés...",
+        "permissionsTitle": "Jogosultságok szerkesztése",
+        "saveButton": "Mentés"
     },
     "playlistEditModal": {
         "playlistName": "Lejátszási lista neve",

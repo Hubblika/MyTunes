@@ -149,7 +149,12 @@
             "coverRequired": "Please select a cover image",
             "invalidDate": "Please enter a valid date",
             "invalidDuration": "Duration must be a positive number"
-        }
+        },
+
+        "editPermissions": "Edit permissions",
+        "loadingMessage": "Loading...",
+        "permissionsTitle": "Edit permissions",
+        "saveButton": "Save"
     },
     "playlistEditModal": {
         "playlistName": "Playlist name",

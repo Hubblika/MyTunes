@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
-import { Layout } from '@/layouts'
 import { Input, PrimaryButton } from '@/components/common'
 import { useI18n } from 'vue-i18n'
 
@@ -20,11 +19,9 @@ const form = useForm({
 const inputStyles = "w-full rounded-xl bg-white dark:bg-black/30 border border-black/10 dark:border-white/10 px-4 py-3 focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/30 transition"
 
 function submit() {
-    // 1. Clear previous errors to start fresh
     form.clearErrors();
     let hasError = false;
 
-    // 2. Manual Validation (Replaces default browser bubbles)
     if (!form.title) { form.setError('title', 'admin.validation.required'); hasError = true; }
     if (!form.artist) { form.setError('artist', 'admin.validation.required'); hasError = true; }
     if (!form.album) { form.setError('album', 'admin.validation.required'); hasError = true; }
@@ -36,24 +33,19 @@ function submit() {
         hasError = true;
     }
 
-    // File fields validation
     if (!form.audio) { form.setError('audio', 'admin.validation.audioRequired'); hasError = true; }
     if (!form.cover) { form.setError('cover', 'admin.validation.coverRequired'); hasError = true; }
 
-    // 3. Stop if any manual validation failed
     if (hasError) return;
 
-    // 4. Send the Request to Laravel/Inertia
     form.post('/songs', {
-        forceFormData: true, // Required for sending File objects (audio/cover)
+        forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            // Use the i18n translation for the success message
             alert(t('admin.songUploadSuccess'));
-            form.reset(); // Clear the form after a successful upload
+            form.reset();
         },
         onError: (errors) => {
-            // These are errors returned from the server-side Laravel validator
             console.error('Server-side validation failed:', errors);
         }
     });
@@ -150,7 +142,7 @@ function submit() {
                                 class="w-full cursor-pointer rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-black/30 px-4 py-3 text-left text-sm sm:text-base hover:bg-black/5 dark:hover:bg-white/10 transition">
                                 <span class="block text-xs mb-1 opacity-60">{{ $t('admin.audioFileLabel') }}</span>
                                 <span class="font-medium truncate block">
-                                    {{ form.audio ? form.audio.name : $t('admin.choosseAudio') }}
+                                    {{ form.audio ? form.audio.name : $t('admin.chooseAudio') }}
                                 </span>
                                 <input type="file" accept=".mp3" class="hidden"
                                     @change="e => form.audio = (e.target as HTMLInputElement).files?.[0] ?? null" />

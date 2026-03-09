@@ -72,21 +72,22 @@ function like() {
 }
 
 async function addToPlaylist() {
-    if (!showPlaylists.value) {
-        const allPlaylists = await player.fetchPlaylists(page.props.self.username);
+    if (showPlaylists.value) return;
 
-        const checks = await Promise.all(
-            allPlaylists.map(async (playlist) => {
-                const hasSong = await player.containsSong(playlist, props.song);
-                (playlist as any).hasSong = hasSong;
-                return playlist;
-            })
-        );
+    const username = page.props.self.username;
 
-        playlists.value = checks;
-    }
+    const allPlaylists = await player.fetchPlaylists(username);
 
-    showPlaylists.value = !showPlaylists.value;
+    const checks = await Promise.all(
+        allPlaylists.map(async (playlist) => {
+            const hasSong = await player.containsSong(playlist, props.song);
+            (playlist as any).hasSong = hasSong;
+            return playlist;
+        })
+    );
+
+    playlists.value = checks;
+    showPlaylists.value = true;
 }
 
 async function addSongToPlaylist(playlistUuid: string) {
@@ -185,10 +186,10 @@ onBeforeUnmount(() => {
                 <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
             </li>
 
-            <li class="relative flex items-center gap-3 px-4 py-2 rounded-lg
-           cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
-           transition-colors duration-150">
-                <div @mouseenter="addToPlaylist" class="flex items-center gap-3">
+            <li class="relative flex items-center gap-3 px-4 py-2 rounded-lg 
+    cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 
+    transition-colors duration-150" @mouseenter="addToPlaylist">
+                <div class="flex items-center gap-3 w-full" @click="addToPlaylist">
                     <Icon name="square-rounded-plus" class="size-5 text-black dark:text-white" />
                     <span>{{ $t('songCard.addToPlaylist') }}</span>
                 </div>

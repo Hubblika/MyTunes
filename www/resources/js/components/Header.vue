@@ -3,9 +3,11 @@ import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
 import { Icon, Searchbar, Button } from './common';
 import { router } from '@inertiajs/vue3';
 import _ from 'lodash';
+import axios from 'axios';
 
 const dropdownOpen = ref(false);
 const logoSrc = ref('');
+const email = ref("");
 
 function updateLogo() {
     const isDark = document.documentElement.classList.contains('dark');
@@ -48,9 +50,16 @@ function download() {
     //TODO: download the desktop app
 }
 
-onMounted(() => {
+async function getUser() {
+    const res = await axios.get('/me');
+    email.value = res.data.data.email;
+    console.log(email.value)
+}
+
+onMounted(async () => {
     updateLogo();
     document.addEventListener('click', handleClickOutside);
+    await getUser()
 
     const observer = new MutationObserver(updateLogo);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
@@ -100,10 +109,10 @@ onBeforeUnmount(() => {
             </Button>
 
             <div class="relative" ref="dropdownRef">
-                <button @click="dropdownOpen = !dropdownOpen" class="size-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center
+                <Button @click="dropdownOpen = !dropdownOpen" :tooltip="email" class="rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center
                        cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-600 transition">
                     <Icon name="user" />
-                </button>
+                </Button>
 
                 <ul v-if="dropdownOpen" class="absolute right-0 mt-2 w-48
                 text-black dark:text-white
