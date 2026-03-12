@@ -25,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::create('user_likes', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('song_id')->constrained('songs', 'uuid')->cascadeOnDelete();
             $table->timestamps();

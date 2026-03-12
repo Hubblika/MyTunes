@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Playlist extends Model
 {
+
+    use HasFactory;
+
     protected $table = 'playlists';
 
     protected $primaryKey = 'uuid';

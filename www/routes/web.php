@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-require_once __DIR__.'/utils.php';
+require_once __DIR__ . '/utils.php';
 
 Route::middleware('auth')->group(function () {
 
@@ -27,20 +27,14 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Queue');
     })->name('queue');
 
-     Route::get('/library', function () {
+    Route::get('/library', function () {
         return Inertia::render('Library');
     })->name('library');
 
     Route::get('/playlist/{uuid}', function ($uuid) {
         return Inertia::render('Playlist', ['uuid' => $uuid]);
     })->whereUuid('uuid')
-      ->name('playlist.detail');
-
-    Route::get('/admin', function () {
-        return Inertia::render('Admin');
-    })->middleware('can:admin')
-      ->name('admin');
-
+        ->name('playlist.detail');
 
     Route::get('/playlists', [PlaylistController::class, 'index']);
     Route::post('/playlists', [PlaylistController::class, 'store']);
@@ -63,12 +57,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/likes/{uuid}', [LikeController::class, 'show']);
     Route::delete('/likes/{uuid}', [LikeController::class, 'destroy']);
 
-    Route::get('/users', [UserController::class, 'index'])->middleware('can:admin');
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
-    Route::put('/admin', [AdminController::class, 'updateAdminStatus']);
+    Route::middleware('can:admin')->group(function () {
+        Route::get('/admin', function () {
+            return Inertia::render('Admin');
+        })->name('admin');
+
+        Route::get('/users', [UserController::class, 'index']);
+        Route::put('/admin', [AdminController::class, 'updateAdminStatus']);
+    });
 
     Route::get('/search', function (Request $request) {
         $query = $request->input('query', '');
@@ -77,7 +77,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/stream/{song}', [StreamController::class, 'stream'])->name('songs.stream');
 
-    Route::get('/me', fn (Request $request) => ok($request->user()));
+    Route::get('/me', fn(Request $request) => ok($request->user()));
 });
 
 Route::fallback(function () {

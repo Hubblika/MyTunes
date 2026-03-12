@@ -154,7 +154,9 @@
         "editPermissions": "Jogosultságok szerkesztése",
         "loadingMessage": "Betöltés...",
         "permissionsTitle": "Jogosultságok szerkesztése",
-        "saveButton": "Mentés"
+        "saveButton": "Mentés",
+        "permissionUpdateSuccess": "Jogosultságok sikeresen elmentve!",
+        "admin.permissionsUpdateError": "Hiba a jogosultságok mentésekor!"
     },
     "playlistEditModal": {
         "playlistName": "Lejátszási lista neve",

@@ -87,9 +87,6 @@ class PlaylistController extends Controller
      */
     public function update(Request $request, string $uuid)
     {
-        error_log("Method: " . $request->method());
-    error_log("All Data: " . print_r($request->all(), true));
-    error_log("Files: " . print_r($request->allFiles(), true));
         $playlist = Playlist::where('uuid', $uuid)->first();
         if (!$playlist) return err(404);
 

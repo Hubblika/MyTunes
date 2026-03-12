@@ -154,7 +154,9 @@
         "editPermissions": "Edit permissions",
         "loadingMessage": "Loading...",
         "permissionsTitle": "Edit permissions",
-        "saveButton": "Save"
+        "saveButton": "Save",
+        "permissionUpdateSuccess": "Save successful!",
+        "admin.permissionsUpdateError": "An error occured during the save!"
     },
     "playlistEditModal": {
         "playlistName": "Playlist name",
