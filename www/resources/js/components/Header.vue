@@ -47,7 +47,17 @@ function loadHomeContent() {
 
 function download() {
     console.log('Starting download');
-    //TODO: download the desktop app
+    
+    const fileUrl = '/downloads/MyTunes_Desktop.exe';
+    
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    
+    link.setAttribute('download', 'MyTunes_Desktop.exe'); 
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 async function getUser() {
