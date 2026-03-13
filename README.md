@@ -9,6 +9,8 @@ To get this project running locally, follow these steps:
 
 1. Clone the repo:
    `git clone https://github.com/Hubblika/MyTunes.git`
+2. Navigate into the project folder
+    `cd mytunes`
 2. Change to www branch
     `git switch www`
 3. Change to working directory
