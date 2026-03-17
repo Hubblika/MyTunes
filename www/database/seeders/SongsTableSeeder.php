@@ -286,7 +286,7 @@ class SongsTableSeeder extends Seeder
                 'artist' => $song['artist'],
                 'album' => $song['album'],
                 'file_name' => $song['file_name'],
-                'cover_url' => 'storage/' . $song['cover_url'],
+                'cover_url' => '/storage/' . $song['cover_url'],
                 'date' => $song['release_date'],
                 'created_at' => now(),
                 'duration' => $song['duration'],

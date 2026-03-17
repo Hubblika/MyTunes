@@ -31,7 +31,6 @@ const selectMenu = (item: string) => {
     dropdownOpen.value = false;
     if (item === 'logout') logout();
     else if (item === 'settings') router.get('/settings');
-    else console.log(`Selected ${item}`);
 }
 
 const dropdownRef = ref<HTMLElement | null>(null);
@@ -45,9 +44,7 @@ function loadHomeContent() {
     router.get('/');
 }
 
-function download() {
-    console.log('Starting download');
-    
+function download() {    
     const fileUrl = '/downloads/MyTunes_Desktop.exe';
     
     const link = document.createElement('a');
@@ -63,7 +60,6 @@ function download() {
 async function getUser() {
     const res = await axios.get('/me');
     email.value = res.data.data.email;
-    console.log(email.value)
 }
 
 onMounted(async () => {
