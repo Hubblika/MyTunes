@@ -1,112 +1,111 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
-import { Icon, Button, PlaylistEditModal } from '.'
-import { router } from '@inertiajs/vue3'
-import { usePlayerStore } from '@/stores/player'
-import axios from 'axios'
-import { _Playlist } from '@/types'
+import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue';
+import { Icon, Button, PlaylistEditModal } from '.';
+import { usePlayerStore } from '@/stores/player';
+import { router } from '@inertiajs/vue3';
+import { _Playlist } from '@/types';
 
-const player = usePlayerStore()
+const player = usePlayerStore();
 
-const { playlist } = defineProps<{ playlist: _Playlist }>()
+const { playlist } = defineProps<{ playlist: _Playlist }>();
 const emit = defineEmits<{
     deletePlaylist: [id: string]
     renamePlaylist: [id: string, name: string]
-}>()
+}>();
 
-const dropdownRef = ref<HTMLElement | null>(null)
-const dropdownOpen = ref(false)
-const menuX = ref(0)
-const menuY = ref(0)
-const OFFSET = 6
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownOpen = ref(false);
+const menuX = ref(0);
+const menuY = ref(0);
+const OFFSET = 6;
 
-const renamingModal = ref(false)
-const renameInput = ref('')
-const coverFile = ref<File | null>(null)
-const DISABLED_UUID = '00000000-0000-0000-0000-000000000000'
+const renamingModal = ref(false);
+const renameInput = ref('');
+const coverFile = ref<File | null>(null);
+const DISABLED_UUID = '00000000-0000-0000-0000-000000000000';
+const isMobile = ref(false);
 
-const isMobile = ref(false)
-function checkMobile() {
-    isMobile.value = window.innerWidth <= 768
-}
+onMounted(async () => {
+    window.addEventListener('playlist-context-open', handleOtherDropdown);
+    window.addEventListener('click', handleClickOutside);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    await player.fetchLikedSongs();
+    await player.fetchPlaylistSongs(playlist.uuid);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('playlist-context-open', handleOtherDropdown);
+    window.removeEventListener('click', handleClickOutside);
+    window.removeEventListener('resize', checkMobile);
+});
 
 const coverUrl = computed(() => {
-    const pl = player.playlists.get(playlist.uuid)
-    return pl?.cover_url || '/uploads/thumbnails/defaultThumbnail.png'
+    const pl = player.playlists.get(playlist.uuid);
+    return pl?.cover_url || '/uploads/thumbnails/defaultThumbnail.png';
 })
 
-function openDropdown(e: MouseEvent) {
-    if (playlist.uuid === DISABLED_UUID) return
-
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (isMobile.value) {
-        dropdownOpen.value = true
-        return
-    }
-
-    menuX.value = e.clientX + OFFSET
-    menuY.value = e.clientY + OFFSET
-    dropdownOpen.value = true
-
-    nextTick(() => {
-        if (!dropdownRef.value) return
-        const { innerWidth, innerHeight } = window
-        const rect = dropdownRef.value.getBoundingClientRect()
-        if (menuX.value + rect.width > innerWidth) menuX.value = e.clientX - rect.width - OFFSET
-        if (menuY.value + rect.height > innerHeight) menuY.value = e.clientY - rect.height - OFFSET
-        menuX.value = Math.max(OFFSET, menuX.value)
-        menuY.value = Math.max(OFFSET, menuY.value)
-    })
-
-    window.dispatchEvent(new CustomEvent('playlist-context-open', { detail: playlist.uuid }))
-}
-
-function handleOtherDropdown(e: Event) {
-    const event = e as CustomEvent<string>
-    if (event.detail !== playlist.uuid) dropdownOpen.value = false
-}
-
-function handleClickOutside() {
-    dropdownOpen.value = false
-}
-
-const selectMenu = (item: 'rename' | 'delete') => {
-    dropdownOpen.value = false
-    if (item === 'delete') emit('deletePlaylist', playlist.uuid)
-    if (item === 'rename') {
-        renameInput.value = playlist.name
-        renamingModal.value = true
-    }
+function checkMobile() {
+    isMobile.value = window.innerWidth <= 768;
 }
 
 async function play() {
-    const isLikedPlaylist = playlist.uuid === DISABLED_UUID
+    const isLikedPlaylist = playlist.uuid === DISABLED_UUID;
     if (isLikedPlaylist) {
-        if (!player.likedSongList.length) return
-        if (player.currentPlaylist === playlist.uuid) player.togglePlay()
-        else player.addPlaylistToQueue({ ...playlist, songs: [...player.likedSongList] })
+        if (!player.likedSongList.length) return;
+        if (player.currentPlaylist === playlist.uuid) player.togglePlay();
+        else player.addPlaylistToQueue({ ...playlist, songs: [...player.likedSongList] });
     } else {
-        if (player.currentPlaylist === playlist.uuid) player.togglePlay()
-        else player.addPlaylistToQueue(playlist)
+        if (player.currentPlaylist === playlist.uuid) player.togglePlay();
+        else player.addPlaylistToQueue(playlist);
     }
 }
 
-onMounted(async () => {
-    window.addEventListener('playlist-context-open', handleOtherDropdown)
-    window.addEventListener('click', handleClickOutside)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    await player.fetchLikedSongs()
-    await player.fetchPlaylistSongs(playlist.uuid)
-})
+const selectMenu = (item: 'rename' | 'delete') => {
+    dropdownOpen.value = false;
+    if (item === 'delete') emit('deletePlaylist', playlist.uuid);
+    if (item === 'rename') {
+        renameInput.value = playlist.name;
+        renamingModal.value = true;
+    }
+}
 
-onBeforeUnmount(() => {
-    window.removeEventListener('playlist-context-open', handleOtherDropdown)
-    window.removeEventListener('click', handleClickOutside)
-    window.removeEventListener('resize', checkMobile)
-})
+function openDropdown(e: MouseEvent) {
+    if (playlist.uuid === DISABLED_UUID) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isMobile.value) {
+        dropdownOpen.value = true;
+        return;
+    }
+
+    menuX.value = e.clientX + OFFSET;
+    menuY.value = e.clientY + OFFSET;
+    dropdownOpen.value = true;
+
+    nextTick(() => {
+        if (!dropdownRef.value) return;
+        const { innerWidth, innerHeight } = window;
+        const rect = dropdownRef.value.getBoundingClientRect();
+        if (menuX.value + rect.width > innerWidth) menuX.value = e.clientX - rect.width - OFFSET;
+        if (menuY.value + rect.height > innerHeight) menuY.value = e.clientY - rect.height - OFFSET;
+        menuX.value = Math.max(OFFSET, menuX.value);
+        menuY.value = Math.max(OFFSET, menuY.value);
+    })
+
+    window.dispatchEvent(new CustomEvent('playlist-context-open', { detail: playlist.uuid }));
+}
+
+function handleOtherDropdown(e: Event) {
+    const event = e as CustomEvent<string>;
+    if (event.detail !== playlist.uuid) dropdownOpen.value = false;
+}
+
+function handleClickOutside() {
+    dropdownOpen.value = false;
+}
 </script>
 
 <template>

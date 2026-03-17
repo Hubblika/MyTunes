@@ -1,39 +1,38 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { SongCard, Icon } from '.'
-import { _Song } from '@/types';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { SongCard, Icon } from '.';
+import { _Song } from '@/types';;
 
 const props = defineProps<{
     title: string,
     songs: _Song[]
 }>()
 
-const scrollContainer = ref<HTMLElement | null>(null)
-
-const canScroll = ref(false)
-
-function updateScroll() {
-    if (!scrollContainer.value) return
-    canScroll.value = scrollContainer.value.scrollWidth > scrollContainer.value.clientWidth
-}
+const scrollContainer = ref<HTMLElement | null>(null);
+const canScroll = ref(false);
 
 onMounted(() => {
-    nextTick(() => updateScroll())
-    window.addEventListener('resize', updateScroll)
-})
+    nextTick(() => updateScroll());
+    window.addEventListener('resize', updateScroll);
+});
 
 onUnmounted(() => {
-    window.removeEventListener('resize', updateScroll)
-})
+    window.removeEventListener('resize', updateScroll);
+});
 
 function scroll(direction: 'left' | 'right') {
-    if (!scrollContainer.value) return
+    if (!scrollContainer.value) return;
 
-    const scrollAmount = 188
+    const scrollAmount = 188;
     scrollContainer.value.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
     })
+}
+
+function updateScroll() {
+    if (!scrollContainer.value) return;
+    canScroll.value = scrollContainer.value.scrollWidth > scrollContainer.value.clientWidth;
 }
 </script>
 

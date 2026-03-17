@@ -1,68 +1,77 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { ButtonProps } from '@/types'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ButtonProps } from '@/types';
 
-const {
-    type = 'button',
-    href,
-    class: classList,
-    disabled,
-    tooltip
-} = defineProps<ButtonProps>()
+const props = defineProps<ButtonProps>();
 
-const emit = defineEmits<{ click: [e: MouseEvent] }>()
+const emit = defineEmits<{ click: [e: MouseEvent] }>();
 
-const tag = computed(() => (href ? 'a' : 'button'))
+const tag = computed(() => (props.href ? 'a' : 'button'));
 
-const buttonRef = ref<HTMLElement | null>(null)
-const tooltipVisible = ref(false)
-const tooltipStyle = ref<Record<string, string>>({})
-const tooltipRef = ref<HTMLElement | null>(null)
+const buttonRef = ref<HTMLElement | null>(null);
+const tooltipVisible = ref(false);
+const tooltipStyle = ref<Record<string, string>>({});
+const tooltipRef = ref<HTMLElement | null>(null);
 
-let hoverMedia: MediaQueryList | null = null
+let hoverMedia: MediaQueryList | null = null;
+
+onMounted(() => {
+    hoverMedia = window.matchMedia('(hover: hover)');
+});
+
+onBeforeUnmount(() => {
+    hoverMedia = null;
+});
+
+function handleMouseEnter() {
+    if (hoverMedia?.matches) {
+        showTooltip();
+    }
+}
+
+function handleMouseLeave() {
+    if (hoverMedia?.matches) {
+        hideTooltip();
+    }
+}
 
 async function showTooltip() {
-    if (!buttonRef.value) return
+    if (!buttonRef.value) return;
 
-    const rect = buttonRef.value.getBoundingClientRect()
-    const margin = 8
-    const tooltipHeight = 32
+    const rect = buttonRef.value.getBoundingClientRect();
+    const margin = 8;
+    const tooltipHeight = 32;
 
-    // 1. Initial Top Calculation
-    let top = rect.top - tooltipHeight - margin
-    if (top < 8) top = rect.bottom + margin
+    let top = rect.top - tooltipHeight - margin;
+    if (top < 8) top = rect.bottom + margin;
 
-    // 2. Initial Horizontal Position (Centered)
     tooltipStyle.value = {
         left: `${rect.left + rect.width / 2}px`,
         top: `${top}px`,
         transform: 'translateX(-50%)',
-        opacity: '0' // Hide it for a split second while we calculate
+        opacity: '0'
     }
 
-    tooltipVisible.value = true
+    tooltipVisible.value = true;
 
-    // 3. Wait for DOM update to measure the actual tooltip width
-    await nextTick()
-    if (!tooltipRef.value) return
+    await nextTick();
+    if (!tooltipRef.value) return;
 
-    const tooltipRect = tooltipRef.value.getBoundingClientRect()
-    const screenWidth = window.innerWidth
-    const padding = 12 // Minimum distance from screen edge
+    const tooltipRect = tooltipRef.value.getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+    const padding = 12;
 
-    let finalLeft = rect.left + rect.width / 2
-    let finalTransform = 'translateX(-50%)'
+    let finalLeft = rect.left + rect.width / 2;
+    let finalTransform = 'translateX(-50%)';
 
-    // 4. Boundary Checks
-    // Check Left Edge
     if (tooltipRect.left < padding) {
-        finalLeft = padding
-        finalTransform = 'none'
-    } 
-    // Check Right Edge
+        finalLeft = padding;
+        finalTransform = 'none';
+    }
+
     else if (tooltipRect.right > screenWidth - padding) {
-        finalLeft = screenWidth - padding
-        finalTransform = 'translateX(-100%)'
+        finalLeft = screenWidth - padding;
+        finalTransform = 'translateX(-100%)';
     }
 
     tooltipStyle.value = {
@@ -74,24 +83,15 @@ async function showTooltip() {
 }
 
 function hideTooltip() {
-    tooltipVisible.value = false
+    tooltipVisible.value = false;
 }
-
-onMounted(() => {
-    hoverMedia = window.matchMedia('(hover: hover)')
-})
-
-onBeforeUnmount(() => {
-    hoverMedia = null
-})
 </script>
 
 <template>
-    <component ref="buttonRef" :is="tag" :href="href" :type="type" :disabled="disabled" :class="[
+    <component ref="buttonRef" :is="tag" :href="props.href" :type="props.type" :disabled="props.disabled" :class="[
         'group h-10 px-3 flex justify-center items-center cursor-pointer disabled:cursor-not-allowed',
-        classList
-    ]" @mouseenter="hoverMedia?.matches && showTooltip()" @mouseleave="hoverMedia?.matches && hideTooltip()"
-        @click.stop="emit('click', $event)">
+        props.class
+    ]" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @click.stop="emit('click', $event)">
         <slot />
     </component>
 
