@@ -171,7 +171,7 @@ onBeforeUnmount(() => {
             <div class="justify-self-end"></div>
         </div>
 
-        <div class="flex flex-col overflow-y-auto overflow-x-hidden">
+        <div class="flex flex-col overflow-y-auto overflow-x-hidden pb-32">
             <template v-if="props.uuid === '00000000-0000-0000-0000-000000000000'">
                 <PlaylistSong v-for="(song, index) in player.likedSongList" :key="song.uuid" :index="index + 1"
                     :song="song" :playlistUuid="props.uuid" />
