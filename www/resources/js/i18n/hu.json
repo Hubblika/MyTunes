@@ -155,8 +155,8 @@
         "loadingMessage": "Betöltés...",
         "permissionsTitle": "Jogosultságok szerkesztése",
         "saveButton": "Mentés",
-        "permissionUpdateSuccess": "Jogosultságok sikeresen elmentve!",
-        "admin.permissionsUpdateError": "Hiba a jogosultságok mentésekor!"
+        "permissionsUpdateSuccess": "Jogosultságok sikeresen elmentve!",
+        "permissionsUpdateError": "Hiba a jogosultságok mentésekor!"
     },
     "playlistEditModal": {
         "playlistName": "Lejátszási lista neve",

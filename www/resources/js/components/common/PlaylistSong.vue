@@ -56,7 +56,6 @@ function openDropdown(e: MouseEvent) {
     )
 }
 
-
 function handleOtherDropdown(e: Event) {
     const event = e as CustomEvent<string>
     if (event.detail !== props.song.uuid) {

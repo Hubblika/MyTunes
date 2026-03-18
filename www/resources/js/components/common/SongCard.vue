@@ -5,7 +5,11 @@ import { usePlayerStore } from '@/stores/player'
 import { _Song, _Playlist } from '@/types'
 import { usePage } from '@inertiajs/vue3'
 
-const props = defineProps<{ song: _Song }>()
+const props = defineProps<{ 
+  song: _Song,
+  title?: string,
+  image?: string
+}>()
 
 const player = usePlayerStore()
 const page = usePage()
