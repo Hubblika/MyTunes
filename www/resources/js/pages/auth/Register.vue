@@ -8,7 +8,7 @@ defineOptions({
 </script>
 
 <template>
-    <main class="text-black dark:text-white bg-white dark:bg-black w-full">
+    <main class="w-full">
         <Loginform register></Loginform>
     </main>
 </template>

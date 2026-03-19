@@ -14,23 +14,18 @@ return new class extends Migration
         Schema::create('songs', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('title');
-            $table->string('artist'); // ->foreignId('user_id')?
-            $table->string('url');
-            $table->string('cover_url');
+            $table->string('artist');
+            $table->string('album');
+            $table->string('file_name')->nullable();
+            $table->string('cover_url')->nullable();
             $table->date('date');
             $table->unsignedMediumInteger('duration');
             $table->string('genre', 60)->nullable();
             $table->timestamps();
         });
 
-        Schema::create('_user_songs', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignUuid('song_id')->constrained('songs', 'uuid')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-        });
-
-        Schema::create('_user_likes', function (Blueprint $table) {
-            $table->id()->primary();
+        Schema::create('user_likes', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('song_id')->constrained('songs', 'uuid')->cascadeOnDelete();
             $table->timestamps();

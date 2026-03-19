@@ -5,16 +5,10 @@ import QueueSong from "./common/QueueSong.vue";
 
 const player = usePlayerStore();
 const { queue } = storeToRefs(player);
-
-function formatDuration(seconds: number) {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
-}
 </script>
 
 <template>
-    <section class="flex flex-col h-full gap-4">
+    <section class="flex flex-col h-full gap-4 p-4">
         <header class="px-4">
             <h1 class="text-2xl font-bold text-black dark:text-white">
                 {{ $t('queue.title') }}
@@ -32,8 +26,7 @@ function formatDuration(seconds: number) {
         </div>
 
         <div class="flex flex-col overflow-y-auto">
-            <QueueSong v-for="(song, index) in queue" :key="song.uuid" :index="index + 1" :cover="song.cover_url"
-                :title="song.title" :artist="song.artist" :duration="formatDuration(song.duration)" />
+            <QueueSong v-for="(song, index) in queue" :key="song.uuid" :index="index + 1" :song="song" />
         </div>
     </section>
 </template>

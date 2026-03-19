@@ -12,9 +12,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return ok($users);
+        $users = User::where('email', '!=', 'admin@example.com')->get();
+
+        return response()->json($users);
     }
+
 
     /**
      * Store a newly created resource in storage.

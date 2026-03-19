@@ -1,153 +1,191 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Icon, Button } from '.';
+import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue';
+import { Icon, Button, PlaylistEditModal } from '.';
+import { usePlayerStore } from '@/stores/player';
 import { router } from '@inertiajs/vue3';
-import { Playlist } from '@/lib/types';
-import { usePlayerStore } from '@/stores/player'
-import axios from "axios";
-import { _Song } from '@/types';
+import { _Playlist } from '@/types';
 
-const player = usePlayerStore()
-const dropdownOpen = ref(false);
-const renaming = ref(false);
-const likes = ref<string[]>([]);
-const likedSongs = ref<_Song[]>([]);
+const player = usePlayerStore();
 
-const { playlist } = defineProps<{
-    playlist: Playlist
-}>()
-
+const { playlist } = defineProps<{ playlist: _Playlist }>();
 const emit = defineEmits<{
     deletePlaylist: [id: string]
     renamePlaylist: [id: string, name: string]
 }>();
 
-const selectMenu = (item: string) => {
-    dropdownOpen.value = false;
-    switch (item) {
-        case 'delete':
-            emit('deletePlaylist', playlist.uuid);
-            break;
-        case 'rename':
-            if (inputRef.value) inputRef.value.value = playlist.name;
-            renaming.value = !renaming.value;
-            break;
-    }
-};
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownOpen = ref(false);
+const menuX = ref(0);
+const menuY = ref(0);
+const OFFSET = 6;
+
+const renamingModal = ref(false);
+const renameInput = ref('');
+const coverFile = ref<File | null>(null);
+const DISABLED_UUID = '00000000-0000-0000-0000-000000000000';
+const isMobile = ref(false);
+
+onMounted(async () => {
+    window.addEventListener('playlist-context-open', handleOtherDropdown);
+    window.addEventListener('click', handleClickOutside);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    await player.fetchLikedSongs();
+    await player.fetchPlaylistSongs(playlist.uuid);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('playlist-context-open', handleOtherDropdown);
+    window.removeEventListener('click', handleClickOutside);
+    window.removeEventListener('resize', checkMobile);
+});
+
+const coverUrl = computed(() => {
+    const pl = player.playlists.get(playlist.uuid);
+    return pl?.cover_url || '/uploads/thumbnails/defaultThumbnail.png';
+})
+
+function checkMobile() {
+    isMobile.value = window.innerWidth <= 768;
+}
 
 async function play() {
-    if (playlist.uuid === '00000000-0000-0000-0000-000000000000') {
-        await fetchLikes();
-        await fetchLikedSongs();
-
-        if (!likedSongs.value.length) return;
-
-        const isCurrentPlaylist = player.currentPlaylist === playlist.uuid;
-
-        if (isCurrentPlaylist) {
-            player.togglePlay();
-        } else {
-            player.emptyQueue();
-            likedSongs.value.forEach(song => player.addToQueue(song, playlist.uuid));
-            player.currentIndex = 0;
-            player.isPlaying = true;
-            player.currentPlaylist = playlist.uuid;
-            await player.fetchLiked();
-        }
+    const isLikedPlaylist = playlist.uuid === DISABLED_UUID;
+    if (isLikedPlaylist) {
+        if (!player.likedSongList.length) return;
+        if (player.currentPlaylist === playlist.uuid) player.togglePlay();
+        else player.addPlaylistToQueue({ ...playlist, songs: [...player.likedSongList] });
+    } else {
+        if (player.currentPlaylist === playlist.uuid) player.togglePlay();
+        else player.addPlaylistToQueue(playlist);
     }
 }
 
-async function fetchLikes() {
-    const response = await axios.get("/api/like");
-    likes.value = response.data.likes;
-}
-
-async function fetchLikedSongs() {
-    if (!likes.value?.length) return;
-    try {
-        const requests = likes.value.map(uuid => axios.get(`/api/songs/${uuid}`));
-        const responses = await Promise.all(requests);
-        likedSongs.value = responses.map(r => r.data.data).filter(Boolean);
-    } catch (err) {
-        console.error("Error fetching liked songs:", err);
-        likedSongs.value = [];
+const selectMenu = (item: 'rename' | 'delete') => {
+    dropdownOpen.value = false;
+    if (item === 'delete') emit('deletePlaylist', playlist.uuid);
+    if (item === 'rename') {
+        renameInput.value = playlist.name;
+        renamingModal.value = true;
     }
 }
 
-function finishRenaming() {
-    renaming.value = false;
-    if (inputRef.value?.value) {
-        emit('renamePlaylist', playlist.uuid, inputRef.value.value);
+function openDropdown(e: MouseEvent) {
+    if (playlist.uuid === DISABLED_UUID) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isMobile.value) {
+        dropdownOpen.value = true;
+        return;
     }
+
+    menuX.value = e.clientX + OFFSET;
+    menuY.value = e.clientY + OFFSET;
+    dropdownOpen.value = true;
+
+    nextTick(() => {
+        if (!dropdownRef.value) return;
+        const { innerWidth, innerHeight } = window;
+        const rect = dropdownRef.value.getBoundingClientRect();
+        if (menuX.value + rect.width > innerWidth) menuX.value = e.clientX - rect.width - OFFSET;
+        if (menuY.value + rect.height > innerHeight) menuY.value = e.clientY - rect.height - OFFSET;
+        menuX.value = Math.max(OFFSET, menuX.value);
+        menuY.value = Math.max(OFFSET, menuY.value);
+    })
+
+    window.dispatchEvent(new CustomEvent('playlist-context-open', { detail: playlist.uuid }));
 }
 
-const dropdownRef = ref<HTMLElement>();
-const inputRef = ref<HTMLInputElement>();
-const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-        dropdownOpen.value = false;
-    }
+function handleOtherDropdown(e: Event) {
+    const event = e as CustomEvent<string>;
+    if (event.detail !== playlist.uuid) dropdownOpen.value = false;
 }
 
-onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-    fetchLikes();
-});
+function handleClickOutside() {
+    dropdownOpen.value = false;
+}
 </script>
 
 <template>
-    <div :class="player.currentPlaylist === playlist.uuid && player.isPlaying
-        ? 'bg-gray-500/10 dark:bg-white/10'
-        : ''"
-        class="flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-500/10 dark:hover:bg-white/10 transition"
-        @click="() => renaming ? {} : router.visit(`/playlist/${playlist.uuid}`)">
-
-        <div class="relative size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0 group">
-            <img :src="'/uploads/thumbnails/defaultThumbnail.png'"
+    <div @contextmenu.prevent="openDropdown" :class="player.currentPlaylist === playlist.uuid && player.isPlaying
+        ? 'bg-gray-500/10 dark:bg-white/10' : ''"
+        class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-500/10 dark:hover:bg-white/10 transition">
+        <div class="relative size-12 rounded bg-gray-400/30 dark:bg-white/20 overflow-hidden shrink-0 group cursor-pointer"
+            @click="() => router.visit(`/playlist/${playlist.uuid}`)">
+            <img :src="coverUrl"
                 class="w-full h-full object-cover transition-opacity duration-150 group-hover:opacity-50" />
-
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-150"
                 @click.stop="play">
-                <Icon :name="player.currentPlaylist === playlist.uuid && player.isPlaying
-                    ? 'player-pause-filled'
-                    : 'player-play-filled'"
-                    class="size-6 text-white hover:scale-110 transition-transform cursor-pointer" />
+                <Icon
+                    :name="player.currentPlaylist === playlist.uuid && player.isPlaying ? 'player-pause-filled' : 'player-play-filled'"
+                    class="size-6 text-white hover:scale-110 transition-transform" />
             </div>
         </div>
 
-        <div class="min-w-0 flex flex-col grow">
-            <span v-if="!renaming" class="text-sm font-medium truncate">
-                {{ playlist.name }}
-            </span>
-
-            <input v-else class="text-sm font-medium w-full" :placeholder="playlist.name"
-                @keypress="e => e.key === 'Enter' ? finishRenaming() : {}" ref="inputRef" />
-
-            <span class="text-xs opacity-60 truncate">
-                0 {{ $t('sidebar.playlistNumber') }}
-            </span>
+        <div class="min-w-0 flex flex-col grow cursor-pointer"
+            @click="() => router.visit(`/playlist/${playlist.uuid}`)">
+            <span class="text-sm font-medium truncate">{{ playlist.name }}</span>
+            <span class="text-xs opacity-60 truncate">{{ playlist.uuid === DISABLED_UUID ? player.likedCount :
+                playlist.songs_count ?? 0 }} {{ $t('sidebar.playlistNumber') }}</span>
         </div>
 
-        <div v-if="playlist.uuid !== '00000000-0000-0000-0000-000000000000'" class="relative" ref="dropdownRef"
-            @click="e => e.stopImmediatePropagation()">
-            <Button @click="dropdownOpen = !dropdownOpen" class="group transition-all duration-150">
-                <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
-            </Button>
-
-            <ul v-if="dropdownOpen"
-                class="absolute mt-2 bg-white dark:bg-black border border-gray-200 dark:border-gray-500/6 rounded-md shadow-lg py-1 z-50 right-0">
-                <li @click="() => selectMenu('rename')"
-                    class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-                    <Icon :name="renaming ? 'pencil-off' : 'pencil'" class="size-5 text-black" />
-                    <span>{{ $t(renaming ? 'generic.cancel' : 'sidebar.renamePlaylistButton') }}</span>
-                </li>
-
-                <li @click="() => selectMenu('delete')"
-                    class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer whitespace-nowrap">
-                    <Icon name="trash" class="size-5 text-red-500" />
-                    <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
-                </li>
-            </ul>
-        </div>
+        <Button @click.stop="openDropdown($event)" :tooltip="$t('tooltip.moreOptions')"
+            v-if="playlist.uuid !== DISABLED_UUID" class="p-2 rounded-full">
+            <Icon name="dots-vertical" class="size-5 transition-transform duration-150 group-hover:scale-110" />
+        </Button>
     </div>
+
+    <Teleport to="body">
+        <ul ref="dropdownRef" v-if="dropdownOpen && !isMobile" :style="{ left: `${menuX}px`, top: `${menuY}px` }"
+            class="fixed text-black dark:text-white bg-white/20 dark:bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl shadow-lg py-2 z-50 min-w-[200px] whitespace-nowrap"
+            @click.stop>
+            <li @click="selectMenu('rename')"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
+                <Icon name="pencil" class="size-5" />
+                <span>{{ $t('sidebar.editPlaylistButton') }}</span>
+            </li>
+            <li @click="selectMenu('delete')"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
+                <Icon name="trash" class="size-5 text-red-500" />
+                <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
+            </li>
+        </ul>
+    </Teleport>
+
+    <Teleport to="body">
+        <transition name="slide-up">
+            <div v-if="dropdownOpen && isMobile" @click.self="dropdownOpen = false"
+                class="fixed inset-0 bg-black/40 z-50 flex justify-center items-end">
+                <div
+                    class="bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10 rounded-t-3xl w-full max-h-[80vh] overflow-auto p-4">
+                    <li @click="selectMenu('rename')"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
+                        <Icon name="pencil" class="size-5" />
+                        <span>{{ $t('sidebar.editPlaylistButton') }}</span>
+                    </li>
+                    <li @click="selectMenu('delete')"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/30 dark:hover:bg-black/30 cursor-pointer">
+                        <Icon name="trash" class="size-5 text-red-500" />
+                        <span>{{ $t('sidebar.deletePlaylistButton') }}</span>
+                    </li>
+                </div>
+            </div>
+        </transition>
+
+         <PlaylistEditModal v-model="renamingModal" :title="$t('modal.title')" :name-value="renameInput"
+        :description-value="playlist?.description || ''" :cover-url="playlist?.cover_url || ''"
+        @update:nameValue="renameInput = $event" @update:descriptionValue="playlist!.description = $event"
+        @update:coverFile="coverFile = $event" @save="async () => {
+            if (!playlist) return;
+            await player.updatePlaylist(playlist.uuid, {
+                name: renameInput,
+                description: playlist.description ?? undefined,
+                cover: coverFile ?? undefined
+            });
+            renamingModal = false;
+            coverFile = null;
+        }" />
+    </Teleport>
 </template>

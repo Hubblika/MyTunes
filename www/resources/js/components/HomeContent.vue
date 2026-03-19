@@ -9,7 +9,7 @@ const songs = ref<_Song[]>([]);
 
 const getSongs = async () => {
     try {
-        const response = await axios.get('/api/songs');
+        const response = await axios.get('/songs');
         songs.value = response.data.data;
     } catch (error) {
         console.error(error);
@@ -37,7 +37,7 @@ const songsByArtist = computed(() => {
 
 
 <template>
-    <div class="p-6 flex flex-col gap-4">
+    <div class="p-6 pb-36 flex flex-col gap-4 overflow-auto">
         <HomeRow v-for="(artistSongs, artist) in songsByArtist" :key="artist" :title="artist" :songs="artistSongs"/>
     </div>
 </template>

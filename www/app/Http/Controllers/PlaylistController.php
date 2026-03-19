@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Playlist;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PlaylistController extends Controller
 {
@@ -15,23 +16,22 @@ class PlaylistController extends Controller
     {
         $username = $request->query('username');
 
+        // Admins can get all playlists
         if (!$username) {
-            // Only admins can get all playlists from all users
-            if ($request->user()?->is_admin) {
-                $playlists = Playlist::all();
+            $user = $request->user();
+            if ($user && $user->is_admin) {
+                $playlists = Playlist::withCount('songs')->get();
                 return ok($playlists);
             }
-
             return err(404, ['field' => 'username']);
         }
 
         $target = User::whereUsername($username)->first();
-
         if (!$target) {
             return err(404, ['field' => 'username']);
         }
 
-        $playlists = Playlist::whereUserId($target->getKey())
+        $playlists = Playlist::whereUserId($target->id)
             ->withCount('songs')
             ->get();
 
@@ -39,34 +39,28 @@ class PlaylistController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource.
      */
     public function store(Request $request)
     {
         $user = $request->user();
 
-        if (!$user) {
-            return err(401);
-        }
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $public = $request->input('public', true);
 
-        $name = $request->json('name');
-        $description = $request->json('description');
-        $public = $request->json('public', true);
-
-        if (!$name || \strlen($name) < 1) {
+        if (!$name || strlen($name) < 1) {
             return err(400, ['field' => 'name']);
         }
 
-        $playlist_id = Playlist::create([
+        $playlist = Playlist::create([
             'user_id' => $user->id,
             'name' => $name,
             'description' => $description,
-            'public' => $public
-        ])->getKey();
+            'public' => (bool) $public,
+        ]);
 
-        $playlist = Playlist::find($playlist_id);
-
-        return ok($playlist);
+        return ok($playlist->loadCount('songs'), 201);
     }
 
     /**
@@ -74,78 +68,82 @@ class PlaylistController extends Controller
      */
     public function show(Request $request, string $uuid)
     {
-        $playlist = Playlist::find($uuid);
+        $playlist = Playlist::where('uuid', $uuid)
+            ->withCount('songs')
+            ->first();
 
-        if (!$playlist) {
-            return err(404);
-        }
-
-        if (!$playlist->public && $playlist->user_id !== $request->user()?->getKey()) {
-            return err(404);
-        }
-
-        $songs = $playlist->songs->song;
-
-        return ok(['playlist' => $playlist, 'songs' => $songs]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $uuid)
-    {
-        $name = $request->json('name');
-        $description = $request->json('description');
-        $public = $request->json('public');
-
-        $playlist = Playlist::find($uuid);
-
-        if (!$playlist) {
-            return err(404);
-        }
+        if (!$playlist) return err(404);
 
         $user = $request->user();
-
-        if (!$user || $user->getKey() !== $playlist->user->getKey()) {
-            return err(403);
+        if (!$playlist->public && $playlist->user_id !== $user->id) {
+            return err(404);
         }
-
-        if ($name !== null && strlen($name) > 0) {
-            $playlist->name = $name;
-        }
-
-        if ($description && strlen($description) === 0) {
-            $playlist->description = null;
-        } else if ($description) {
-            $playlist->description = $description;
-        }
-
-        if ($public !== null) {
-            $playlist->public = $public;
-        }
-
-        $playlist->save();
 
         return ok($playlist);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update the specified resource.
+     */
+    public function update(Request $request, string $uuid)
+    {
+        $playlist = Playlist::where('uuid', $uuid)->first();
+        if (!$playlist) return err(404);
+
+        $user = $request->user();
+        if ($playlist->user_id !== $user->id) return err(403);
+
+        $request->validate([
+            'name' => 'nullable|string|min:1',
+            'cover' => 'nullable|image|max:2048',
+            'description' => 'nullable|string',
+            'public' => 'boolean',
+        ]);
+
+        if ($request->filled('name')) {
+            $playlist->name = $request->input('name');
+        }
+
+        if ($request->has('description')) {
+            $desc = $request->input('description');
+            $playlist->description = $desc === '' ? null : $desc;
+        }
+
+        if ($request->has('public')) {
+            $playlist->public = (bool) $request->input('public');
+        }
+
+        if ($request->hasFile('cover')) {
+            if ($playlist->cover_url) {
+                $oldPath = str_replace('/storage/', '', $playlist->cover_url);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $path = $request->file('cover')->store('covers', 'public');
+            $playlist->cover_url = Storage::url($path);
+        }
+
+        $playlist->save();
+
+        return ok($playlist->loadCount('songs'));
+    }
+
+    /**
+     * Remove the specified resource.
      */
     public function destroy(Request $request, string $uuid)
     {
-        $playlist = Playlist::find($uuid);
-
-        if (!$playlist) {
-            return err(404);
-        }
+        $playlist = Playlist::where('uuid', $uuid)->first();
+        if (!$playlist) return err(404);
 
         $user = $request->user();
-
-        if (!$user) {
-            return err(401);
-        } else if ($playlist->user->username !== $user->username) { // <- this is stupid but i think the userid type conversion is messing it up
+        if ($playlist->user_id !== $user->id) {
             return err(403);
+        }
+
+        if ($playlist->cover_url) {
+            $oldPath = str_replace('/storage/', '', $playlist->cover_url);
+            Storage::disk('public')->delete($oldPath);
         }
 
         $playlist->delete();

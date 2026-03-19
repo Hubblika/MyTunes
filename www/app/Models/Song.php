@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Song extends Model
 {
+    use HasFactory;
+
     protected $table = 'songs';
 
     protected $primaryKey = 'uuid';
@@ -17,7 +20,8 @@ class Song extends Model
         'uuid',
         'title',
         'artist',
-        'url',
+        'album',
+        'file_name',
         'cover_url',
         'date',
         'duration',

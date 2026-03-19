@@ -13,53 +13,64 @@ class LikeController extends Controller
         $user = $request->user();
 
         $likes = UserLike::where('user_id', $user->id)
-            ->pluck('song_id');
+            ->orderBy('created_at', 'desc')
+            ->get(['song_id', 'created_at']);
 
-        return response()->json(['likes' => $likes]);
+        $likesData = $likes->map(function ($like) {
+            return [
+                'uuid' => $like->song_id,
+                'added_at' => $like->created_at,
+            ];
+        });
+
+        return response()->json([
+            'likes' => $likesData,
+        ]);
     }
 
     public function store(Request $request, string $uuid)
     {
         $user = $request->user();
 
-        $song = Song::where('uuid', $uuid)->firstOrFail();
+        Song::where('uuid', $uuid)->firstOrFail();
 
         UserLike::firstOrCreate([
             'user_id' => $user->id,
-            'song_id' => $song->uuid,
+            'song_id' => $uuid,
         ]);
 
         return response()->json([
-            'message' => 'Song liked'
-        ]);
+            'message' => 'Song liked',
+        ], 201);
     }
 
-    public function show(Request $request, $uuid)
+    public function show(Request $request, string $uuid)
     {
         $user = $request->user();
+
+        Song::where('uuid', $uuid)->firstOrFail();
 
         $liked = UserLike::where('user_id', $user->id)
             ->where('song_id', $uuid)
             ->exists();
 
-        return response()->json(['liked' => $liked]);
+        return response()->json([
+            'liked' => $liked,
+        ]);
     }
-
-
-
 
     public function destroy(Request $request, string $uuid)
     {
         $user = $request->user();
 
-        $song = Song::where('uuid', $uuid)->firstOrFail();
+        Song::where('uuid', $uuid)->firstOrFail();
 
         UserLike::where('user_id', $user->id)
-            ->where('song_id', $song->uuid)
+            ->where('song_id', $uuid)
             ->delete();
 
         return response()->json([
-            'message' => 'Song unliked'
+            'message' => 'Song unliked',
         ]);
     }
 }

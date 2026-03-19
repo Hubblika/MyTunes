@@ -3,135 +3,143 @@
 namespace App\Http\Controllers;
 
 use App\Models\Song;
-use Date;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Storage;
 
 class SongController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display all songs
      */
     public function index(Request $request)
     {
-        $query = $request->query('q');
-        
-        if (!$query) {
-            $songs = Song::all();
-            return ok($songs);
+        $query = $request->input('q');
+
+        $songsQuery = Song::query();
+
+        if ($query) {
+            $query = strtolower($query);
+            $songsQuery->where(function ($q) use ($query) {
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$query}%"])
+                    ->orWhereRaw('LOWER(artist) LIKE ?', ["%{$query}%"])
+                    ->orWhereRaw('LOWER(album) LIKE ?', ["%{$query}%"]);
+            });
         }
 
-        $cursor = $request->query('cursor');
-
-        $songs = Song::when($query, function ($q) use ($query) {
-            $q
-                ->where('title', 'like', '%'.$query.'%')
-                ->orWhere('genre', 'like', '%'.$query.'%');
-                // TODO: allow search to find song by artist name?
-                // ->orWhereHas('user', function ($q) use ($query) {
-                //     $q
-                //         ->where('is_searchable', true)
-                //         ->where('username', 'like', '%'.$query.'%');
-                // });
-        })
-            ->orderBy('updated_at')
-            ->cursorPaginate(LIMIT, ['*'], 'cursor', $cursor);
+        $songs = $songsQuery->orderBy('updated_at')->get();
 
         return response()->json([
-            'data' => $songs->items(),
-            'next_cursor' => optional($songs->nextCursor())->encode()
+            'data' => $songs->map(fn($song) => $this->transformSong($song)),
         ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created song
      */
     public function store(Request $request)
     {
         $user = $request->user();
+        if (!$user) return redirect()->back()->with('error', 'Unauthorized');
+        if (!$user->is_admin) return redirect()->back()->with('error', 'Forbidden');
 
-        if (!$user) {
-            return err(401);
-        } else if (!$user->is_admin) {
-            return err(403);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'artist' => 'required|string|max:255',
+            'album' => 'required|string|max:255',
+            'audio' => 'required|file|mimes:mp3',
+            'cover' => 'nullable|file|image',
+            'date' => 'required|date',
+            'duration' => 'required|integer',
+            'genre' => 'nullable|string|max:60',
+        ]);
+
+        $song = new Song();
+        $song->title = $request->input('title');
+        $song->artist = $request->input('artist');
+        $song->album = $request->input('album');
+        $song->date = $request->input('date');
+        $song->duration = $request->input('duration');
+        $song->genre = $request->input('genre');
+
+        $song->save();
+
+        if ($audioFile = $request->file('audio')) {
+            $fileName = "{$song->title}.mp3";
+            $audioFile->storeAs('songs', $fileName, 'local');
+            $song->file_name = $fileName;
         }
 
-        $audio = $request->file('audio');
-        // $cover = $request->file('cover');
 
-        $title = $request->input('title');
-        $date = $request->input('date');
-        $duration = $request->input('duration');
-        $genre = $request->input('genre');
-        $explicit = $request->input('is_explicit', false);
-
-        if (!$request->hasFile('audio') || !$audio) {
-            return err(400, ['field' => 'audio']);
-        } else if (!$title) {
-            return err(400, ['field' => 'title']);
-        } else if (!$date) {
-            return err(400, ['field' => 'date']);
-        } else if (!$duration) {
-            return err(400, ['field' => 'duration']);
+        if ($coverFile = $request->file('cover')) {
+            $coverFileName = "{$song->title}.jpg";
+            $coverPath = $coverFile->storeAs('songCovers', $coverFileName, 'public');
+            $song->cover_url = "/storage/{$coverPath}";
+        } else {
+            $song->cover_url = '/storage/default-cover.png';
         }
 
-        $uuid = Song::create([
-            'title' => $title,
-            'artist' => 'todo',
-            
-            // if uuid is generated automatically in `Song::boot` instead of here with `uuid_create()`, `$uuid` value isn't available to use here yet
-            'url' => /* '/storage/songs/'.$uuid.'/audio.mp3' */ '?',
-            'cover_url' => /* '/storage/songs/'.$uuid.'/cover.jpg' */ '?',
+        $song->save();
 
-            'date' => Date::parse($date),
-            'duration' => $duration,
-            'genre' => $genre,
-            // 'is_explicit' => $explicit
-        ])->getKey();
-
-        Storage::disk('public')->put('songs/'.$uuid.'.mp3', file_get_contents($audio));
-        // Storage::disk('public')->put('songs/'.$uuid.'/cover.png', file_get_contents($cover));
-
-        $song = Song::find($uuid);
-        return $request->acceptsJson() ? ok($song) : Inertia::render('Admin');
+        return redirect()->back()->with('success', 'Song uploaded successfully!');
     }
 
+
+
+
     /**
-     * Display the specified resource.
+     * Show a single song
      */
     public function show(string $uuid)
     {
         $song = Song::find($uuid);
-
         if (!$song) {
-            return err(404);
+            return response()->json(['error' => 'Song not found'], 404);
         }
 
-        return ok($song);
+        return response()->json($this->transformSong($song));
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $uuid)
-    {
-        // TODO
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Delete a song
      */
     public function destroy(Request $request, string $uuid)
     {
         $user = $request->user();
+        if (!$user) return response()->json(['error' => 'Unauthorized'], 401);
+        if (!$user->is_admin) return response()->json(['error' => 'Forbidden'], 403);
 
-        if (!$user) {
-            return err(401);
-        } else if (!$user->is_admin) {
-            return err(403);
+        $song = Song::find($uuid);
+        if (!$song) return response()->json(['error' => 'Song not found'], 404);
+
+        // Delete files from storage
+        Storage::disk('public')->delete($song->file_name);
+        if ($song->cover_url && !str_contains($song->cover_url, 'default-cover.png')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $song->cover_url));
         }
 
+        $song->delete();
+
         return response()->noContent();
+    }
+
+    /**
+     * Transform song model into API-ready array
+     */
+    protected function transformSong(Song $song): array
+    {
+        return [
+            'uuid' => $song->uuid,
+            'title' => $song->title,
+            'artist' => $song->artist,
+            'album' => $song->album,
+            'url' => route('songs.stream', $song->uuid), // streaming route
+            'cover_url' => $song->cover_url ?? '/storage/app/public/covers/default_cover.png',
+            'date' => $song->date,
+            'duration' => $song->duration,
+            'genre' => $song->genre,
+            'created_at' => $song->created_at?->toDateTimeString(),
+            'updated_at' => $song->updated_at?->toDateTimeString(),
+        ];
     }
 }

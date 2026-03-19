@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MainContent, PlaylistContent } from '@/components';
+import { MainContent, PlaylistContent, MobilePlaylistContent } from '@/components';
 import { MainLayout } from '@/layouts';
 
 defineOptions({
@@ -13,6 +13,12 @@ const props = defineProps<{
 
 <template>
     <MainContent>
-        <PlaylistContent :uuid="props.uuid" />
+        <div class="hidden lg:block">
+            <PlaylistContent :uuid="props.uuid" />
+        </div>
+
+        <div class="block lg:hidden">
+            <MobilePlaylistContent :uuid="props.uuid" />
+        </div>
     </MainContent>
 </template>

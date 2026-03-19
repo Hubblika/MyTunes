@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Playlist extends Model
 {
+
+    use HasFactory;
+
     protected $table = 'playlists';
 
     protected $primaryKey = 'uuid';
@@ -19,6 +23,7 @@ class Playlist extends Model
         'name',
         'description',
         'public',
+        'cover_url',
     ];
 
     protected static function boot(): void
@@ -47,7 +52,7 @@ class Playlist extends Model
             'playlist_songs',
             'playlist_id',
             'song_id'
-        )->withPivot('position')
+        )->withPivot('position', 'created_at')
          ->withTimestamps();
     }
 
@@ -58,6 +63,7 @@ class Playlist extends Model
             'name' => 'string',
             'description' => 'string',
             'public' => 'boolean',
+            'cover_url' => 'string',
         ];
     }
 }

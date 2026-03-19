@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
+            $table->string('cover_url')->nullable();
             $table->text('description')->nullable();
             $table->boolean('public')->default(true);
             $table->timestamps();

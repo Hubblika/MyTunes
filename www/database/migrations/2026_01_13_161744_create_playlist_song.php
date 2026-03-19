@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('playlist_songs', function (Blueprint $table) {
-            $table->uuid()->primary();
+            $table->id(); // Auto-increment integer primary key
             $table->foreignUuid('playlist_id')->references('uuid')->on('playlists')->onDelete('cascade');
             $table->foreignUuid('song_id')->references('uuid')->on('songs')->onDelete('cascade');
             $table->integer('position')->nullable();

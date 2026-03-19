@@ -1,6 +1,13 @@
 {
+    "The email field is required.": "Az e-mail mező kitöltése kötelező.",
+    "The password field is required.": "A jelszó mező kitöltése kötelező.",
+    "These credentials do not match our records.": "A megadott adatok nem egyeznek a rendszerünkben.",
+    "The password field must be at least 8 characters.": "A jelszónak legalább 8 karakterből kell állnia.",
+    "The password field confirmation does not match.": "A jelszó megerősítése nem egyezik.",
+    "The email has already been taken.": "Ez az e-mail cím már foglalt.",
     "generic": {
-        "cancel": "Mégsem"
+        "cancel": "Mégsem",
+        "save": "Mentés"
     },
     "login": {
         "title": "Bejelentkezés MyTunes-ba",
@@ -11,9 +18,10 @@
         "mainButton": "Bejelentkezés",
         "statusMessage": "Kérem, várjon...",
         "signUpText": "Nincs még fiókja?",
-        "signUpButton": "Regisztráció"
+        "signUpButton": "Regisztráció",
+        "rememberMe": "Emlékezz Rám",
+        "forgotPassword": "Elfelejtet Jelszó?"
     },
-
     "register": {
         "title": "Regisztráció MyTunes-ba",
         "emailLabel": "E-mail",
@@ -27,7 +35,13 @@
         "loginText": "Már van fiókja?",
         "loginButton": "Bejelentkezés"
     },
-
+    "forgotPassword": {
+        "title": "Jelszó visszaállítása",
+        "description": "Adja meg az e-mail címét és kövesse az e-mailben kapott utasításokat a jelszó visszaállításához.",
+        "submitButton": "Küldés",
+        "backToLogin": "Vissza a bejelentkezéshez",
+        "sending": "Küldés..."
+    },
     "header": {
         "searchbar": "Keresés",
         "downloadButton": "Alkalmazás letöltése",
@@ -35,28 +49,30 @@
         "settingButton": "Beállítások",
         "logoutButton": "Kijelentkezés"
     },
-
     "sidebar": {
         "title": "Zenéim",
         "searchbar": "Keresés",
         "likedSongs": "Kedvelt Zenéim",
         "playlistNumber": "zene",
         "deletePlaylistButton": "Lejátszási lista törlése",
-        "renamePlaylistButton": "Lejátszási lista átnevezése"
+        "editPlaylistButton": "Lejátszási lista szerkezszése",
+        "newPlaylistDefaultName": "Új lejátszási lista"
     },
-
-     "toolbar": {
+    "toolbar": {
         "songTitle": "Zene címe",
-        "artistName": "Előadó neve"
+        "artistName": "Előadó neve",
+        "nowPlaying": "Műsoron"
     },
-
     "settings": {
         "title": "Általános Beállítások",
-        "themeTitle": "Téma - váltás világos és sötét téma között",
+        "themeTitle": "Téma",
+        "themeDescription": "váltás világos és sötét téma között",
         "darkTheme": "Sötét",
         "lightTheme": "Világos",
-        "languageTitle": "Nyelv - az applikáció nyelvének váltása (Magyar/Angol)",
-        "languageLabel": "Magyar"
+        "languageTitle": "Nyelv",
+        "languageDescription": "az applikáció nyelvének váltása (Magyar/Angol)",
+        "languageLabel": "Magyar",
+        "logout": "Kijelentkezés"
     },
     "queue": {
         "title": "Műsor",
@@ -65,10 +81,85 @@
     },
     "playlist": {
         "likedTitle": "Kedvelt Dalok",
-        "likedNumber": "dal",
+        "likedNumber": "zene",
         "headerTitle": "Cím",
         "headerAlbum": "Album",
         "headerAddedAt": "Felvétel dátuma",
         "headerDuration": "Időtartam"
+    },
+    "songCard": {
+        "today": "ma",
+        "yesterday": "tegnap",
+        "days_ago": "{count} napja",
+        "like": "Hozzáadás a kedvencekhez",
+        "unlike": "Eltávolítás a kedvencek közül",
+        "addToPlaylist": "Hozzáadás lejátszási listához",
+        "addToQueue": "Műsorra tűzés",
+        "noPlaylistsAvailable": "Nincs elérhető lejátszási lista",
+        "removeSong": "Zene eltávolítása a lejátszási listából"
+    },
+    "tooltip": {
+        "like": "Hozzáadás a kedvelt dalokhoz",
+        "unlike": "Eltávolítás a kedvelt dalokból",
+        "enableShuffle": "Véletlen sorrend engedélyezése",
+        "disableShuffle": "Véletlen sorrend letiltása",
+        "previous": "Előző",
+        "play": "Lejátszás",
+        "pause": "Szünet",
+        "next": "Következő",
+        "enableLoop": "Ismétlés engedélyezése",
+        "disableLoop": "Ismétlés letiltása",
+        "lyrics": "Dalszöveg",
+        "queue": "Műsor",
+        "mute": "Néma",
+        "unmute": "Némítás visszavonása",
+        "home": "Főoldal",
+        "moreOptions": "További lehetőségek",
+        "addPlaylist": "Lejátszási lista hozzáadása"
+    },
+    "search": {
+        "noResult": "Nincs a keresésnek megfelelő zene."
+    },
+    "modal": {
+        "title": "Lejátszási lista szerkesztése",
+        "charactersLeft": "karakter maradt",
+        "playlistNamePlaceholder": "Lejátszási lista neve",
+        "playlistDescriptionPlaceholder": "Leírás"
+    },
+    "admin": {
+        "title": "Adminisztrátori felület",
+        "songUpload": "Zene feltöltése",
+        "uploadTitle": "Új zene feltöltése",
+        "titleLabel": "Cím",
+        "artistLabel": "Előadó",
+        "albumLabel": "Album",
+        "releaseDateLabel": "Kiadás dátuma",
+        "DurationLabel": "Időtartam (másodpercben)",
+        "genreLabel": "Műfaj",
+        "audioFileLabel": "Audio fájl",
+        "chooseAudio": "Válasszon egy audio fájlt",
+        "coverFileLabel": "Borítókép",
+        "chooseCover": "Válasszon egy borítóképet",
+        "uploading": "Feltöltés folyamatban...",
+        "submitButton": "Feltöltés",
+        "songUploadSuccess": "Zene sikeresen feltöltve!",
+        "validation": {
+            "required": "Ezt a mezőt kötelező kitölteni",
+            "audioRequired": "Kérjük, válasszon egy audio fájlt",
+            "coverRequired": "Kérjük, válasszon egy borítóképet",
+            "invalidDate": "Kérjük, adjon meg egy érvényes dátumot",
+            "invalidDuration": "Az időtartamnak pozitív számnak kell lennie"
+        },
+
+        "editPermissions": "Jogosultságok szerkesztése",
+        "loadingMessage": "Betöltés...",
+        "permissionsTitle": "Jogosultságok szerkesztése",
+        "saveButton": "Mentés",
+        "permissionUpdateSuccess": "Jogosultságok sikeresen elmentve!",
+        "admin.permissionsUpdateError": "Hiba a jogosultságok mentésekor!"
+    },
+    "playlistEditModal": {
+        "playlistName": "Lejátszási lista neve",
+        "description": "Leírás"
     }
 }

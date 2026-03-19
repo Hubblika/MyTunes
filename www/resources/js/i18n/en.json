@@ -1,6 +1,13 @@
 {
+    "The email field is required.": "The email field is required.",
+    "The password field is required.": "The password field is required.",
+    "These credentials do not match our records.": "These credentials do not match our records.",
+    "The password field must be at least 8 characters.": "The password field must be at least 8 characters.",
+    "The password field confirmation does not match.": "The password field confirmation does not match.",
+    "The email has already been taken.": "The email has already been taken.",
     "generic": {
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "save": "Save"
     },
     "login": {
         "title": "Log in to MyTunes",
@@ -11,9 +18,10 @@
         "mainButton": "Log In",
         "statusMessage": "Please wait...",
         "signUpText": "Don't have an account?",
-        "signUpButton": "Sign Up"
+        "signUpButton": "Sign Up",
+        "rememberMe": "Remember Me",
+        "forgotPassword": "Forgot Password?"
     },
-
     "register": {
         "title": "Sign up for MyTunes",
         "emailLabel": "Email",
@@ -27,36 +35,44 @@
         "loginText": "Already have an account?",
         "loginButton": "Log In"
     },
-
+    "forgotPassword": {
+        "title": "Reset password",
+        "description": "Enter your email below and follow the instructions to reset your password",
+        "submitButton": "Submit",
+        "backToLogin": "Back to login",
+        "sending": "Sending..."
+    },
     "header": {
         "searchbar": "Search",
         "downloadButton": "Download the desktop app",
         "profileButton": "Profile",
         "settingButton": "Settings",
         "logoutButton": "Logout"
-    }, 
-
+    },
     "sidebar": {
         "title": "My music",
         "searchbar": "Search",
         "likedSongs": "Liked Songs",
         "playlistNumber": "songs",
         "deletePlaylistButton": "Delete playlist",
-        "renamePlaylistButton": "Rename playlist"
+        "editPlaylistButton": "Edit playlist",
+        "newPlaylistDefaultName": "New Playlist"
     },
-
     "toolbar": {
         "songTitle": "Song Title",
-        "artistName": "Artist Name"
+        "artistName": "Artist Name",
+        "nowPlaying": "Now Playing"
     },
-
     "settings": {
         "title": "General Settings",
-        "themeTitle": "Theme - switch between light and dark mode",
+        "themeTitle": "Theme",
+        "themeDescription": "switch between light and dark mode",
         "darkTheme": "Dark",
         "lightTheme": "Light",
-        "languageTitle": "Language - switch app language (Hungarian/English)",
-        "languageLabel": "English"
+        "languageTitle": "Language",
+        "languageDescription": "switch app language (Hungarian/English)",
+        "languageLabel": "English",
+        "logout": "Logout"
     },
     "queue": {
         "title": "Queue",
@@ -70,5 +86,80 @@
         "headerAlbum": "Album",
         "headerAddedAt": "Added at",
         "headerDuration": "Duration"
+    },
+    "songCard": {
+        "today": "today",
+        "yesterday": "yesterday",
+        "days_ago": "{count} days ago",
+        "like": "Like",
+        "unlike": "Unlike",
+        "addToPlaylist": "Add to playlist",
+        "addToQueue": "Add to queue",
+        "noPlaylistsAvailable": "No playlist avaliable",
+        "removeSong": "Remove song from playlist"
+    },
+    "tooltip": {
+        "like": "Like",
+        "unlike": "Unlike",
+        "enableShuffle": "Enable shuffle",
+        "disableShuffle": "Disable shuffle",
+        "previous": "Previous",
+        "play": "Play",
+        "pause": "Pause",
+        "next": "Next",
+        "enableLoop": "Enable loop",
+        "disableLoop": "Disable loop",
+        "lyrics": "Lirycs",
+        "queue": "Queue",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "home": "Home",
+        "moreOptions": "More options",
+        "addPlaylist": "Add new playlist"
+    },
+    "search": {
+        "noResult": "No songs found."
+    },
+    "modal": {
+        "title": "Edit playlist",
+        "charactersLeft": "characters left",
+        "playlistNamePlaceholder": "Playlist Name",
+        "playlistDescriptionPlaceholder": "Description"
+    },
+    "admin": {
+        "title": "Admin Dashboard",
+        "songUpload": "Upload Song",
+        "uploadTitle": "Upload a new song",
+        "titleLabel": "Title",
+        "artistLabel": "Artist",
+        "albumLabel": "Album",
+        "releaseDateLabel": "Release Date",
+        "DurationLabel": "Duration (in seconds)",
+        "genreLabel": "Genre",
+        "audioFileLabel": "Audio File",
+        "chooseAudio": "Choose an audio file",
+        "coverFileLabel": "Cover Image",
+        "chooseCover": "Choose a cover image",
+        "uploading": "Uploading...",
+        "submitButton": "Upload",
+        "songUploadSuccess": "Song uploaded successfully!",
+        "validation": {
+            "required": "This field is required",
+            "audioRequired": "Please select an audio file",
+            "coverRequired": "Please select a cover image",
+            "invalidDate": "Please enter a valid date",
+            "invalidDuration": "Duration must be a positive number"
+        },
+
+        "editPermissions": "Edit permissions",
+        "loadingMessage": "Loading...",
+        "permissionsTitle": "Edit permissions",
+        "saveButton": "Save",
+        "permissionUpdateSuccess": "Save successful!",
+        "admin.permissionsUpdateError": "An error occured during the save!"
+    },
+    "playlistEditModal": {
+        "playlistName": "Playlist name",
+        "description": "Description"
     }
 }

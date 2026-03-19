@@ -4,19 +4,19 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
+    use HasFactory;
 
-    protected $keyType = 'string';       // UUID
-    public $incrementing = false;        // Not auto-incrementing
     protected $fillable = [
-        'username', 'email', 'password', 'is_admin', 'is_searchable', 'description'
+        'username', 'email', 'password', 'is_admin', 'is_searchable', 'description',
     ];
 
     protected $hidden = [
-        'is_admin',
         'is_searchable',
         'password',
         'two_factor_secret',

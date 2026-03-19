@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, useTemplateRef, watch } from 'vue';
-import { ClassValue } from 'clsx';
 import { icons as tabler } from '@iconify-json/tabler';
+import { ClassValue } from 'clsx';
 
 const {
     name,
@@ -13,14 +13,15 @@ const {
 
 const svg = useTemplateRef('svg');
 
+watch(() => name, setIcon);
+
+onMounted(() => setIcon(name));
+
 function setIcon(name: string) {
     if (svg.value) {
         svg.value.innerHTML = tabler.icons[name].body;
     }
 }
-
-onMounted(() => setIcon(name));
-watch(() => name, setIcon);
 </script>
 
 <template>
