@@ -202,8 +202,7 @@ export const usePlayerStore = defineStore("player", {
         async fetchLikedSongs() {
             try {
                 const res = await axios.get("/likes");
-                const likedData: { uuid: string; added_at: string }[] =
-                    res.data.likes || [];
+                const likedData: { uuid: string; added_at: string }[] = res.data.likes || [];
 
                 if (!likedData.length) {
                     this.likedSongs = [];
@@ -211,15 +210,21 @@ export const usePlayerStore = defineStore("player", {
                 }
 
                 const requests = likedData.map((item) =>
-                    axios.get(`/songs/${item.uuid}`),
+                    axios.get(`/songs/${item.uuid}`)
                 );
+
                 const responses = await Promise.all(requests);
 
                 this.likedSongs = responses
                     .map((r, i) => {
                         const song = r.data;
                         if (!song) return null;
-                        return { ...song, added_at: likedData[i].added_at };
+
+                        return {
+                            ...song,
+                            added_at: likedData[i].added_at,
+                            url: song.url || `http://localhost:8000/stream/${song.uuid}`
+                        };
                     })
                     .filter(Boolean) as _Song[];
 
@@ -321,24 +326,15 @@ export const usePlayerStore = defineStore("player", {
         ) {
             try {
                 console.log(payload)
-                // We use FormData because we are sending a File (binary data)
                 const formData = new FormData();
 
-                /**
-                 * THE DOCKER/PHP FIX:
-                 * PHP only populates $_FILES and $_POST for POST requests.
-                 * To perform a PUT request with files, we send a POST and 
-                 * tell Laravel to "spoof" the PUT method.
-                 */
                 formData.append("_method", "PUT");
 
-                // Append only the data that exists in the payload
                 if (payload.name) {
                     formData.append("name", payload.name);
                 }
 
                 if (payload.description !== undefined) {
-                    // If description is empty string, we still want to send it to clear it
                     formData.append("description", payload.description);
                 }
 
@@ -357,7 +353,6 @@ export const usePlayerStore = defineStore("player", {
                     },
                 );
 
-                // Update the local state/cache
                 const pl = this.playlists.get(uuid);
                 if (pl && data.data) {
                     const updated: _Playlist = {
@@ -375,7 +370,6 @@ export const usePlayerStore = defineStore("player", {
 
                 return data.data;
             } catch (err) {
-                // Log the error for debugging
                 console.error("Failed to update playlist:", err);
                 return null;
             }
@@ -419,6 +413,7 @@ export const usePlayerStore = defineStore("player", {
                 const songs = res.data.map((song: any) => ({
                     ...song,
                     added_at: song.pivot?.created_at,
+                    url: `http://localhost:8000/stream/${song.uuid}`
                 })) as _Song[];
 
                 const pl = this.playlists.get(uuid);
