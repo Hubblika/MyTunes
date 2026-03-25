@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Song;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
 
 class SongController extends Controller
 {
@@ -112,7 +111,6 @@ class SongController extends Controller
         $song = Song::find($uuid);
         if (!$song) return response()->json(['error' => 'Song not found'], 404);
 
-        // Delete files from storage
         Storage::disk('public')->delete($song->file_name);
         if ($song->cover_url && !str_contains($song->cover_url, 'default-cover.png')) {
             Storage::disk('public')->delete(str_replace('/storage/', '', $song->cover_url));
@@ -133,7 +131,7 @@ class SongController extends Controller
             'title' => $song->title,
             'artist' => $song->artist,
             'album' => $song->album,
-            'url' => route('songs.stream', $song->uuid), // streaming route
+            'url' => route('songs.stream', $song->uuid),
             'cover_url' => $song->cover_url ?? '/storage/app/public/covers/default_cover.png',
             'date' => $song->date,
             'duration' => $song->duration,

@@ -17,16 +17,6 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        // Creating users is handled by laravel
-        return response()->noContent();
-    }
-
     /**
      * Display the specified resource.
      */
@@ -39,14 +29,6 @@ class UserController extends Controller
         }
 
         return ok($user);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        // TODO
     }
 
     /**

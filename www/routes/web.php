@@ -58,7 +58,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/likes/{uuid}', [LikeController::class, 'destroy']);
 
     Route::get('/users/{id}', [UserController::class, 'show']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
     Route::middleware('can:admin')->group(function () {
