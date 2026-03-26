@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { MobilePlaylistSong, Icon, PlaylistEditModal, Button } from "./common";
-import { _Playlist } from "@/types";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { usePlayerStore } from "@/stores/player";
 import { router } from "@inertiajs/vue3";
+import { _Playlist } from "@/types";
+
 
 
 const props = defineProps<{ uuid: string }>();
@@ -19,15 +20,30 @@ const dropdownOpen = ref(false);
 const renamingModal = ref(false);
 const renameInput = ref("");
 const coverFile = ref<File | null>(null);
-const DISABLED_UUID = '00000000-0000-0000-0000-000000000000'
+const DISABLED_UUID = '00000000-0000-0000-0000-000000000000';
 
-const canEditPlaylist = computed(() => props.uuid !== DISABLED_UUID)
+const canEditPlaylist = computed(() => props.uuid !== DISABLED_UUID);
 
 const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
         dropdownOpen.value = false;
     }
 };
+
+onMounted(async () => {
+    document.addEventListener("click", handleClickOutside);
+
+    if (props.uuid === "00000000-0000-0000-0000-000000000000") {
+        await player.fetchLikedSongs();
+    } else {
+        await player.fetchPlaylist(props.uuid);
+        await player.fetchPlaylistSongs(props.uuid);
+    }
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener("click", handleClickOutside);
+});
 
 async function play() {
     const isLikedPlaylist = props.uuid === "00000000-0000-0000-0000-000000000000";
@@ -63,21 +79,6 @@ async function deleteCurrentPlaylist() {
     const success = await player.deletePlaylistAPI(playlist.value.uuid);
     if (success) router.visit("/");
 }
-
-onMounted(async () => {
-    document.addEventListener("click", handleClickOutside);
-
-    if (props.uuid === "00000000-0000-0000-0000-000000000000") {
-        await player.fetchLikedSongs();
-    } else {
-        await player.fetchPlaylist(props.uuid);
-        await player.fetchPlaylistSongs(props.uuid);
-    }
-});
-
-onBeforeUnmount(() => {
-    document.removeEventListener("click", handleClickOutside);
-});
 </script>
 
 <template>

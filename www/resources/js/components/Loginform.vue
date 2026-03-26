@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import { Form, router } from '@inertiajs/vue3'
-import { Input, PrimaryButton, TextLink } from './common'
-import { store as loginStore } from '@/routes/login'
-import { store as registerStore } from '@/routes/register'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { store as registerStore } from '@/routes/register';
+import { Input, PrimaryButton, TextLink } from './common';
+import { store as loginStore } from '@/routes/login';
+import { Form, router } from '@inertiajs/vue3';
 
 const { register } = defineProps<{
     register?: boolean
-}>()
+}>();
 
-const password = ref('')
-const password2 = ref('')
-const remember = ref(false)
-const logoSrc = ref('')
+const password = ref('');
+const password2 = ref('');
+const remember = ref(false);
+const logoSrc = ref('');
 
-const currentStore = computed(() => register ? registerStore : loginStore)
-
-function updateLogo() {
-    const isDark = document.documentElement.classList.contains('dark')
-    logoSrc.value = isDark
-        ? '/uploads/logos/logo_dark.svg'
-        : '/uploads/logos/logo_light.svg'
-}
-
-let observer: MutationObserver | null = null
+const currentStore = computed(() => register ? registerStore : loginStore);
 
 onMounted(() => {
-    updateLogo()
-    observer = new MutationObserver(updateLogo)
+    updateLogo();
+    observer = new MutationObserver(updateLogo);
     observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['class'],
-    })
-})
+    });
+});
 
 onBeforeUnmount(() => {
-    observer?.disconnect()
+    observer?.disconnect();
 })
+
+function updateLogo() {
+    const isDark = document.documentElement.classList.contains('dark');
+    logoSrc.value = isDark
+        ? '/uploads/logos/logo_dark.svg'
+        : '/uploads/logos/logo_light.svg';
+}
+
+let observer: MutationObserver | null = null;
 </script>
 
 <template>

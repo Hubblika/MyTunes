@@ -155,7 +155,7 @@
         "loadingMessage": "Betöltés...",
         "permissionsTitle": "Jogosultságok szerkesztése",
         "saveButton": "Mentés",
-        "permissionUpdateSuccess": "Jogosultságok sikeresen elmentve!",
+        "permissionsUpdateSuccess": "Jogosultságok sikeresen elmentve!",
         "admin.permissionsUpdateError": "Hiba a jogosultságok mentésekor!"
     },
     "playlistEditModal": {

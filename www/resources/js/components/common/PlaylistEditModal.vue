@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { Button, Icon } from '.'
+import { ref, computed, watch } from 'vue';
+import { Button, Icon } from '.';
 
 const props = defineProps({
     modelValue: { type: Boolean, required: true },
@@ -8,7 +8,7 @@ const props = defineProps({
     nameValue: { type: String, required: true },
     descriptionValue: { type: String, default: '' },
     coverUrl: { type: String, default: '' }
-})
+});
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
@@ -17,60 +17,61 @@ const emit = defineEmits<{
     (e: 'update:coverFile', value: File | null): void
     (e: 'save'): void
     (e: 'cancel'): void
-}>()
+}>();
 
-const localName = ref(props.nameValue)
-const localDescription = ref(props.descriptionValue)
-const localCover = ref<File | null>(null)
-const coverPreview = ref<string | null>(props.coverUrl)
+const localName = ref(props.nameValue);
+const localDescription = ref(props.descriptionValue);
+const localCover = ref<File | null>(null);
+const coverPreview = ref<string | null>(props.coverUrl);
 
-const MAX_NAME_LENGTH = 50
-const MAX_DESCRIPTION_LENGTH = 200
-const WARNING_THRESHOLD = 10
+const MAX_NAME_LENGTH = 50;
+const MAX_DESCRIPTION_LENGTH = 200;
+const WARNING_THRESHOLD = 10;
 
-watch(() => props.nameValue, (newVal) => localName.value = newVal)
-watch(() => props.descriptionValue, (newVal) => localDescription.value = newVal)
-watch(() => props.coverUrl, (newVal) => coverPreview.value = newVal)
+watch(() => props.nameValue, (newVal) => localName.value = newVal);
+watch(() => props.descriptionValue, (newVal) => localDescription.value = newVal);
+watch(() => props.coverUrl, (newVal) => coverPreview.value = newVal);
 
 watch(localName, (val) => {
-    if (val.length > MAX_NAME_LENGTH) localName.value = val.slice(0, MAX_NAME_LENGTH)
-})
-watch(localDescription, (val) => {
-    if (val.length > MAX_DESCRIPTION_LENGTH) localDescription.value = val.slice(0, MAX_DESCRIPTION_LENGTH)
-})
+    if (val.length > MAX_NAME_LENGTH) localName.value = val.slice(0, MAX_NAME_LENGTH);
+});
 
-const nameCharsLeft = computed(() => MAX_NAME_LENGTH - localName.value.length)
-const descriptionCharsLeft = computed(() => MAX_DESCRIPTION_LENGTH - localDescription.value.length)
+watch(localDescription, (val) => {
+    if (val.length > MAX_DESCRIPTION_LENGTH) localDescription.value = val.slice(0, MAX_DESCRIPTION_LENGTH);
+});
+
+const nameCharsLeft = computed(() => MAX_NAME_LENGTH - localName.value.length);
+const descriptionCharsLeft = computed(() => MAX_DESCRIPTION_LENGTH - localDescription.value.length);
 
 const nameCounterColor = computed(() => {
-    if (nameCharsLeft.value <= 0) return 'text-red-500'
-    if (nameCharsLeft.value <= WARNING_THRESHOLD) return 'text-yellow-400'
-    return 'text-gray-500 dark:text-gray-400'
-})
+    if (nameCharsLeft.value <= 0) return 'text-red-500';
+    if (nameCharsLeft.value <= WARNING_THRESHOLD) return 'text-yellow-400';
+    return 'text-gray-500 dark:text-gray-400';
+});
 
 const descriptionCounterColor = computed(() => {
-    if (descriptionCharsLeft.value <= 0) return 'text-red-500'
-    if (descriptionCharsLeft.value <= WARNING_THRESHOLD) return 'text-yellow-400'
-    return 'text-gray-500 dark:text-gray-400'
-})
+    if (descriptionCharsLeft.value <= 0) return 'text-red-500';
+    if (descriptionCharsLeft.value <= WARNING_THRESHOLD) return 'text-yellow-400';
+    return 'text-gray-500 dark:text-gray-400';
+});
 
 function onCoverSelected(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0] ?? null
-    localCover.value = file
-    if (file) coverPreview.value = URL.createObjectURL(file)
+    const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+    localCover.value = file;
+    if (file) coverPreview.value = URL.createObjectURL(file);
 }
 
 function save() {
-    emit('update:nameValue', localName.value)
-    emit('update:descriptionValue', localDescription.value)
-    emit('update:coverFile', localCover.value)
-    emit('save')
-    emit('update:modelValue', false)
+    emit('update:nameValue', localName.value);
+    emit('update:descriptionValue', localDescription.value);
+    emit('update:coverFile', localCover.value);
+    emit('save');
+    emit('update:modelValue', false);
 }
 
 function cancel() {
-    emit('cancel')
-    emit('update:modelValue', false)
+    emit('cancel');
+    emit('update:modelValue', false);
 }
 </script>
 

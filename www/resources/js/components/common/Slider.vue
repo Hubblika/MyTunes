@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const emit = defineEmits<{
   (e: 'update:modelValue', value: number): void
-}>()
+}>();
 
 defineProps<{
   modelValue: number
   max: number
-}>()
+}>();
 </script>
 
 <template>

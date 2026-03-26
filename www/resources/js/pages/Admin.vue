@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
-import { Layout } from '@/layouts'
-import { Button, Icon } from '@/components/common'
-import { SongUploadForm, EditPermission } from '@/components'
+import { SongUploadForm, EditPermission } from '@/components';
+import { Button, Icon } from '@/components/common';
+import { router } from '@inertiajs/vue3';
+import { Layout } from '@/layouts';
+import { ref } from 'vue';
 
-const showUploadForm = ref(false)
-const showEditPermission = ref(false)
+const showUploadForm = ref(false);
+const showEditPermission = ref(false);
 
 const handleClose = () => {
     if (showUploadForm.value) {
-        showUploadForm.value = false
+        showUploadForm.value = false;
     } 
     else if (showEditPermission.value) {
-        showEditPermission.value = false
+        showEditPermission.value = false;
     } else {
-        router.visit('/')
+        router.visit('/');
     }
 }
 </script>

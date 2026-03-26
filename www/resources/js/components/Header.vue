@@ -65,15 +65,15 @@ async function getUser() {
 onMounted(async () => {
     updateLogo();
     document.addEventListener('click', handleClickOutside);
-    await getUser()
+    await getUser();
 
     const observer = new MutationObserver(updateLogo);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 });
 
 onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside)
-})
+    document.removeEventListener('click', handleClickOutside);
+});
 
 </script>
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3'
-import { Input, PrimaryButton } from '@/components/common'
-import { useI18n } from 'vue-i18n'
+import { Input, PrimaryButton } from '@/components/common';
+import { useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const form = useForm({
     title: '',

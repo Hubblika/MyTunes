@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useForm } from '@inertiajs/vue3'
-import { Input, PrimaryButton } from '@/components/common'
-import { Layout } from '@/layouts'
+import { Input, PrimaryButton } from '@/components/common';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import { Layout } from '@/layouts';
 
 defineOptions({
     layout: Layout,
@@ -11,43 +11,43 @@ defineOptions({
 const props = defineProps<{
     email: string
     token: string
-}>()
+}>();
 
 const form = useForm({
     token: props.token,
     email: props.email,
     password: '',
     password_confirmation: '',
-})
+});
 
-const logoSrc = ref('')
+const logoSrc = ref('');
 
 function updateLogo() {
-    const isDark = document.documentElement.classList.contains('dark')
+    const isDark = document.documentElement.classList.contains('dark');
     logoSrc.value = isDark
         ? '/uploads/logos/logo_dark.svg'
-        : '/uploads/logos/logo_light.svg'
+        : '/uploads/logos/logo_light.svg';
 }
 
-let observer: MutationObserver | null = null
+let observer: MutationObserver | null = null;
 
 onMounted(() => {
-    updateLogo()
-    observer = new MutationObserver(updateLogo)
+    updateLogo();
+    observer = new MutationObserver(updateLogo);
     observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['class'],
-    })
-})
+    });
+});
 
 onBeforeUnmount(() => {
-    observer?.disconnect()
+    observer?.disconnect();
 })
 
 const submit = () => {
     form.post('/reset-password', {
         onFinish: () => form.reset('password', 'password_confirmation'),
-    })
+    });
 }
 </script>
 

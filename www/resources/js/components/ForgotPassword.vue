@@ -1,37 +1,38 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useForm, router } from '@inertiajs/vue3'
-import { Input, PrimaryButton, TextLink } from './common'
+import { Input, PrimaryButton, TextLink } from './common';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useForm, router } from '@inertiajs/vue3';
 
-defineProps<{ status?: string }>()
+defineProps<{ status?: string }>();
 
 const form = useForm({
     email: '',
 })
 
-const logoSrc = ref('')
-
-function updateLogo() {
-    const isDark = document.documentElement.classList.contains('dark')
-    logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg'
-}
-
-let observer: MutationObserver | null = null
+const logoSrc = ref('');
 
 onMounted(() => {
-    updateLogo()
-    observer = new MutationObserver(updateLogo)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    updateLogo();
+    observer = new MutationObserver(updateLogo);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 })
 
-onBeforeUnmount(() => observer?.disconnect())
+onBeforeUnmount(() => observer?.disconnect());
+
+function updateLogo() {
+    const isDark = document.documentElement.classList.contains('dark');
+    logoSrc.value = isDark ? '/uploads/logos/logo_dark.svg' : '/uploads/logos/logo_light.svg';
+}
+
+let observer: MutationObserver | null = null;
+
 
 const submit = () => {
     form.post('/forgot-password', {
         onSuccess: () => {
             router.get('/login');
         },
-    })
+    });
 }
 </script>
 

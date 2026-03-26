@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
 import { Searchbar, PlaylistCard, Button, Icon } from './common';
 import { usePage, router } from '@inertiajs/vue3';
 import { usePlayerStore } from '@/stores/player';
+import { onMounted, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n'
 import { _Playlist } from '@/types';
 
 const page = usePage();
 const player = usePlayerStore();
-const { t } = useI18n()
+const { t } = useI18n();
 
 const playlists = ref<_Playlist[]>([]);
 const searchQuery = ref('');

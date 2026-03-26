@@ -1,55 +1,55 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { useForm } from '@inertiajs/vue3'
-import { PrimaryButton, ToggleSwitch } from '@/components/common'
-import { useI18n } from 'vue-i18n'
+import { PrimaryButton, ToggleSwitch } from '@/components/common';
+import { useForm } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 
 interface User {
     id: number
     email: string
     is_admin: boolean
-}
+};
 
 const form = useForm<{ users: User[] }>({
     users: [],
-})
+});
 
-const loading = ref(false)
-const error = ref('')
-const { t } = useI18n()
+const loading = ref(false);
+const error = ref('');
+const { t } = useI18n();
+
+onMounted(async () => {
+    await fetchUsers();
+});
 
 async function fetchUsers() {
-    loading.value = true
-    error.value = ''
+    loading.value = true;
+    error.value = '';
     try {
-        const response = await axios.get('/users')
-        form.users = response.data.data ?? response.data
+        const response = await axios.get('/users');
+        form.users = response.data.data ?? response.data;
     } catch (err) {
-        error.value = 'Failed to load users.'
-        console.error(err)
+        error.value = 'Failed to load users.';
+        console.error(err);
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 
 
 async function submit() {
-    form.processing = true
+    form.processing = true;
     try {
-        await axios.put('/admin', { users: form.users })
-        alert(t('admin.permissionsUpdateSuccess'))
+        await axios.put('/admin', { users: form.users });
+        alert(t('admin.permissionsUpdateSuccess'));
     } catch (err) {
-        console.error(err)
-        alert(t('admin.permissionsUpdateError'))
+        console.error(err);
+        alert(t('admin.permissionsUpdateError'));
     } finally {
-        form.processing = false
+        form.processing = false;
     }
 }
-
-onMounted(async () => {
-    await fetchUsers()
-})
 </script>
 
 <template>

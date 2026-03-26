@@ -1,6 +1,6 @@
-import { defineStore } from "pinia";
-import type { _Song } from "@/types";
 import type { _Playlist } from "@/types";
+import type { _Song } from "@/types";
+import { defineStore } from "pinia";
 import axios from "axios";
 
 export const usePlayerStore = defineStore("player", {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
 import { usePlayerStore } from "@/stores/player";
 import QueueSong from "./common/QueueSong.vue";
+import { storeToRefs } from "pinia";
 
 const player = usePlayerStore();
 const { queue } = storeToRefs(player);
@@ -25,7 +25,7 @@ const { queue } = storeToRefs(player);
             <div class="justify-self-end">{{ $t('queue.headerDuration') }}</div>
         </div>
 
-        <div class="flex flex-col overflow-y-auto">
+        <div class="flex flex-col overflow-y-auto pb-32">
             <QueueSong v-for="(song, index) in queue" :key="song.uuid" :index="index + 1" :song="song" />
         </div>
     </section>

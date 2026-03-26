@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { Icon } from '@/components/common'
-import { router } from '@inertiajs/vue3'
+import { Icon } from '@/components/common';
+import { router } from '@inertiajs/vue3';
 
 function goHome() {
-    router.get('/')
+    router.get('/');
 }
 
 function goSearch() {
-    router.get('/search')
+    router.get('/search');
 }
 
 function goLibrary() {
-    router.get('/library')
+    router.get('/library');
 }
 
 function goSettings() {
-    router.get('/settings')
+    router.get('/settings');
 }
 </script>
 

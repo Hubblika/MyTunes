@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ToggleSwitch, Icon, Button } from './common';
 import { ref, watch, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { router } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 
 const { locale } = useI18n();
 

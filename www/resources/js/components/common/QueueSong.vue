@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { Icon } from '.'
+import { usePlayerStore } from '@/stores/player';
 import { _Song } from '@/types';
-import { usePlayerStore } from '@/stores/player'
+import { Icon } from '.';
 
 const props = defineProps<{
     index: number;
     song: _Song;
-}>()
+}>();
 
-const player = usePlayerStore()
+const player = usePlayerStore();
 
 async function play() {
-    const current = player.currentTrack
-    player.currentPlaylist = null
+    const current = player.currentTrack;
+    player.currentPlaylist = null;
 
     if (!current || current.uuid !== props.song.uuid) {
-        await player.playSong(props.song)
+        await player.playSong(props.song);
     } else {
-        await player.togglePlay()
+        await player.togglePlay();
     }
 }
 
 function formatDuration(seconds: number) {
-    const m = Math.floor(seconds / 60)
-    const s = seconds % 60
-    return `${m}:${s.toString().padStart(2, "0")}`
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
 }
 </script>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Button } from '.';
 import { ButtonProps } from '@/types';
+import { Button } from '.';
 
 const {
     type = 'button',

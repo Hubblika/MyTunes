@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { usePlayerStore } from '@/stores/player'
-import { Button, Icon, Slider } from '@/components/common'
-import { router } from '@inertiajs/vue3'
+import { Button, Icon, Slider } from '@/components/common';
+import { usePlayerStore } from '@/stores/player';
+import { router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
-const player = usePlayerStore()
-const isVisible = ref(false)
-const hasTrack = computed(() => !!player.currentTrack)
+const player = usePlayerStore();
+const isVisible = ref(false);
+const hasTrack = computed(() => !!player.currentTrack);
 
-const startY = ref<number | null>(null)
+const startY = ref<number | null>(null);
 
 function onTouchStart(e: TouchEvent) {
-    startY.value = e.touches[0].clientY
+    startY.value = e.touches[0].clientY;
 }
 
 function onTouchEnd(e: TouchEvent) {
-    if (startY.value === null) return
-    const deltaY = e.changedTouches[0].clientY - startY.value
-    if (deltaY > 80) close()
-    startY.value = null
+    if (startY.value === null) return;
+    const deltaY = e.changedTouches[0].clientY - startY.value;
+    if (deltaY > 80) close();
+    startY.value = null;
 }
 
 function openQueue() {
@@ -27,20 +27,20 @@ function openQueue() {
 }
 
 function open() {
-    if (hasTrack.value) isVisible.value = true
+    if (hasTrack.value) isVisible.value = true;
 }
 
 function close() {
-    isVisible.value = false
+    isVisible.value = false;
 }
 
 const formattedTime = (time: number) => {
-    const m = Math.floor(time / 60)
-    const s = time % 60
-    return `${m}:${s.toString().padStart(2, '0')}`
+    const m = Math.floor(time / 60);
+    const s = time % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-defineExpose({ open })
+defineExpose({ open });
 </script>
 
 <template>

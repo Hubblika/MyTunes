@@ -1,74 +1,87 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { Icon } from '.'
-import { usePlayerStore } from '@/stores/player'
-import { _Song, _Playlist } from '@/types'
-import { usePage } from '@inertiajs/vue3'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { usePlayerStore } from '@/stores/player';
+import { _Song, _Playlist } from '@/types';
+import { usePage } from '@inertiajs/vue3';
+import { Icon } from '.';
 
-const props = defineProps<{ song: _Song }>()
+const props = defineProps<{ song: _Song }>();
 
-const player = usePlayerStore()
-const page = usePage()
+const player = usePlayerStore();
+const page = usePage();
 
 
-const dropdownRef = ref<HTMLElement | null>(null)
-const dropdownOpen = ref(false)
-const menuX = ref(0)
-const menuY = ref(0)
-const OFFSET = 6
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownOpen = ref(false);
+const menuX = ref(0);
+const menuY = ref(0);
+const OFFSET = 6;
 
-const showPlaylists = ref(false)
-const playlists = ref<_Playlist[]>([])
+const showPlaylists = ref(false);
+const playlists = ref<_Playlist[]>([]);
 
-const isMobile = ref(false)
+const isMobile = ref(false);
+
+onMounted(() => {
+    window.addEventListener('song-context-open', handleOtherDropdown)
+    window.addEventListener('click', handleClickOutside)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('song-context-open', handleOtherDropdown)
+    window.removeEventListener('click', handleClickOutside)
+    window.removeEventListener('resize', checkMobile)
+});
 
 function checkMobile() {
-    isMobile.value = window.innerWidth <= 768
+    isMobile.value = window.innerWidth <= 768;
 }
 
 async function play() {
-    player.currentPlaylist = null
+    player.currentPlaylist = null;
     if (!player.currentTrack || player.currentTrack.uuid !== props.song.uuid) {
-        await player.playSong(props.song)
+        await player.playSong(props.song);
     } else {
-        player.togglePlay()
+        player.togglePlay();
     }
 }
 
 function openDropdown(e: MouseEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
-    menuX.value = e.clientX + OFFSET
-    menuY.value = e.clientY + OFFSET
+    menuX.value = e.clientX + OFFSET;
+    menuY.value = e.clientY + OFFSET;
 
-    dropdownOpen.value = true
+    dropdownOpen.value = true;
 
     nextTick(() => {
-        if (!dropdownRef.value) return
+        if (!dropdownRef.value) return;
 
-        const { innerWidth, innerHeight } = window
-        const rect = dropdownRef.value.getBoundingClientRect()
+        const { innerWidth, innerHeight } = window;
+        const rect = dropdownRef.value.getBoundingClientRect();
 
         if (menuX.value + rect.width > innerWidth) {
-            menuX.value = e.clientX - rect.width - OFFSET
+            menuX.value = e.clientX - rect.width - OFFSET;
         }
 
         if (menuY.value + rect.height > innerHeight) {
-            menuY.value = e.clientY - rect.height - OFFSET
+            menuY.value = e.clientY - rect.height - OFFSET;
         }
 
-        menuX.value = Math.max(OFFSET, menuX.value)
-        menuY.value = Math.max(OFFSET, menuY.value)
+        menuX.value = Math.max(OFFSET, menuX.value);
+        menuY.value = Math.max(OFFSET, menuY.value);
     })
 
     window.dispatchEvent(
         new CustomEvent('song-context-open', { detail: props.song.uuid })
-    )
+    );
 }
 
 function like() {
-    player.toggleLike(props.song)
-    dropdownOpen.value = false
+    player.toggleLike(props.song);
+    dropdownOpen.value = false;
 }
 
 async function addToPlaylist() {
@@ -92,55 +105,42 @@ async function addToPlaylist() {
 
 async function addSongToPlaylist(playlistUuid: string) {
     try {
-        await player.addSongToPlaylist(playlistUuid, props.song.uuid)
-        dropdownOpen.value = false
-        showPlaylists.value = false
+        await player.addSongToPlaylist(playlistUuid, props.song.uuid);
+        dropdownOpen.value = false;
+        showPlaylists.value = false;
     } catch (err) {
-        console.error("Failed to add song to playlist", err)
+        console.error("Failed to add song to playlist", err);
     }
 }
 
 function addToQueue() {
-    player.addToQueue(props.song)
-    dropdownOpen.value = false
+    player.addToQueue(props.song);
+    dropdownOpen.value = false;
 }
 
 function handleOtherDropdown(e: Event) {
-    const event = e as CustomEvent<string>
-    if (event.detail !== props.song.uuid) dropdownOpen.value = false
+    const event = e as CustomEvent<string>;
+    if (event.detail !== props.song.uuid) dropdownOpen.value = false;
 }
 
 
 function handleClickOutside(e: MouseEvent) {
-    const target = e.target as Node
+    const target = e.target as Node;
 
-    const desktopDropdown = dropdownRef.value
-    const mobileDropdown = document.getElementById('mobile-dropdown')
+    const desktopDropdown = dropdownRef.value;
+    const mobileDropdown = document.getElementById('mobile-dropdown');
 
     const clickedInsideDesktop =
-        desktopDropdown && desktopDropdown.contains(target)
+        desktopDropdown && desktopDropdown.contains(target);
 
     const clickedInsideMobile =
-        mobileDropdown && mobileDropdown.contains(target)
+        mobileDropdown && mobileDropdown.contains(target);
 
     if (!clickedInsideDesktop && !clickedInsideMobile) {
-        dropdownOpen.value = false
-        showPlaylists.value = false
+        dropdownOpen.value = false;
+        showPlaylists.value = false;
     }
 }
-
-onMounted(() => {
-    window.addEventListener('song-context-open', handleOtherDropdown)
-    window.addEventListener('click', handleClickOutside)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-})
-
-onBeforeUnmount(() => {
-    window.removeEventListener('song-context-open', handleOtherDropdown)
-    window.removeEventListener('click', handleClickOutside)
-    window.removeEventListener('resize', checkMobile)
-})
 </script>
 
 <template>

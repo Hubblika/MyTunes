@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ForgotPassword } from '@/components'
-import { Layout } from '@/layouts'
+import { ForgotPassword } from '@/components';
+import { Layout } from '@/layouts';
 
 defineOptions({
     layout: Layout,

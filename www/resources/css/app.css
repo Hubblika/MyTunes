@@ -42,7 +42,6 @@
     background-color: #b0b0b0;
 }
 
-/* Remove scrollbar buttons */
 .custom-scrollbar::-webkit-scrollbar-button {
     display: none;
 }

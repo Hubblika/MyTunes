@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { HomeRow } from './common';
-import axios from 'axios';
 import { _Song } from '@/types';
-
+import axios from 'axios';
 
 const songs = ref<_Song[]>([]);
 
@@ -19,7 +18,6 @@ const getSongs = async () => {
 onMounted(() => {
     getSongs();
 });
-
 
 const songsByArtist = computed(() => {
     const grouped: Record<string, _Song[]> = {};

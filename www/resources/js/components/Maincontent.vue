@@ -1,7 +1,3 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
     <div class="relative w-full overflow-y-auto
             rounded-2xl border border-black/10 dark:border-white/10

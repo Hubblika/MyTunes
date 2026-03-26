@@ -1,61 +1,61 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
-import { MainLayout } from '@/layouts'
-import { Searchbar, PlaylistCard, Button, Icon } from '../components/common'
-import { usePage, router } from '@inertiajs/vue3'
-import { usePlayerStore } from '@/stores/player'
-import { useI18n } from 'vue-i18n'
-import { _Playlist } from '@/types'
-import Maincontent from '@/components/Maincontent.vue'
+import { Searchbar, PlaylistCard, Button, Icon } from '../components/common';
+import Maincontent from '@/components/Maincontent.vue';
+import { usePage, router } from '@inertiajs/vue3';
+import { usePlayerStore } from '@/stores/player';
+import { onMounted, ref, computed } from 'vue';
+import { MainLayout } from '@/layouts';
+import { _Playlist } from '@/types';
+import { useI18n } from 'vue-i18n';
 
-const page = usePage()
-const player = usePlayerStore()
-const { t } = useI18n()
+const page = usePage();
+const player = usePlayerStore();
+const { t } = useI18n();
 
 defineOptions({
     layout: MainLayout
 });
 
-const playlists = ref<_Playlist[]>([])
-const searchQuery = ref('')
+const playlists = ref<_Playlist[]>([]);
+const searchQuery = ref('');
 
 const filteredPlaylists = computed(() => {
-    if (!searchQuery.value) return playlists.value
+    if (!searchQuery.value) return playlists.value;
 
-    const query = searchQuery.value.toLowerCase()
+    const query = searchQuery.value.toLowerCase();
     return playlists.value.filter(p =>
         p.name.toLowerCase().startsWith(query)
-    )
-})
+    );
+});
+
+onMounted(getOwnPlaylists);
 
 async function getOwnPlaylists() {
-    playlists.value = await player.fetchPlaylists(page.props.self.username)
+    playlists.value = await player.fetchPlaylists(page.props.self.username);
 }
 
 async function addPlaylist() {
-    const newPl = await player.addPlaylist(t('sidebar.newPlaylistDefaultName'))
-    if (newPl) playlists.value.push(newPl)
+    const newPl = await player.addPlaylist(t('sidebar.newPlaylistDefaultName'));
+    if (newPl) playlists.value.push(newPl);
 }
 
 async function deletePlaylist(uuid: string) {
-    const success = await player.deletePlaylistAPI(uuid)
-    if (!success) return
+    const success = await player.deletePlaylistAPI(uuid);
+    if (!success) return;
 
-    playlists.value = playlists.value.filter(p => p.uuid !== uuid)
+    playlists.value = playlists.value.filter(p => p.uuid !== uuid);
 
-    if (page.props.uuid === uuid) router.visit('/')
+    if (page.props.uuid === uuid) router.visit('/');
 }
 
 async function renamePlaylist(uuid: string, name: string) {
-    const updated = await player.renamePlaylistAPI(uuid, name)
-    if (!updated) return
+    const updated = await player.renamePlaylistAPI(uuid, name);
+    if (!updated) return;
 
     playlists.value = playlists.value.map(p =>
         p.uuid === uuid ? updated : p
-    )
+    );
 }
-
-onMounted(getOwnPlaylists)
 </script>
 
 <template>

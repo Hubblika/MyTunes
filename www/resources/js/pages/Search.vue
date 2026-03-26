@@ -1,70 +1,69 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import _ from 'lodash'
-
-import { MainContent } from '@/components'
-import { MainLayout } from '@/layouts'
-import { HomeRow, Searchbar } from '@/components/common'
+import { HomeRow, Searchbar } from '@/components/common';
+import { MainContent } from '@/components';
+import { MainLayout } from '@/layouts';
+import { ref, watch } from 'vue';
+import _ from 'lodash';
 
 defineOptions({
     layout: MainLayout
 })
 
-const { query } = defineProps<{ query: string }>()
+const { query } = defineProps<{ query: string }>();
 
-const songs = ref<any[]>([])
+const songs = ref<any[]>([]);
 
-const isMobile = window.matchMedia('(max-width: 1023px)').matches
+const isMobile = window.matchMedia('(max-width: 1023px)').matches;
 
 async function fetchAll() {
     const res = await fetch('/songs', {
         headers: { Accept: 'application/json' }
-    })
+    });
 
-    const data = await res.json()
-    songs.value = data.data
+    const data = await res.json();
+    songs.value = data.data;
 }
 
 async function search(q: string) {
     if (!q) {
         if (isMobile) {
-            await fetchAll()
+            await fetchAll();
         } else {
-            songs.value = []
+            songs.value = [];
         }
-        return
+        return;
     }
 
     const res = await fetch(`/songs?q=${encodeURIComponent(q)}`, {
         headers: { Accept: 'application/json' }
-    })
+    });
 
-    const data = await res.json()
-    songs.value = data.data
+    const data = await res.json();
+    songs.value = data.data;
 }
 
-const debouncedSearch = _.debounce(search, 300)
+const debouncedSearch = _.debounce(search, 300);
 
-const mobileQuery = ref(query ?? '')
+const mobileQuery = ref(query ?? '');
 
 watch(mobileQuery, (q) => {
-    debouncedSearch(q)
-})
+    debouncedSearch(q);
+});
 
 watch(() => query, (q) => {
-    mobileQuery.value = q ?? ''
-    debouncedSearch(q)
+    mobileQuery.value = q ?? '';
+    debouncedSearch(q);
 }, { immediate: true })
 
 function groupByArtist(songs: any[]) {
     const grouped: Record<string, any[]> = {}
 
     for (const song of songs) {
-        if (!grouped[song.artist]) grouped[song.artist] = []
-        grouped[song.artist].push(song)
+        if (!grouped[song.artist]) grouped[song.artist] = [];
+        grouped[song.artist].push(song);
     }
 
-    return grouped
+    return grouped;
 }
 </script>
 

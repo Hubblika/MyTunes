@@ -1,63 +1,62 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
-import { Button, Icon } from '@/components/common'
-import { usePlayerStore } from '@/stores/player'
-import { router } from '@inertiajs/vue3'
+import { ref, computed, onMounted, nextTick } from 'vue';
+import { Button, Icon } from '@/components/common';
+import { usePlayerStore } from '@/stores/player';
 
-const player = usePlayerStore()
-const hasTrack = computed(() => !!player.currentTrack)
+const player = usePlayerStore();
+const hasTrack = computed(() => !!player.currentTrack);
 
-const touchStartX = ref<number | null>(null)
+const touchStartX = ref<number | null>(null);
 
 const onTouchStart = (e: TouchEvent) => {
-    touchStartX.value = e.touches[0].clientX
+    touchStartX.value = e.touches[0].clientX;
 }
 
 const onTouchEnd = (e: TouchEvent) => {
-    if (touchStartX.value === null) return
+    if (touchStartX.value === null) return;
 
-    const deltaX = e.changedTouches[0].clientX - touchStartX.value
+    const deltaX = e.changedTouches[0].clientX - touchStartX.value;
 
     if (Math.abs(deltaX) > 50) {
         if (deltaX < 0) {
-            player.next()
+            player.next();
         } else {
-            player.previous()
+            player.previous();
         }
     }
 
-    touchStartX.value = null
+    touchStartX.value = null;
 }
 
-const titleRef = ref<HTMLParagraphElement | null>(null)
-const artistRef = ref<HTMLParagraphElement | null>(null)
+const titleRef = ref<HTMLParagraphElement | null>(null);
+const artistRef = ref<HTMLParagraphElement | null>(null);
 
 const scrollText = (el: HTMLParagraphElement | null) => {
-    if (!el) return
+    if (!el) return;
 
-    const scrollWidth = el.scrollWidth
-    const clientWidth = el.clientWidth
+    const scrollWidth = el.scrollWidth;
+    const clientWidth = el.clientWidth;
 
-    if (scrollWidth <= clientWidth) return
+    if (scrollWidth <= clientWidth) return;
 
-    let scrollPos = 0
+    let scrollPos = 0;
 
     const animate = () => {
-        scrollPos += 1
-        if (scrollPos > scrollWidth) scrollPos = -clientWidth
-        el.scrollLeft = scrollPos
-        requestAnimationFrame(animate)
+        scrollPos += 1;
+        if (scrollPos > scrollWidth) scrollPos = -clientWidth;
+        el.scrollLeft = scrollPos;
+        requestAnimationFrame(animate);
     }
 
-    animate()
+    animate();
 }
 
 onMounted(() => {
     nextTick(() => {
-        scrollText(titleRef.value)
-        scrollText(artistRef.value)
-    })
-})
+        scrollText(titleRef.value);
+        scrollText(artistRef.value);
+    });
+});
 </script>
 
 <template>

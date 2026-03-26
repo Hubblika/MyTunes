@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Button, Icon, Slider } from '@/components/common'
-import { usePlayerStore } from '@/stores/player'
-import { router } from '@inertiajs/vue3'
+import { Button, Icon, Slider } from '@/components/common';
+import { usePlayerStore } from '@/stores/player';
+import { router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const player = usePlayerStore()
-const hasTrack = computed(() => !!player.currentTrack)
+const player = usePlayerStore();
+const hasTrack = computed(() => !!player.currentTrack);
 
 const volumeIcon = computed(() => {
-    if (player.volume === 0) return 'volume-3'
-    if (player.volume < 50) return 'volume-2'
-    return 'volume'
+    if (player.volume === 0) return 'volume-3';
+    if (player.volume < 50) return 'volume-2';
+    return 'volume';
 })
 
 function skipForward() { player.next() }
 function skipBack() { player.previous() }
 
 function mute() {
-    player.volume = player.volume === 0 ? 10 : 0
+    player.volume = player.volume === 0 ? 10 : 0;
 }
 
 function openQueue() {
-    router.get('/queue')
+    router.get('/queue');
 }
 
 const formattedTime = (time: number) => {
-    const m = Math.floor(time / 60)
-    const s = time % 60
-    return `${m}:${s.toString().padStart(2, '0')}`
+    const m = Math.floor(time / 60);
+    const s = time % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
 }
 </script>
 
