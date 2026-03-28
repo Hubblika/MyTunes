@@ -25,12 +25,12 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         port: 5173,
-        strictPort: true, // Prevents Vite from trying other ports
+        strictPort: true,
         hmr: {
             host: 'localhost',
         },
         watch: {
-            usePolling: true, // IMPORTANT: Needed for Docker on Windows/macOS
+            usePolling: true,
         },
     },
 });

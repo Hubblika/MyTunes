@@ -342,7 +342,6 @@ export const usePlayerStore = defineStore("player", {
                     formData.append("cover", payload.cover);
                 }
 
-                // We use axios.post here!
                 const { data } = await axios.post(
                     `/playlists/${uuid}`,
                     formData,
