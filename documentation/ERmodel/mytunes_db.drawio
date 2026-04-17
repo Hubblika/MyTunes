@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.4">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36">
   <diagram name="Oldal-1" id="SBqPY6jcmFlInsscT_c3">
-    <mxGraphModel dx="2885" dy="1140" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1802" dy="550" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -261,7 +261,7 @@
             <mxPoint x="1500" y="440" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sFk-EsLzNVmw4K-tTzMe-74" edge="1" parent="1" source="sFk-EsLzNVmw4K-tTzMe-45" style="endArrow=none;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" value="">
+        <mxCell id="sFk-EsLzNVmw4K-tTzMe-74" edge="1" parent="1" source="sFk-EsLzNVmw4K-tTzMe-45" style="endArrow=none;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="sFk-EsLzNVmw4K-tTzMe-60" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
             <mxPoint x="1330" y="425" as="sourcePoint" />
             <mxPoint x="1460" y="480" as="targetPoint" />
