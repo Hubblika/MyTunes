@@ -10,9 +10,9 @@ const props = defineProps<{ song: _Song }>();
 const player = usePlayerStore();
 const page = usePage();
 
-
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownOpen = ref(false);
+const playlistMenuDirection = ref<'right' | 'left'>('right');
 const menuX = ref(0);
 const menuY = ref(0);
 const OFFSET = 6;
@@ -84,11 +84,25 @@ function like() {
     dropdownOpen.value = false;
 }
 
-async function addToPlaylist() {
-    if (showPlaylists.value) return;
+async function addToPlaylist(e: MouseEvent) {
+    if (showPlaylists.value && !isMobile.value) return;
+
+    if (!isMobile.value) {
+        const parentMenu = dropdownRef.value;
+        if (parentMenu) {
+            const rect = parentMenu.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const subMenuWidth = 200;
+
+            if (rect.right + subMenuWidth > windowWidth) {
+                playlistMenuDirection.value = 'left';
+            } else {
+                playlistMenuDirection.value = 'right';
+            }
+        }
+    }
 
     const username = page.props.self.username;
-
     const allPlaylists = await player.fetchPlaylists(username);
 
     const checks = await Promise.all(
@@ -123,18 +137,13 @@ function handleOtherDropdown(e: Event) {
     if (event.detail !== props.song.uuid) dropdownOpen.value = false;
 }
 
-
 function handleClickOutside(e: MouseEvent) {
     const target = e.target as Node;
-
     const desktopDropdown = dropdownRef.value;
     const mobileDropdown = document.getElementById('mobile-dropdown');
 
-    const clickedInsideDesktop =
-        desktopDropdown && desktopDropdown.contains(target);
-
-    const clickedInsideMobile =
-        mobileDropdown && mobileDropdown.contains(target);
+    const clickedInsideDesktop = desktopDropdown && desktopDropdown.contains(target);
+    const clickedInsideMobile = mobileDropdown && mobileDropdown.contains(target);
 
     if (!clickedInsideDesktop && !clickedInsideMobile) {
         dropdownOpen.value = false;
@@ -177,6 +186,7 @@ function handleClickOutside(e: MouseEvent) {
         <ul ref="dropdownRef" v-if="dropdownOpen && !isMobile" :style="{ left: `${menuX}px`, top: `${menuY}px` }" class="fixed text-black dark:text-white bg-white/20 dark:bg-black/20 backdrop-blur-md
            border border-black/10 dark:border-white/10 rounded-2xl shadow-lg py-2 z-50
            min-w-[200px] whitespace-nowrap transition-all duration-200" @click.stop>
+            
             <li @click="like" class="flex items-center gap-3 px-4 py-2 rounded-lg
            cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
            transition-colors duration-150">
@@ -187,18 +197,18 @@ function handleClickOutside(e: MouseEvent) {
             </li>
 
             <li class="relative flex items-center gap-3 px-4 py-2 rounded-lg 
-    cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 
-    transition-colors duration-150" @mouseenter="addToPlaylist">
+                cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 
+                transition-colors duration-150" @mouseenter="addToPlaylist">
                 <div class="flex items-center gap-3 w-full" @click="addToPlaylist">
                     <Icon name="square-rounded-plus" class="size-5 text-black dark:text-white" />
                     <span>{{ $t('songCard.addToPlaylist') }}</span>
                 </div>
 
-                <ul v-if="showPlaylists" class="absolute top-0 left-full translate-x-1
-             bg-white/20 dark:bg-black/20
-             backdrop-blur-md
-             border border-black/10 dark:border-white/10
-             rounded-2xl shadow-lg z-50 min-w-[180px]">
+                <ul v-if="showPlaylists" 
+                    :class="[
+                        'absolute top-0 bg-white/20 dark:bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl shadow-lg z-50 min-w-[180px]',
+                        playlistMenuDirection === 'right' ? 'left-full translate-x-1' : 'right-full -translate-x-1'
+                    ]">
                     <li v-for="playlist in playlists" :key="playlist.uuid"
                         @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
                             'flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-150',
@@ -211,8 +221,7 @@ function handleClickOutside(e: MouseEvent) {
                     </li>
 
                     <li v-if="playlists.length === 0" class="flex items-center gap-3 px-4 py-2 rounded-lg
-               cursor-pointer hover:bg-white/30 dark:hover:bg-black/30
-               transition-colors duration-150">
+                        cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition-colors duration-150">
                         <Icon name="cancel" class="size-4 text-red-500" />
                         <span class="truncate">{{ $t('songCard.noPlaylistsAvailable') }}</span>
                     </li>
@@ -233,42 +242,41 @@ function handleClickOutside(e: MouseEvent) {
             <div id="mobile-dropdown" v-if="dropdownOpen && isMobile" @click.self="dropdownOpen = false"
                 class="fixed inset-0 bg-black/40 z-50 flex justify-center items-end">
 
-                <div class="bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10
-      rounded-t-3xl w-full max-h-[80vh] overflow-auto p-4">
+                <div class="bg-white dark:bg-neutral-900 border border-white/10 dark:border-black/10
+                    rounded-t-3xl w-full max-h-[80vh] overflow-auto p-4 shadow-2xl">
                     <li @click="like"
-                        class="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition">
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition">
                         <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
                             :class="player.isLiked(props.song) ? 'text-black dark:text-white' : 'text-pink-500'"
                             class="size-5" />
                         <span>{{ player.isLiked(props.song) ? $t('songCard.unlike') : $t('songCard.like') }}</span>
                     </li>
 
-                    <li class="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition"
+                    <li class="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition"
                         @click="addToPlaylist">
                         <Icon name="square-rounded-plus" class="size-5" />
                         <span>{{ $t('songCard.addToPlaylist') }}</span>
                     </li>
 
                     <li @click="addToQueue"
-                        class="flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer hover:bg-white/30 dark:hover:bg-black/30 transition">
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition">
                         <Icon name="playlist-add" class="size-5" />
                         <span>{{ $t('songCard.addToQueue') }}</span>
                     </li>
 
                     <ul v-if="showPlaylists"
-                        class="mt-2 bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10 rounded-2xl shadow-inner overflow-auto max-h-64">
+                        class="mt-2 bg-gray-50 dark:bg-black/40 rounded-2xl shadow-inner overflow-auto max-h-64 border border-black/5 dark:border-white/5">
                         <li v-for="playlist in playlists" :key="playlist.uuid"
                             @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
-                                'flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-150',
+                                'flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-colors duration-150',
                                 (playlist as any).hasSong
-                                    ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed hover:bg-transparent'
-                                    : 'hover:bg-white/30 dark:hover:bg-black/30'
+                                    ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                    : 'hover:bg-gray-200 dark:hover:bg-white/10'
                             ]">
                             {{ playlist.name }}
                             <span v-if="(playlist as any).hasSong" class="ml-2 text-xs text-gray-500">✓</span>
                         </li>
                     </ul>
-
                 </div>
             </div>
         </transition>

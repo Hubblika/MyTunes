@@ -412,7 +412,7 @@ export const usePlayerStore = defineStore("player", {
                 const songs = res.data.map((song: any) => ({
                     ...song,
                     added_at: song.pivot?.created_at,
-                    url: `http://localhost:8000/stream/${song.uuid}`
+                    url: `/stream/${song.uuid}`
                 })) as _Song[];
 
                 const pl = this.playlists.get(uuid);
