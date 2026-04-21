@@ -242,8 +242,8 @@ function handleClickOutside(e: MouseEvent) {
             <div id="mobile-dropdown" v-if="dropdownOpen && isMobile" @click.self="dropdownOpen = false"
                 class="fixed inset-0 bg-black/40 z-50 flex justify-center items-end">
 
-                <div class="bg-white dark:bg-neutral-900 border border-white/10 dark:border-black/10
-                    rounded-t-3xl w-full max-h-[80vh] overflow-auto p-4 shadow-2xl">
+                <div class="bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10
+          rounded-t-3xl w-full max-h-[80vh] overflow-auto p-4">
                     <li @click="like"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition">
                         <Icon :name="player.isLiked(props.song) ? 'heart-off' : 'heart-filled'"
@@ -265,7 +265,7 @@ function handleClickOutside(e: MouseEvent) {
                     </li>
 
                     <ul v-if="showPlaylists"
-                        class="mt-2 bg-gray-50 dark:bg-black/40 rounded-2xl shadow-inner overflow-auto max-h-64 border border-black/5 dark:border-white/5">
+                        class="mt-2 bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-black/10 rounded-2xl shadow-inner overflow-auto max-h-64">
                         <li v-for="playlist in playlists" :key="playlist.uuid"
                             @click.stop="!(playlist as any).hasSong && addSongToPlaylist(playlist.uuid)" :class="[
                                 'flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-colors duration-150',
