@@ -11,8 +11,6 @@ To get this project running locally, follow these steps:
    `git clone https://github.com/Hubblika/MyTunes.git`
 2. Navigate into the project folder
     `cd MyTunes`
-3. Pull the large files from the repo
-    `git lfs pull`
 4. Change to working directory
     `cd www`
 5. Start docker desktop:
