@@ -6,6 +6,7 @@ import _ from 'lodash';
 import axios from 'axios';
 
 const dropdownOpen = ref(false);
+const isDesktop = ref(false);
 const logoSrc = ref('');
 const email = ref("");
 
@@ -44,14 +45,14 @@ function loadHomeContent() {
     router.get('/');
 }
 
-function download() {    
+function download() {
     const fileUrl = '/downloads/MyTunes_Desktop.exe';
-    
+
     const link = document.createElement('a');
     link.href = fileUrl;
-    
-    link.setAttribute('download', 'MyTunes_Desktop.exe'); 
-    
+
+    link.setAttribute('download', 'MyTunes_Desktop.exe');
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -63,6 +64,10 @@ async function getUser() {
 }
 
 onMounted(async () => {
+    if (window.chrome && window.chrome.webview) {
+        isDesktop.value = true;
+    }
+
     updateLogo();
     document.addEventListener('click', handleClickOutside);
     await getUser();
@@ -106,12 +111,13 @@ onBeforeUnmount(() => {
 
         <div class="flex items-center gap-4 flex-none">
 
-            <Button @click="download"
+            <Button v-if="!isDesktop" @click="download"
                 class="w-full rounded-full border border-black dark:border-white flex items-center justify-center cursor-pointer transition-all duration-150 hover:border-black/60 dark:hover:border-white/80 group">
                 <Icon name="download"
                     class="size-5 transition-colors group-hover:text-black/60 dark:group-hover:text-white/80" />
-                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">{{
-                    $t('header.downloadButton') }}</span>
+                <span class="transition-colors group-hover:text-black/60 dark:group-hover:text-white/80">
+                    {{ $t('header.downloadButton') }}
+                </span>
             </Button>
 
             <div class="relative" ref="dropdownRef">
